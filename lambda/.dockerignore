@@ -1,0 +1,30 @@
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv
+venv
+ENV
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# OS files
+.DS_Store
+
+# Node (in monorepo contexts)
+node_modules
+
+# Build artifacts
+build
+.dist
+.eggs
+*.egg-info
