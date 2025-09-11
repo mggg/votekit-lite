@@ -1,11 +1,10 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import votekitIcon from '$lib/assets/votekit_icon_naked.png';
 
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
 </svelte:head>
 
 
@@ -13,7 +12,7 @@
 	<header class="sticky top-0 z-10 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
 		<nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4">
 			<a href="/run" class="flex items-center gap-2 font-semibold tracking-tight text-slate-800">
-				<img src={favicon} alt="Votekit" class="size-6" />
+				<img src={votekitIcon} alt="Votekit" class="size-6" />
 				<span>Votekit Simulator</span>
 			</a>
 			<div class="flex items-center gap-1.5 text-sm">
