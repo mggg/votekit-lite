@@ -27,3 +27,20 @@ services:
       - ./lambda:/app
     ports:
       - "8000:8000"
+
+  # infra:
+  #   build:
+  #     context: ./infra
+  #     dockerfile: Dockerfile
+  #   container_name: votekit-infra
+  #   working_dir: /workspace/infra
+  #   command: sh -lc "pulumi login --local && (pulumi stack select dev || pulumi stack init dev) && pulumi up --yes --stack dev"
+  #   volumes:
+  #     - ./:/workspace
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ~/.aws:/root/.aws:ro
+  #   environment:
+  #     - PULUMI_HOME=/workspace/infra/.pulumi
+  #     - AWS_REGION=us-east-1
+  #     - AWS_PROFILE=default
+  #   depends_on: []

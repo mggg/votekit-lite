@@ -1,0 +1,6 @@
+name: votekit-infra
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: Infrastructure for votekit - Lambda (container), API endpoint, and IAM role

@@ -17,7 +17,7 @@
   <div class="not-prose grid grid-cols-1 gap-4 md:grid-cols-2">
     {#each sections as s}
       <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm backdrop-blur">
-        <h2 class="text-lg font-semibold text-slate-800">{s.title}</h2>
+        <h2 class="text-lg font-semibold text-green-300">{s.title}</h2>
         <p class="mt-2 text-slate-600">{s.body}</p>
       </div>
     {/each}

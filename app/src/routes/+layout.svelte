@@ -23,7 +23,7 @@
 			</div>
 		</nav>
 	</header>
-	<main class="mx-auto max-w-7xl px-4 py-10">
+	<main class="mx-auto max-w-7xl px-4 py-6">
 		<slot />
 	</main>
 	<footer class="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
