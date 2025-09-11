@@ -49,7 +49,7 @@
   }
 
   function formatMode(election: ElectionConfig): string {
-    if (election.mode === 'plurality') return `Plurality (${election.ballotGenerator})`;
+    if (election.mode === 'plurality') return `Bloc plurality`;
     return `STV, ${election.numSeats} seats`;
   }
 
@@ -103,10 +103,13 @@
               </div>
               <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                 <dt class="text-slate-500">Blocs</dt>
-                <dd>A {selected.params.voterBlocs.blocA.proportionPct}% ({selected.params.voterBlocs.blocA.preference}), B {selected.params.voterBlocs.blocB.proportionPct}% ({selected.params.voterBlocs.blocB.preference})</dd>
+                <dd>
+                  A {selected.params.voterBlocs.blocA.count} (A→A {selected.params.voterBlocs.blocA.preference.forA}, A→B {selected.params.voterBlocs.blocA.preference.forB}),
+                  B {selected.params.voterBlocs.blocB.count} (B→B {selected.params.voterBlocs.blocB.preference.forB}, B→A {selected.params.voterBlocs.blocB.preference.forA})
+                </dd>
                 <dt class="text-slate-500">Mode</dt>
                 <dd>{formatMode(selected.params.election)}</dd>
-                <dt class="text-slate-500">Generator</dt>
+                <dt class="text-slate-500">Behavior</dt>
                 <dd>{selected.params.ballotGenerator}</dd>
                 <dt class="text-slate-500">Trials</dt>
                 <dd>{selected.params.trials}</dd>

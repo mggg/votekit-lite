@@ -5,9 +5,14 @@ export type SlateConfig = {
 
 export type VoterPreference = 'strong' | 'random' | 'indifferent';
 
+export type BlocCrossPreferences = {
+  forA: VoterPreference;
+  forB: VoterPreference;
+};
+
 export type VoterBlocConfig = {
-  blocA: { proportionPct: number; preference: VoterPreference; cohesionPct: number };
-  blocB: { proportionPct: number; preference: VoterPreference; cohesionPct: number };
+  blocA: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
+  blocB: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
 };
 
 export type ElectionConfig =
