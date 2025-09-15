@@ -47,7 +47,7 @@ jobs:
         ./build-and-push-lambda.sh
         
         echo "✅ Lambda Docker image built and pushed successfully!"
-        
+    
     - name: Deploy infrastructure with Pulumi
       run: |
         docker run --rm \
@@ -55,6 +55,12 @@ jobs:
           -v "/var/run/docker.sock:/var/run/docker.sock" \
           --env-file ./infra/.env \
           -e PULUMI_HOME=/workspace/infra/.pulumi \
+          -e AWS_ACCOUNT_ID=${{secrets.AWS_ACCOUNT_ID}}
+          -e AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}
+          -e AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
+          -e AWS_REGION=${{secrets.AWS_REGION}}
+          -e PULUMI_CONFIG_PASSPHRASE=${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+
           -w /workspace/infra \
           votekit-infra \
           sh -c "pulumi login s3://${{ env.PULUMI_BACKEND_BUCKET }} && (pulumi stack select dev || pulumi stack init dev) && pulumi up --yes --stack dev"
