@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+.pulumi/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+.mypy_cache/

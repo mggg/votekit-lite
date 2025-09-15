@@ -18,7 +18,7 @@ Replace placeholders before running. Use a unique version tag.
 
 ```bash
 AWS_ACCOUNT_ID="123456789012"
-AWS_REGION="us-east-1"
+AWS_REGION="us-east-2"
 ECR_REPO_NAME="votekit-lambda"
 IMAGE_TAG="v1"
 

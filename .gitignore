@@ -30,3 +30,4 @@ app/build/*/**
 infra/venv*/**
 infra/.pulumi
 infra/__pycache__/__main__.cpython-312.pyc
+infra/__pycache__/__main__.cpython-313.pyc
