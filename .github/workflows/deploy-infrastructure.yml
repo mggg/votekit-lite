@@ -15,8 +15,7 @@ env:
 
 jobs:
   deploy-infrastructure:
-    runs-on: ubuntu-latest-arm64
-    
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
