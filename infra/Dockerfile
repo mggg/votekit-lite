@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 
 # Install Docker CLI, bash, git, jq, and other dependencies
 RUN apk add --no-cache docker-cli bash git jq curl

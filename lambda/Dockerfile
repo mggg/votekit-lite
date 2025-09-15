@@ -1,5 +1,5 @@
 # Use the AWS Lambda Python base image for the runtime you need
-FROM public.ecr.aws/lambda/python:3.12
+FROM public.ecr.aws/lambda/python:3.13
 
 # Copy function code
 COPY main.py ${LAMBDA_TASK_ROOT}/
