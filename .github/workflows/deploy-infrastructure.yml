@@ -16,13 +16,14 @@ env:
 jobs:
   deploy-infrastructure:
     runs-on: ubuntu-latest
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+      with:
+        platforms: linux/arm64,linux/amd64
       
     - name: Build infrastructure container
       run: |
@@ -55,12 +56,11 @@ jobs:
           -v "/var/run/docker.sock:/var/run/docker.sock" \
           --env-file ./infra/.env \
           -e PULUMI_HOME=/workspace/infra/.pulumi \
-          -e AWS_ACCOUNT_ID=${{secrets.AWS_ACCOUNT_ID}}
-          -e AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}
-          -e AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
-          -e AWS_REGION=${{secrets.AWS_REGION}}
-          -e PULUMI_CONFIG_PASSPHRASE=${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-
+          -e AWS_ACCOUNT_ID=${{secrets.AWS_ACCOUNT_ID}} \
+          -e AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} \
+          -e AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} \
+          -e AWS_REGION=${{secrets.AWS_REGION}} \
+          -e PULUMI_CONFIG_PASSPHRASE=${{ secrets.PULUMI_CONFIG_PASSPHRASE }} \
           -w /workspace/infra \
           votekit-infra \
           sh -c "pulumi login s3://${{ env.PULUMI_BACKEND_BUCKET }} && (pulumi stack select dev || pulumi stack init dev) && pulumi up --yes --stack dev"

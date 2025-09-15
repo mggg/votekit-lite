@@ -30,20 +30,16 @@ fi
 echo "Logging in to ECR..."
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URL}
 
-# Build the image for linux/amd64 platform with Lambda-compatible format
-echo "Building Docker image..."
-# Use legacy builder to avoid OCI manifest issues with Lambda
+# Build the image for linux/arm64 platform with Lambda-compatible format
+echo "Building Docker image for ARM64..."
+# Use Buildx for cross-platform builds (ARM64 on AMD64 runner)
 # Build with explicit platform and no cache to ensure clean build
-# Force the image to be built in the correct format for Lambda
-DOCKER_BUILDKIT=0 docker build --platform linux/arm64 --no-cache -t ${ECR_REPO_NAME} ./lambda
-
-# Tag the image
-echo "Tagging image..."
-docker tag ${ECR_REPO_NAME}:latest ${ECR_REPO_URL}:latest
-
-# Push the image with specific format for AWS Lambda
-echo "Pushing image to ECR..."
-docker push ${ECR_REPO_URL}:latest
+docker buildx build \
+  --platform linux/arm64 \
+  --no-cache \
+  --tag ${ECR_REPO_URL}:latest \
+  --push \
+  ./lambda
 
 echo "Successfully built and pushed Lambda image to ECR!"
 echo "Image URI: ${ECR_REPO_URL}:latest"
