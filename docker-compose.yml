@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   app:
     build:
@@ -28,19 +26,27 @@ services:
     ports:
       - "8000:8000"
 
-  # infra:
-  #   build:
-  #     context: ./infra
-  #     dockerfile: Dockerfile
-  #   container_name: votekit-infra
-  #   working_dir: /workspace/infra
-  #   command: sh -lc "pulumi login --local && (pulumi stack select dev || pulumi stack init dev) && pulumi up --yes --stack dev"
-  #   volumes:
-  #     - ./:/workspace
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ~/.aws:/root/.aws:ro
-  #   environment:
-  #     - PULUMI_HOME=/workspace/infra/.pulumi
-  #     - AWS_REGION=us-east-1
-  #     - AWS_PROFILE=default
-  #   depends_on: []
+  infra:
+    build:
+      context: ./infra
+      dockerfile: Dockerfile
+    container_name: votekit-infra
+    working_dir: /workspace/infra
+    command: sh -lc "pulumi login s3://votekit-frontend-pulumi-backend && (pulumi stack select dev || pulumi stack init dev) && pulumi up --yes --stack dev"
+    volumes:
+      - ./:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Add Docker build cache volume to avoid registry authentication issues
+      - docker-build-cache:/var/lib/docker
+    env_file:
+      - ./infra/.env
+    environment:
+      - PULUMI_HOME=/workspace/infra/.pulumi
+      - AWS_DEFAULT_REGION=us-east-2
+      # Disable Docker buildkit to avoid cache issues on ARM
+      - DOCKER_BUILDKIT=0
+      - COMPOSE_DOCKER_CLI_BUILD=0
+    depends_on: []
+
+volumes:
+  docker-build-cache:

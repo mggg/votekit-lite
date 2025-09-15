@@ -4,3 +4,5 @@ runtime:
   options:
     virtualenv: venv
 description: Infrastructure for votekit - Lambda (container), API endpoint, and IAM role
+backend:
+  url: s3://votekit-frontend-pulumi-backend
