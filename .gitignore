@@ -27,3 +27,6 @@ vite.config.ts.timestamp-*
 
 app/build
 app/build/*/**
+infra/venv*/**
+infra/.pulumi
+infra/__pycache__/__main__.cpython-312.pyc

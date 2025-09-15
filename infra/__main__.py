@@ -11,29 +11,30 @@ import pulumi_docker as docker
 project_name = pulumi.get_project()
 stack_name = pulumi.get_stack()
 
-# ECR repository to store the Lambda container image
-repo = aws.ecr.Repository(
+# S3 bucket for Pulumi backend storage
+# Reference existing bucket instead of creating new one
+pulumi_backend_bucket = aws.s3.Bucket.get(
+    "votekit-frontend-pulumi-backend",
+    id="votekit-frontend-pulumi-backend",
+    bucket="votekit-frontend-pulumi-backend",
+)
+
+# Note: Since we're using an existing bucket, we don't configure versioning, encryption, or public access blocks
+# These should already be configured on the existing bucket. If you need to modify them,
+# you would need to use separate aws.s3.BucketVersioning, aws.s3.BucketServerSideEncryptionConfiguration,
+# and aws.s3.BucketPublicAccessBlock resources, but be careful not to conflict with existing settings.
+
+# Reference existing ECR repository instead of creating a new one
+# This avoids the repository name mismatch issue
+repo = aws.ecr.Repository.get(
     "votekit-lambda-repo",
+    id="votekit-lambda-repo"
 )
 
-# Get ECR auth credentials for the Docker registry
-auth = aws.ecr.get_authorization_token_output(registry_id=repo.registry_id)
-registry = docker.Registry(
-    server=repo.repository_url.apply(lambda url: url.split("/")[0]),
-    username=auth.user_name,
-    password=auth.password,
-)
-
-# Build and push the Lambda image from the local lambda directory
-image = docker.Image(
-    "votekit-lambda-image",
-    build=docker.DockerBuild(
-        context="../lambda",
-        dockerfile="../lambda/Dockerfile",
-    ),
-    image_name=repo.repository_url.apply(lambda url: f"{url}:latest"),
-    registry=registry,
-)
+# For now, let's use a simple approach - build the image manually
+# and reference it by the repository URL. This avoids Docker-in-Docker issues.
+# The image will need to be built and pushed manually before running this.
+image_uri = repo.repository_url.apply(lambda url: f"{url}:latest")
 
 # Lambda execution role
 assume_role_doc: Dict[str, object] = {
@@ -62,10 +63,15 @@ aws.iam.RolePolicyAttachment(
 fn = aws.lambda_.Function(
     "votekit-lambda",
     package_type="Image",
-    image_uri=image.image_name,
+    image_uri=image_uri,
     role=lambda_exec_role.arn,
-    timeout=15,
-    memory_size=256,
+    timeout=30,
+    memory_size=4096,
+    # Add these parameters to help with image compatibility
+    architectures=["arm64"],
+    environment={
+        "variables": {}
+    }
 )
 
 # Create an IAM role that can be assumed by the account root and can invoke the Lambda
@@ -106,3 +112,4 @@ aws.iam.RolePolicy(
 pulumi.export("lambda_function_name", fn.name)
 pulumi.export("lambda_function_arn", fn.arn)
 pulumi.export("invoker_role_arn", invoker_role.arn)
+pulumi.export("pulumi_backend_bucket", pulumi_backend_bucket.bucket)
