@@ -1,0 +1,52 @@
+### Test the invoke endpoint
+POST http://localhost:8000/invoke
+Content-Type: application/json
+
+{
+  "id": "test-123",
+  "name": "Test Run",
+  "blocs": {
+    "bloc1": {
+      "count": 50,
+      "preference": {
+        "slate1": "random",
+        "slate2": "random"
+      },
+      "cohesion": {
+        "slate1": 0.7,
+        "slate2: 0.3
+      },
+    },
+    "bloc2": {
+      "count": 50,
+      "preference": {
+        "slate1": "random",
+        "slate2": "random"
+      },
+      "cohesion": {
+        "slate1": 0.6,
+        "slate2: 0.4
+      },
+    }
+  },
+  "slates": {
+    "slate1": {
+      "numCandidates": 3
+    },
+    "slate2": {
+      "numCandidates": 3
+    }
+  },
+  "election": {
+    "mode": "stv",
+    "numSeats": 5,
+    "maxBallotLength":6
+  },
+  "ballotGenerator": "sPL",
+  "trials": 100,
+  "createdAt": "1700000000000"
+}
+
+### Test the root endpoint
+GET http://localhost:8000/
+
