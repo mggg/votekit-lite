@@ -2,8 +2,9 @@ import { LambdaClient, InvokeCommand, InvokeCommand } from '@aws-sdk/client-lamb
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { VotekitConfigSchema, type VotekitConfig } from '../../../lib/types/votekitConfig';
 import type { RequestHandler } from './$types';
-import { dev as IS_DEV } from '$app/environment';
 import  {LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} from '$env/static/private';
+import { IS_DEV } from '../../../lib/constants';
+
 const invokeLambdaDev = async (votekitConfig: VotekitConfig) => {
 	return await fetch('http://localhost:8000/invoke', {
 		method: 'POST',
@@ -65,7 +66,6 @@ const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
 
 export const POST: RequestHandler = async ({ request }) => {
   // Parse the request body
-  // If the client sends JSON, use request.json()
   const data = await request.json(); 
 	const votekitConfig = VotekitConfigSchema.parse(data);
 	const invokeFn = IS_DEV ? invokeLambdaDev : invokeLambdaProd;
