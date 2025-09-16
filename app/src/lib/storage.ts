@@ -27,6 +27,15 @@ export type RunParams = {
   election: ElectionConfig;
   ballotGenerator: 'sBT' | 'sPL' | 'CS';
   trials: number;
+  maxRankingCandidates?: number;
+  numSlates?: number;
+  slateCandidates?: number[];
+  blocACohesion?: number[];
+  blocBCohesion?: number[];
+  voterBlocMode?: 'count' | 'share';
+  totalVoters?: number;
+  blocAShare?: number;
+  blocBShare?: number;
   createdAt: number;
 };
 
