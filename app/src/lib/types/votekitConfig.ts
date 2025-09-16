@@ -15,7 +15,7 @@ const CohesionSchema  = z.record(z.string(), z.coerce.number());
 const VoterBlocSchema = z.object({
   count: z.coerce.number(),
   preference: PreferenceSchema,
-  cohesionPct: z.coerce.number(),
+  cohesion: CohesionSchema,
 });
 
 // Slate schema with number coercion
