@@ -1,0 +1,46 @@
+import { z } from "zod";
+
+
+const PreferenceValuesSchema = z.union([
+  z.literal("all_bets_off"),
+  z.literal("strong"),
+  z.literal("unif"),
+]);
+
+
+// Schema for a single bloc's preferences, keyed by bloc identifiers
+const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);
+
+// Voter bloc schema
+const VoterBlocSchema = z.object({
+  count: z.coerce.number(),
+  preference: PreferenceSchema,
+  cohesionPct: z.coerce.number(),
+});
+
+// Slate schema with number coercion
+const SlateSchema = z.object({
+  numCandidates: z.coerce.number(),
+});
+
+// Election schema
+const ElectionSchema = z.object({
+  mode: z.string(),
+  stv: z.string(),
+  numSeats: z.coerce.number()
+});
+
+// Main config schema
+export const VotekitConfigSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  voterBlocs: z.record(z.string(), VoterBlocSchema),
+  slates: z.record(z.string(), SlateSchema),
+  election: ElectionSchema,
+  ballotGenerator: z.string(),
+  trials: z.coerce.number(),
+  createdAt: z.string(),
+});
+
+// Example type
+export type VotekitConfig = z.infer<typeof ConfigSchema>;
