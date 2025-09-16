@@ -612,7 +612,7 @@
           {/each}
         {/each}
         <div><strong>Candidate pool:</strong> {slateCandidates.map((count, index) => `${slateNames[index]} fields ${count} candidates`).join(', ')}</div>
-        <div><strong>Behavior:</strong> {ballotGenerator === 'sPL' ? 'impulsive voting' : ballotGenerator === 'sBT' ? 'deliberative voting' : 'Cambridge-style voting'}</div>
+        <div><strong>Behavior:</strong> {ballotGenerator === 'sPL' ? 'Impulsive voting' : ballotGenerator === 'sBT' ? 'Deliberative voting' : 'Cambridge-style voting'}</div>
         <div><strong>Number of simulated elections:</strong> {trials}</div>
       </div>
     </div>
