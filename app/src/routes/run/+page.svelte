@@ -7,43 +7,44 @@
   let trials = 100;
 
   // Voter blocs (counts instead of proportions)
-  let blocACount = 50;
-  let blocBCount = 50;
+  let numVoterBlocs = 2;
+  let blocCounts = [50, 50]; // Array to hold voter counts for each bloc
+  let blocShares = [0.5, 0.5]; // Array to hold voter shares for each bloc
+  let blocNames = ['A', 'B']; // Array to hold custom names for each voting bloc
   
   // Voter bloc mode toggle
   let voterBlocMode: 'count' | 'share' = 'count';
   let totalVoters = 100;
-  let blocAShare = 0.5;
-  let blocBShare = 0.5;
   
   // Advanced voter settings
-  let showAdvancedVoterSettings = false;
-  let blocAPopulation = 10000;
-  let blocBPopulation = 10000;
-  let blocATurnout = 1.0;
-  let blocBTurnout = 1.0;
+  let showTurnoutSettings = false;
+  let blocPopulations = [10000, 10000]; // Array to hold population for each bloc
+  let blocTurnouts = [1.0, 1.0]; // Array to hold turnout for each bloc
 
   // Candidate preference (per bloc, cross-preferences), default to 'random' (all bets are off)
   type VoterPreference = 'strong' | 'random' | 'indifferent';
-  let blocAPrefForA: VoterPreference = 'random';
-  let blocAPrefForB: VoterPreference = 'random';
-  let blocBPrefForB: VoterPreference = 'random';
-  let blocBPrefForA: VoterPreference = 'random';
+  let blocPreferences: VoterPreference[][] = [
+    ['random', 'random'], // Bloc A preferences for [A candidates, B candidates]
+    ['random', 'random']  // Bloc B preferences for [A candidates, B candidates]
+  ];
 
-  // Cohesion (0-1 range) - arrays for dynamic slates
-  let blocACohesion = [0.7, 0.7]; // A voters' cohesion to each slate
-  let blocBCohesion = [0.7, 0.7]; // B voters' cohesion to each slate
+  // Cohesion (0-1 range) - arrays for dynamic slates and voter blocs
+  let blocCohesion: number[][] = [
+    [1.0, 0], // Bloc A cohesion to each slate
+    [0, 1.0]  // Bloc B cohesion to each slate
+  ];
 
   // Slates
   let numSlates = 2;
   let slateCandidates = [3, 3]; // Array to hold candidates per slate
+  let slateNames = ['A', 'B']; // Array to hold custom names for each slate
 
   const MAX_CANDIDATES = 12;
   $: totalCandidates = slateCandidates.reduce((sum, count) => sum + count, 0);
   $: maxRankingCandidates = totalCandidates;
 
   // Election
-  let mode: 'plurality' | 'multiseat' = 'multiseat';
+  let mode: 'blocPlurality' | 'multiseat' = 'multiseat';
   let ballotGenerator: 'sBT' | 'sPL' | 'CS' = 'sPL';
   let stvNumSeats = 5;
   let maxRankingCandidatesInput = 6;
@@ -57,21 +58,47 @@
     maxRankingCandidatesInput = totalCandidates;
   }
   
+  // Handle dynamic voter bloc creation
+  $: if (numVoterBlocs !== blocCounts.length) {
+    if (numVoterBlocs > blocCounts.length) {
+      // Add new blocs
+      for (let i = blocCounts.length; i < numVoterBlocs; i++) {
+        blocCounts = [...blocCounts, 50];
+        blocShares = [...blocShares, 1 / numVoterBlocs];
+        blocPopulations = [...blocPopulations, 10000];
+        blocTurnouts = [...blocTurnouts, 1.0];
+        blocPreferences = [...blocPreferences, new Array(numSlates).fill('random')];
+        blocCohesion = [...blocCohesion, new Array(numSlates).fill(1 / numSlates)];
+        blocNames = [...blocNames, String.fromCharCode(65 + i)];
+      }
+    } else {
+      // Remove excess blocs
+      blocCounts = blocCounts.slice(0, numVoterBlocs);
+      blocShares = blocShares.slice(0, numVoterBlocs);
+      blocPopulations = blocPopulations.slice(0, numVoterBlocs);
+      blocTurnouts = blocTurnouts.slice(0, numVoterBlocs);
+      blocPreferences = blocPreferences.slice(0, numVoterBlocs);
+      blocCohesion = blocCohesion.slice(0, numVoterBlocs);
+      blocNames = blocNames.slice(0, numVoterBlocs);
+    }
+  }
+  
   // Share calculations
   $: if (voterBlocMode === 'share') {
-    blocACount = Math.round(totalVoters * blocAShare);
-    blocBCount = Math.round(totalVoters * blocBShare);
+    blocCounts = blocShares.map(share => Math.round(totalVoters * share));
   }
   
   // Advanced settings: update voter counts when turnout changes in count mode
-  $: if (voterBlocMode === 'count' && showAdvancedVoterSettings) {
-    blocACount = Math.round(blocAPopulation * blocATurnout);
-    blocBCount = Math.round(blocBPopulation * blocBTurnout);
+  $: if (voterBlocMode === 'count' && showTurnoutSettings) {
+    blocCounts = blocPopulations.map((pop, i) => Math.round(pop * blocTurnouts[i]));
   }
   
   // Ensure shares add to 1
-  $: if (voterBlocMode === 'share' && blocAShare + blocBShare !== 1) {
-    blocBShare = 1 - blocAShare;
+  $: if (voterBlocMode === 'share') {
+    const sum = blocShares.reduce((s, share) => s + share, 0);
+    if (Math.abs(sum - 1) > 0.001) {
+      blocShares = blocShares.map(share => share / sum);
+    }
   }
   
   // Handle dynamic slate creation
@@ -80,36 +107,47 @@
       // Add new slates
       for (let i = slateCandidates.length; i < numSlates; i++) {
         slateCandidates = [...slateCandidates, 1];
+        slateNames = [...slateNames, String.fromCharCode(65 + i)];
       }
     } else {
       // Remove excess slates
       slateCandidates = slateCandidates.slice(0, numSlates);
+      slateNames = slateNames.slice(0, numSlates);
     }
   }
   
   // Handle dynamic cohesion arrays
-  $: if (numSlates !== blocACohesion.length) {
-    if (numSlates > blocACohesion.length) {
-      // Add new cohesion values (distribute remaining evenly)
-      const currentSum = blocACohesion.reduce((sum, val) => sum + val, 0);
-      const remaining = Math.max(0, 1 - currentSum);
-      const newSlatesCount = numSlates - blocACohesion.length;
-      const newValue = newSlatesCount > 0 ? remaining / newSlatesCount : 0;
-      const newValues = new Array(newSlatesCount).fill(newValue);
-      blocACohesion = [...blocACohesion, ...newValues];
-      blocBCohesion = [...blocBCohesion, ...newValues];
-    } else {
-      // Remove excess cohesion values and renormalize
-      const truncatedA = blocACohesion.slice(0, numSlates);
-      const truncatedB = blocBCohesion.slice(0, numSlates);
-      
-      // Renormalize to sum to 1
-      const sumA = truncatedA.reduce((sum, val) => sum + val, 0);
-      const sumB = truncatedB.reduce((sum, val) => sum + val, 0);
-      
-      blocACohesion = sumA > 0 ? truncatedA.map(val => val / sumA) : new Array(numSlates).fill(1 / numSlates);
-      blocBCohesion = sumB > 0 ? truncatedB.map(val => val / sumB) : new Array(numSlates).fill(1 / numSlates);
-    }
+  $: if (numSlates !== blocCohesion[0]?.length) {
+    blocCohesion = blocCohesion.map(blocCohesionArray => {
+      if (numSlates > blocCohesionArray.length) {
+        // Add new cohesion values (distribute remaining evenly)
+        const currentSum = blocCohesionArray.reduce((sum, val) => sum + val, 0);
+        const remaining = Math.max(0, 1 - currentSum);
+        const newSlatesCount = numSlates - blocCohesionArray.length;
+        const newValue = newSlatesCount > 0 ? remaining / newSlatesCount : 0;
+        const newValues = new Array(newSlatesCount).fill(newValue);
+        return [...blocCohesionArray, ...newValues];
+      } else {
+        // Remove excess cohesion values and renormalize
+        const truncated = blocCohesionArray.slice(0, numSlates);
+        const sum = truncated.reduce((sum, val) => sum + val, 0);
+        return sum > 0 ? truncated.map(val => val / sum) : new Array(numSlates).fill(1 / numSlates);
+      }
+    });
+  }
+  
+  // Handle dynamic preferences arrays
+  $: if (numSlates !== blocPreferences[0]?.length) {
+    blocPreferences = blocPreferences.map(preferencesArray => {
+      if (numSlates > preferencesArray.length) {
+        // Add new preferences (default to 'random')
+        const newPreferences = new Array(numSlates - preferencesArray.length).fill('random');
+        return [...preferencesArray, ...newPreferences];
+      } else {
+        // Remove excess preferences
+        return preferencesArray.slice(0, numSlates);
+      }
+    });
   }
 
   function updateSlateCandidates(index: number, value: number) {
@@ -118,62 +156,35 @@
     slateCandidates = newCandidates;
   }
   
-  function updateCohesion(bloc: 'A' | 'B', slateIndex: number, value: number) {
-    if (bloc === 'A') {
-      const newCohesion = [...blocACohesion];
-      newCohesion[slateIndex] = Math.max(0, Math.min(1, value));
+  function updateCohesion(blocIndex: number, slateIndex: number, value: number) {
+    const newBlocCohesion = [...blocCohesion];
+    const newCohesion = [...newBlocCohesion[blocIndex]];
+    newCohesion[slateIndex] = Math.max(0, Math.min(1, value));
+    
+    // Ensure sum equals 1
+    const sum = newCohesion.reduce((s, v) => s + v, 0);
+    if (Math.abs(sum - 1) > 0.001) { // Use tolerance for floating point comparison
+      const remaining = 1 - newCohesion[slateIndex];
+      const otherIndices = newCohesion.map((_, i) => i).filter(i => i !== slateIndex);
       
-      // Ensure sum equals 1
-      const sum = newCohesion.reduce((s, v) => s + v, 0);
-      if (Math.abs(sum - 1) > 0.001) { // Use tolerance for floating point comparison
-        const remaining = 1 - newCohesion[slateIndex];
-        const otherIndices = newCohesion.map((_, i) => i).filter(i => i !== slateIndex);
-        
-        if (otherIndices.length > 0 && remaining >= 0) {
-          const otherSum = otherIndices.reduce((s, i) => s + newCohesion[i], 0);
-          if (otherSum > 0) {
-            const scale = remaining / otherSum;
-            otherIndices.forEach(i => {
-              newCohesion[i] = Math.max(0, newCohesion[i] * scale);
-            });
-          } else {
-            // Distribute remaining evenly among other slates
-            const evenShare = remaining / otherIndices.length;
-            otherIndices.forEach(i => {
-              newCohesion[i] = Math.max(0, evenShare);
-            });
-          }
+      if (otherIndices.length > 0 && remaining >= 0) {
+        const otherSum = otherIndices.reduce((s, i) => s + newCohesion[i], 0);
+        if (otherSum > 0) {
+          const scale = remaining / otherSum;
+          otherIndices.forEach(i => {
+            newCohesion[i] = Math.max(0, newCohesion[i] * scale);
+          });
+        } else {
+          // Distribute remaining evenly among other slates
+          const evenShare = remaining / otherIndices.length;
+          otherIndices.forEach(i => {
+            newCohesion[i] = Math.max(0, evenShare);
+          });
         }
       }
-      blocACohesion = newCohesion;
-    } else {
-      const newCohesion = [...blocBCohesion];
-      newCohesion[slateIndex] = Math.max(0, Math.min(1, value));
-      
-      // Ensure sum equals 1
-      const sum = newCohesion.reduce((s, v) => s + v, 0);
-      if (Math.abs(sum - 1) > 0.001) { // Use tolerance for floating point comparison
-        const remaining = 1 - newCohesion[slateIndex];
-        const otherIndices = newCohesion.map((_, i) => i).filter(i => i !== slateIndex);
-        
-        if (otherIndices.length > 0 && remaining >= 0) {
-          const otherSum = otherIndices.reduce((s, i) => s + newCohesion[i], 0);
-          if (otherSum > 0) {
-            const scale = remaining / otherSum;
-            otherIndices.forEach(i => {
-              newCohesion[i] = Math.max(0, newCohesion[i] * scale);
-            });
-          } else {
-            // Distribute remaining evenly among other slates
-            const evenShare = remaining / otherIndices.length;
-            otherIndices.forEach(i => {
-              newCohesion[i] = Math.max(0, evenShare);
-            });
-          }
-        }
-      }
-      blocBCohesion = newCohesion;
     }
+    newBlocCohesion[blocIndex] = newCohesion;
+    blocCohesion = newBlocCohesion;
   }
 
   let recaptchaChecked = false;
@@ -188,26 +199,35 @@
       params: {
         id,
         name,
-        voterBlocs: {
-          blocA: { count: blocACount, preference: { forA: blocAPrefForA, forB: blocAPrefForB }, cohesionPct: blocACohesion[0] || 0.7 },
-          blocB: { count: blocBCount, preference: { forA: blocBPrefForA, forB: blocBPrefForB }, cohesionPct: blocBCohesion[0] || 0.7 }
-        },
+        voterBlocs: blocCounts.map((count, index) => ({
+          count,
+          preference: {
+            forA: blocPreferences[index][0] || 'random',
+            forB: blocPreferences[index][1] || 'random'
+          },
+          cohesionPct: blocCohesion[index][0] || 0.7
+        })),
         slates: {
           slateA: { numCandidates: slateCandidates[0] || 1 },
           slateB: { numCandidates: slateCandidates[1] || 1 }
         },
-        election: mode === 'plurality' ? { mode: 'plurality' } : { mode: 'multiseat', stv: true, numSeats: stvNumSeats },
+        election: mode === 'blocPlurality' ? { mode: 'blocPlurality' } : { mode: 'multiseat', stv: true, numSeats: stvNumSeats },
         ballotGenerator,
         trials,
         maxRankingCandidates: maxRankingCandidatesInput,
         numSlates,
         slateCandidates,
-        blocACohesion,
-        blocBCohesion,
+        slateNames,
+        numVoterBlocs,
+        blocCounts,
+        blocShares,
+        blocNames,
+        blocPopulations,
+        blocTurnouts,
+        blocPreferences,
+        blocCohesion,
         voterBlocMode,
         totalVoters,
-        blocAShare,
-        blocBShare,
         createdAt: Date.now()
       },
       result: {
@@ -228,15 +248,15 @@
       <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
         <OptionCard
           title="Single transferable vote (STV)"
-          description="Ranked-choice multiseat election"
+          description="Votes transfer as candidates are elected/eliminated."
           selected={mode === 'multiseat'}
           onSelect={() => (mode = 'multiseat')}
         />
         <OptionCard
           title="Bloc plurality"
-          description="Most votes wins in a bloc contest"
-          selected={mode === 'plurality'}
-          onSelect={() => (mode = 'plurality')}
+          description="Most votes wins."
+          selected={mode === 'blocPlurality'}
+          onSelect={() => (mode = 'blocPlurality')}
         />
       </div>
     </div>
@@ -282,14 +302,26 @@
         </div>
       </div>
 
+
       <!-- Number of candidates per slate -->
       <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
         {#each slateCandidates as candidates, index}
-          <label class="block text-sm">Slate {String.fromCharCode(65 + index)} - number of candidates
-            <input type="number" min="1" max={MAX_CANDIDATES} class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
-              value={candidates}
-              on:input={(e) => updateSlateCandidates(index, Number((e.target as HTMLInputElement).value))} />
-          </label>
+          <div class="space-y-2">
+            <label class="block text-sm">Slate name
+              <input type="text" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                value={slateNames[index]}
+                on:input={(e) => {
+                  const newNames = [...slateNames];
+                  newNames[index] = (e.target as HTMLInputElement).value || String.fromCharCode(65 + index);
+                  slateNames = newNames;
+                }} />
+            </label>
+            <label class="block text-sm">Number of candidates
+              <input type="number" min="1" max={MAX_CANDIDATES} class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                value={candidates}
+                on:input={(e) => updateSlateCandidates(index, Number((e.target as HTMLInputElement).value))} />
+            </label>
+          </div>
         {/each}
       </div>
       <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
@@ -307,6 +339,17 @@
     <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
       <h2 class="mb-2 text-lg font-semibold text-slate-800">Voter blocs</h2>
       
+       <!-- Number of voter blocs -->
+       <div class="mb-3">
+        <label class="block text-sm">Number of voter blocs
+          <input type="number" min="1" max="5" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={numVoterBlocs} />
+        </label>
+        <div class="mt-1 text-xs text-slate-500">
+          At most 5.
+        </div>
+      </div>
+
+
       <!-- Mode toggle -->
       <div class="mb-3">
         <div class="flex gap-2">
@@ -323,12 +366,28 @@
 
       {#if voterBlocMode === 'count'}
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label class="block text-sm">Bloc A - Number of voters
-            <input type="number" min="0" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocACount} />
-          </label>
-          <label class="block text-sm">Bloc B - Number of voters
-            <input type="number" min="0" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocBCount} />
-          </label>
+          {#each blocCounts as count, index}
+            <div class="space-y-2">
+              <label class="block text-sm">Bloc name
+                <input type="text" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                  value={blocNames[index]}
+                  on:input={(e) => {
+                    const newNames = [...blocNames];
+                    newNames[index] = (e.target as HTMLInputElement).value || String.fromCharCode(65 + index);
+                    blocNames = newNames;
+                  }} />
+              </label>
+              <label class="block text-sm">Number of voters
+                <input type="number" min="0" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                  value={count}
+                  on:input={(e) => {
+                    const newCounts = [...blocCounts];
+                    newCounts[index] = Math.max(0, Number((e.target as HTMLInputElement).value));
+                    blocCounts = newCounts;
+                  }} />
+              </label>
+            </div>
+          {/each}
         </div>
       {:else}
         <div class="mb-3">
@@ -337,66 +396,84 @@
           </label>
         </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div>
-            <label class="block text-sm">Bloc A share: {(blocAShare * 100).toFixed(1)}%
-              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocAShare} />
-            </label>
-            <div class="text-xs text-slate-500 mt-1">Voters: {blocACount}</div>
-          </div>
-          <div>
-            <label class="block text-sm">Bloc B share: {(blocBShare * 100).toFixed(1)}%
-              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocBShare} />
-            </label>
-            <div class="text-xs text-slate-500 mt-1">Voters: {blocBCount}</div>
-          </div>
+          {#each blocShares as share, index}
+            <div class="space-y-2">
+              <label class="block text-sm">Bloc name
+                <input type="text" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                  value={blocNames[index]}
+                  on:input={(e) => {
+                    const newNames = [...blocNames];
+                    newNames[index] = (e.target as HTMLInputElement).value || String.fromCharCode(65 + index);
+                    blocNames = newNames;
+                  }} />
+              </label>
+              <label class="block text-sm">Share: {(share * 100).toFixed(1)}%
+                <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                  value={share}
+                  on:input={(e) => {
+                    const newShares = [...blocShares];
+                    newShares[index] = Number((e.target as HTMLInputElement).value);
+                    blocShares = newShares;
+                  }} />
+              </label>
+              <div class="text-xs text-slate-500">Voters: {blocCounts[index]}</div>
+            </div>
+          {/each}
         </div>
       {/if}
 
       <!-- Advanced settings -->
       <div class="mt-3">
-        <button type="button" class="text-sm text-indigo-600 hover:text-indigo-800" on:click={() => showAdvancedVoterSettings = !showAdvancedVoterSettings}>
-          {showAdvancedVoterSettings ? '▼' : '▶'} Turnout settings
+        <button type="button" class="text-sm text-indigo-600 hover:text-indigo-800" on:click={() => showTurnoutSettings = !showTurnoutSettings}>
+          {showTurnoutSettings ? '▼' : '▶'} Turnout settings
         </button>
-        {#if showAdvancedVoterSettings}
+        {#if showTurnoutSettings}
           <div class="mt-2 p-3 bg-slate-50 rounded-lg">
             {#if voterBlocMode === 'count'}
               <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <div>
-                  <label class="block text-sm">Bloc A population
-                    <input type="number" min="1" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocAPopulation} />
-                  </label>
-                  <label class="block text-sm mt-2">Bloc A turnout rate
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocATurnout} />
-                    <div class="text-xs text-slate-500">{(blocATurnout * 100).toFixed(1)}%</div>
-                  </label>
-                </div>
-                <div>
-                  <label class="block text-sm">Bloc B population
-                    <input type="number" min="1" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocBPopulation} />
-                  </label>
-                  <label class="block text-sm mt-2">Bloc B turnout rate
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocBTurnout} />
-                    <div class="text-xs text-slate-500">{(blocBTurnout * 100).toFixed(1)}%</div>
-                  </label>
-                </div>
+                {#each blocPopulations as population, index}
+                  <div>
+                    <label class="block text-sm">{blocNames[index]} population
+                      <input type="number" min="1" class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                        value={population}
+                        on:input={(e) => {
+                          const newPopulations = [...blocPopulations];
+                          newPopulations[index] = Math.max(1, Number((e.target as HTMLInputElement).value));
+                          blocPopulations = newPopulations;
+                        }} />
+                    </label>
+                    <label class="block text-sm mt-2">{blocNames[index]} turnout rate
+                      <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                        value={blocTurnouts[index]}
+                        on:input={(e) => {
+                          const newTurnouts = [...blocTurnouts];
+                          newTurnouts[index] = Number((e.target as HTMLInputElement).value);
+                          blocTurnouts = newTurnouts;
+                        }} />
+                      <div class="text-xs text-slate-500">{(blocTurnouts[index] * 100).toFixed(1)}%</div>
+                    </label>
+                  </div>
+                {/each}
               </div>
               <div class="mt-2 text-xs text-slate-500">
-                Calculated voters: A = {Math.round(blocAPopulation * blocATurnout)}, B = {Math.round(blocBPopulation * blocBTurnout)}
+                Calculated voters: {blocPopulations.map((pop, i) => `${blocNames[i]} = ${Math.round(pop * blocTurnouts[i])}`).join(', ')}
               </div>
             {:else}
               <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <div>
-                  <label class="block text-sm">Bloc A turnout rate
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocATurnout} />
-                    <div class="text-xs text-slate-500">{(blocATurnout * 100).toFixed(1)}%</div>
-                  </label>
-                </div>
-                <div>
-                  <label class="block text-sm">Bloc B turnout rate
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocBTurnout} />
-                    <div class="text-xs text-slate-500">{(blocBTurnout * 100).toFixed(1)}%</div>
-                  </label>
-                </div>
+                {#each blocTurnouts as turnout, index}
+                  <div>
+                    <label class="block text-sm">{blocNames[index]} turnout rate
+                      <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                        value={turnout}
+                        on:input={(e) => {
+                          const newTurnouts = [...blocTurnouts];
+                          newTurnouts[index] = Number((e.target as HTMLInputElement).value);
+                          blocTurnouts = newTurnouts;
+                        }} />
+                      <div class="text-xs text-slate-500">{(turnout * 100).toFixed(1)}%</div>
+                    </label>
+                  </div>
+                {/each}
               </div>
             {/if}
           </div>
@@ -407,88 +484,69 @@
       <div class="mt-4">
         <h3 class="text-sm font-medium text-slate-700 mb-2">Candidate strength</h3>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <fieldset class="space-y-2">
-            <legend class="text-xs font-medium text-slate-500">A voters</legend>
-            <label class="block text-xs">Towards A candidates
-              <select class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocAPrefForA}>
-                <option value="random">Unknown</option>
-                <option value="strong">Yes</option>
-                <option value="indifferent">No</option>
-              </select>
-            </label>
-            <label class="block text-xs">Towards B candidates
-              <select class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocAPrefForB}>
-                <option value="random">Unknown</option>
-                <option value="strong">Yes</option>
-                <option value="indifferent">No</option>
-              </select>
-            </label>
-          </fieldset>
-          <fieldset class="space-y-2">
-            <legend class="text-xs font-medium text-slate-500">B voters</legend>
-            <label class="block text-xs">Towards A candidates
-              <select class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocBPrefForA}>
-                <option value="random">Unknown</option>
-                <option value="strong">Yes</option>
-                <option value="indifferent">No</option>
-              </select>
-            </label>
-            <label class="block text-xs">Towards B candidates
-              <select class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" bind:value={blocBPrefForB}>
-                <option value="random">Unknown</option>
-                <option value="strong">Yes</option>
-                <option value="indifferent">No</option>
-              </select>
-            </label>
-          </fieldset>
+          {#each blocPreferences as preferences, blocIndex}
+            <fieldset class="space-y-2">
+              <legend class="text-xs font-medium text-slate-500">{blocNames[blocIndex]} voters</legend>
+              {#each Array(numSlates) as _, slateIndex}
+                <label class="block text-xs">Towards {slateNames[slateIndex]} candidates
+                  <select class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
+                    value={preferences[slateIndex] || 'random'}
+                    on:change={(e) => {
+                      const newPreferences = [...blocPreferences];
+                      newPreferences[blocIndex] = [...newPreferences[blocIndex]];
+                      // Ensure the array is long enough for all slates
+                      while (newPreferences[blocIndex].length < numSlates) {
+                        newPreferences[blocIndex].push('random');
+                      }
+                      newPreferences[blocIndex][slateIndex] = (e.target as HTMLSelectElement).value as VoterPreference;
+                      blocPreferences = newPreferences;
+                    }}>
+                    <option value="random">Unknown</option>
+                    <option value="strong">Yes</option>
+                    <option value="indifferent">No</option>
+                  </select>
+                </label>
+              {/each}
+            </fieldset>
+          {/each}
         </div>
       </div>
 
       <!-- Cohesion sliders -->
       <div class="mt-4">
         <h3 class="text-sm font-medium text-slate-700 mb-2">Cohesion</h3>
-        {#if numSlates === 2}
+        <!-- {#if numSlates === 2 && numVoterBlocs === 2}
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <label class="block text-sm">A voters lean to A candidates: {(blocACohesion[0] * 100).toFixed(0)}%
-              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocACohesion[0]} />
+            <label class="block text-sm">A voters lean to A candidates: {(blocCohesion[0][0] * 100).toFixed(0)}%
+              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                value={blocCohesion[0][0]}
+                on:input={(e) => updateCohesion(0, 0, Number((e.target as HTMLInputElement).value))} />
             </label>
-            <label class="block text-sm">B voters lean to B candidates: {(blocBCohesion[1] * 100).toFixed(0)}%
-              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" bind:value={blocBCohesion[1]} />
+            <label class="block text-sm">B voters lean to B candidates: {(blocCohesion[1][1] * 100).toFixed(0)}%
+              <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                value={blocCohesion[1][1]}
+                on:input={(e) => updateCohesion(1, 1, Number((e.target as HTMLInputElement).value))} />
             </label>
           </div>
-        {:else}
+        {:else} -->
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <!-- A voters column -->
-            <div>
-              <h4 class="text-xs font-medium text-slate-600 mb-3">A voters cohesion to each slate (must sum to 100%)</h4>
-              <div class="space-y-3">
-                {#each blocACohesion as cohesion, index}
-                  <label class="block text-sm">To Slate {String.fromCharCode(65 + index)}: {(cohesion * 100).toFixed(0)}%
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
-                      value={cohesion}
-                      on:input={(e) => updateCohesion('A', index, Number((e.target as HTMLInputElement).value))} />
-                  </label>
-                {/each}
+            {#each blocCohesion as blocCohesionArray, blocIndex}
+              <div>
+                <h4 class="text-xs font-medium text-slate-600 mb-3">{blocNames[blocIndex]} voters cohesion to each slate (must sum to 100%)</h4>
+                <div class="space-y-3">
+                  {#each blocCohesionArray as cohesion, slateIndex}
+                    <label class="block text-sm">To {slateNames[slateIndex]}: {(cohesion * 100).toFixed(0)}%
+                      <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
+                        value={cohesion}
+                        on:input={(e) => updateCohesion(blocIndex, slateIndex, Number((e.target as HTMLInputElement).value))} />
+                    </label>
+                  {/each}
+                </div>
+                <div class="text-xs text-slate-500 mt-2">Sum: {(blocCohesionArray.reduce((sum, val) => sum + val, 0) * 100).toFixed(1)}%</div>
               </div>
-              <div class="text-xs text-slate-500 mt-2">Sum: {(blocACohesion.reduce((sum, val) => sum + val, 0) * 100).toFixed(1)}%</div>
-            </div>
-            
-            <!-- B voters column -->
-            <div>
-              <h4 class="text-xs font-medium text-slate-600 mb-3">B voters cohesion to each slate (must sum to 100%)</h4>
-              <div class="space-y-3">
-                {#each blocBCohesion as cohesion, index}
-                  <label class="block text-sm">To Slate {String.fromCharCode(65 + index)}: {(cohesion * 100).toFixed(0)}%
-                    <input type="range" min="0" max="1" step="0.01" class="mt-1 w-full" 
-                      value={cohesion}
-                      on:input={(e) => updateCohesion('B', index, Number((e.target as HTMLInputElement).value))} />
-                  </label>
-                {/each}
-              </div>
-              <div class="text-xs text-slate-500 mt-2">Sum: {(blocBCohesion.reduce((sum, val) => sum + val, 0) * 100).toFixed(1)}%</div>
-            </div>
+            {/each}
           </div>
-        {/if}
+        <!-- {/if} -->
       </div>
     </div>
 
@@ -536,22 +594,24 @@
     <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 text-sm text-slate-600 backdrop-blur">
       <p class="font-medium">Preview:</p>
       <div class="mt-2 space-y-1 text-xs">
-        <div><strong>Election style:</strong> {mode === 'plurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>
-        <div><strong>Voter blocs:</strong> A: {blocACount} voters, B: {blocBCount} voters</div>
+        <div><strong>Election style:</strong> {mode === 'blocPlurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>
+        <div><strong>Voter blocs:</strong> {blocCounts.map((count, index) => `${blocNames[index]}: ${count} voters`).join(', ')}</div>
         <div><strong>Cohesion:</strong></div>
-        {#if numSlates === 2}
-          <div class="ml-2">A voters have {(blocACohesion[0] * 100).toFixed(0)}% lean to A candidates</div>
-          <div class="ml-2">B voters have {(blocBCohesion[1] * 100).toFixed(0)}% lean to B candidates</div>
+        {#if numSlates === 2 && numVoterBlocs === 2}
+          <div class="ml-2">{blocNames[0]} voters have {(blocCohesion[0][0] * 100).toFixed(0)}% lean to {slateNames[0]} candidates</div>
+          <div class="ml-2">{blocNames[1]} voters have {(blocCohesion[1][1] * 100).toFixed(0)}% lean to {slateNames[1]} candidates</div>
         {:else}
-          <div class="ml-2">A voters: {blocACohesion.map((cohesion, index) => `${(cohesion * 100).toFixed(0)}% to Slate ${String.fromCharCode(65 + index)}`).join(', ')}</div>
-          <div class="ml-2">B voters: {blocBCohesion.map((cohesion, index) => `${(cohesion * 100).toFixed(0)}% to Slate ${String.fromCharCode(65 + index)}`).join(', ')}</div>
+          {#each blocCohesion as blocCohesionArray, blocIndex}
+            <div class="ml-2">{blocNames[blocIndex]} voters: {blocCohesionArray.map((cohesion, index) => `${(cohesion * 100).toFixed(0)}% to ${slateNames[index]}`).join(', ')}</div>
+          {/each}
         {/if}
         <div><strong>Candidate strength:</strong></div>
-        <div class="ml-2">Do A voters have preferred A candidates: {blocAPrefForA === 'strong' ? 'yes' : blocAPrefForA === 'indifferent' ? 'no' : 'unknown'}</div>
-        <div class="ml-2">Do A voters have preferred B candidates: {blocAPrefForB === 'strong' ? 'yes' : blocAPrefForB === 'indifferent' ? 'no' : 'unknown'}</div>
-        <div class="ml-2">Do B voters have preferred A candidates: {blocBPrefForA === 'strong' ? 'yes' : blocBPrefForA === 'indifferent' ? 'no' : 'unknown'}</div>
-        <div class="ml-2">Do B voters have preferred B candidates: {blocBPrefForB === 'strong' ? 'yes' : blocBPrefForB === 'indifferent' ? 'no' : 'unknown'}</div>
-        <div><strong>Candidate pool:</strong> {slateCandidates.map((count, index) => `Slate ${String.fromCharCode(65 + index)} fields ${count} candidates`).join(', ')}</div>
+        {#each blocPreferences as preferences, blocIndex}
+          {#each preferences as preference, slateIndex}
+            <div class="ml-2">Do {blocNames[blocIndex]} voters have preferred {slateNames[slateIndex]} candidates: {preference === 'strong' ? 'yes' : preference === 'indifferent' ? 'no' : 'unknown'}</div>
+          {/each}
+        {/each}
+        <div><strong>Candidate pool:</strong> {slateCandidates.map((count, index) => `${slateNames[index]} fields ${count} candidates`).join(', ')}</div>
         <div><strong>Behavior:</strong> {ballotGenerator === 'sPL' ? 'impulsive voting' : ballotGenerator === 'sBT' ? 'deliberative voting' : 'Cambridge-style voting'}</div>
         <div><strong>Number of simulated elections:</strong> {trials}</div>
       </div>

@@ -13,7 +13,7 @@ export type BlocCrossPreferences = {
 export type VoterBlocConfig = {
   blocA: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
   blocB: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
-};
+} | Array<{ count: number; preference: BlocCrossPreferences; cohesionPct: number }>;
 
 export type ElectionConfig =
   | { mode: 'plurality' }
@@ -30,12 +30,17 @@ export type RunParams = {
   maxRankingCandidates?: number;
   numSlates?: number;
   slateCandidates?: number[];
-  blocACohesion?: number[];
-  blocBCohesion?: number[];
+  slateNames?: string[];
+  numVoterBlocs?: number;
+  blocCounts?: number[];
+  blocShares?: number[];
+  blocNames?: string[];
+  blocPopulations?: number[];
+  blocTurnouts?: number[];
+  blocPreferences?: VoterPreference[][];
+  blocCohesion?: number[][];
   voterBlocMode?: 'count' | 'share';
   totalVoters?: number;
-  blocAShare?: number;
-  blocBShare?: number;
   createdAt: number;
 };
 
