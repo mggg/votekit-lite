@@ -10,7 +10,7 @@ const PreferenceValuesSchema = z.union([
 
 // Schema for a single bloc's preferences, keyed by bloc identifiers
 const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);
-
+const CohesionSchema  = z.record(z.string(), z.coerce.number());
 // Voter bloc schema
 const VoterBlocSchema = z.object({
   count: z.coerce.number(),
