@@ -12,7 +12,7 @@ const PreferenceValuesSchema = z.union([
 const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);
 const CohesionSchema  = z.record(z.string(), z.coerce.number());
 // Voter bloc schema
-const VoterBlocSchema = z.object({
+const BlocSchema = z.object({
   count: z.coerce.number(),
   preference: PreferenceSchema,
   cohesion: CohesionSchema,
