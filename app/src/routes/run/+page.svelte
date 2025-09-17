@@ -118,7 +118,6 @@
 			})
 		});
 		const data = await response.json();
-		console.log(data);
 		// saveRun(run);
 		window.location.href = '/results';
 	}

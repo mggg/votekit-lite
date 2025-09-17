@@ -14,16 +14,16 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // VALIDATE CAPTCHA
     const captchaResult = await validateCaptcha(captchaToken);
-    if (!captchaResult.ok) {
+    if (!captchaResult.success) {
       return new Response(JSON.stringify({ 
-        error: captchaResult.error 
+        error: captchaResult['error-codes'] 
       }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-    }
+    } 
     
     // PARSE REQUEST
     const parsedVotekitConfig = VotekitConfigSchema.parse(votekitConfig);
