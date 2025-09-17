@@ -1,7 +1,7 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { type VotekitConfig } from '../../../lib/types/votekitConfig';
-import  {LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} from '$env/static/private';
+import  {LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_STS_ACCESS_KEY_ID, AWS_STS_SECRET_ACCESS_KEY} from '$env/static/private';
 import { IS_DEV } from '../../../lib/constants';
 
 const invokeLambdaDev = async (votekitConfig: VotekitConfig) => {
@@ -21,15 +21,15 @@ const invokeLambdaDev = async (votekitConfig: VotekitConfig) => {
 };
 
 const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
-	if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+	if (!AWS_STS_ACCESS_KEY_ID || !AWS_STS_SECRET_ACCESS_KEY) {
 		throw new Error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set');
 	}
 	// Your base credentials (AWS env vars)
 	const sts = new STSClient({
 		region: 'us-east-2', // change if needed
 		credentials: {
-			accessKeyId: AWS_ACCESS_KEY_ID,
-			secretAccessKey: AWS_SECRET_ACCESS_KEY
+			accessKeyId: AWS_STS_ACCESS_KEY_ID,
+			secretAccessKey: AWS_STS_SECRET_ACCESS_KEY
 		}
 	});
 
