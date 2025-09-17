@@ -35,7 +35,7 @@ const ElectionSchema = z.object({
 export const VotekitConfigSchema = z.object({
   id: z.string(),
   name: z.string(),
-  voterBlocs: z.record(z.string(), VoterBlocSchema),
+  voterBlocs: z.record(z.string(), BlocSchema),
   slates: z.record(z.string(), SlateSchema),
   election: ElectionSchema,
   ballotGenerator: z.string(),
@@ -44,4 +44,5 @@ export const VotekitConfigSchema = z.object({
 });
 
 // Example type
-export type VotekitConfig = z.infer<typeof ConfigSchema>;
+export type VotekitConfig = z.infer<typeof VotekitConfigSchema>;
+

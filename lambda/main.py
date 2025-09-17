@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 from typing import Any, Dict
+from common_schema import validation_schema
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
