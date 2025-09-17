@@ -18,7 +18,7 @@
   
   // Advanced voter settings
   let showTurnoutSettings = false;
-  let blocPopulations = [10000, 10000]; // Array to hold population for each bloc
+  let blocPopulations = [50, 50]; // Array to hold population for each bloc
   let blocTurnouts = [1.0, 1.0]; // Array to hold turnout for each bloc
 
   // Candidate preference (per bloc, cross-preferences), default to 'random' (all bets are off)
