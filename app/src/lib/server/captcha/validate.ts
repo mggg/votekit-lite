@@ -1,5 +1,5 @@
-import { CAPTCHA_SECRET_KEY } from '$env/dynamic/private';
-
+import { env } from '$env/dynamic/private';
+const { CAPTCHA_SECRET_KEY } = env;
 type CaptchaResult =
   | { success: true; challenge_ts: string, hostname: string }
   | { success: false; 'error-codes': string[] };

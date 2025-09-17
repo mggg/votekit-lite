@@ -1,9 +1,10 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { type VotekitConfig } from '../../../lib/types/votekitConfig';
-import  {LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_STS_ACCESS_KEY_ID, AWS_STS_SECRET_ACCESS_KEY} from '$env/dynamic/private';
+import  { env } from '$env/dynamic/private';
 import { IS_DEV } from '../../../lib/constants';
 
+const { LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_STS_ACCESS_KEY_ID, AWS_STS_SECRET_ACCESS_KEY } = env;
 const invokeLambdaDev = async (votekitConfig: VotekitConfig) => {
 	const response = await fetch('http://votekit-lambda-dev:8000/invoke', {
 		method: 'POST',
