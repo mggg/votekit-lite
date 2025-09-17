@@ -56,7 +56,7 @@ validation_schema = {
           "preference",
           "cohesion"
         ],
-        "additionalProperties": false
+        "additionalProperties": False
       }
     },
     "slates": {
@@ -74,7 +74,7 @@ validation_schema = {
         "required": [
           "numCandidates"
         ],
-        "additionalProperties": false
+        "additionalProperties": False
       }
     },
     "election": {
@@ -95,7 +95,7 @@ validation_schema = {
         "numSeats",
         "maxBallotLength"
       ],
-      "additionalProperties": false
+      "additionalProperties": False
     },
     "ballotGenerator": {
       "type": "string"
@@ -117,5 +117,5 @@ validation_schema = {
     "trials",
     "createdAt"
   ],
-  "additionalProperties": false
+  "additionalProperties": False
 }
