@@ -1,4 +1,4 @@
-import { randomRunName } from '$lib';
+import { mockHistogramData, randomRunName, saveRun, type Run } from '$lib';
 import type { VoterPreference } from '$lib';
 
 // Re-export types from storage for convenience
@@ -182,5 +182,59 @@ class FormState {
 		});
 		this.blocCohesion[blocIndex] = newCohesion;
 	}
+
+	async submitMock() {
+		const id = crypto.randomUUID();
+		const run: Run = {
+			params: {
+				id,
+				name: formState.name,
+				voterBlocs: formState.blocCounts.map((count, index) => ({
+					count,
+					preference: {
+						forA: formState.blocPreferences[index][0] || 'random',
+						forB: formState.blocPreferences[index][1] || 'random'
+					},
+					cohesionPct: formState.blocCohesion[index][0] || 0.7
+				})),
+				slates: {
+					slateA: { numCandidates: formState.slates[0].numCandidates || 1 },
+					slateB: { numCandidates: formState.slates[1].numCandidates || 1 }
+				},
+				election:
+					formState.mode === 'blocPlurality'
+						? { mode: 'plurality' }
+						: { mode: 'multiseat', stv: true, numSeats: formState.stvNumSeats },
+				ballotGenerator: formState.ballotGenerator,
+				trials: formState.trials,
+				maxRankingCandidates: formState.maxRankingCandidatesInput,
+				numSlates: formState.slates.length,
+				slateCandidates: formState.slates.map((slate) => slate.numCandidates),
+				slateNames: formState.slates.map((slate) => slate.name),
+				numVoterBlocs: formState.numVoterBlocs,
+				blocCounts: formState.blocCounts,
+				blocShares: formState.blocShares,
+				blocNames: formState.blocNames,
+				blocPopulations: formState.blocs.map((bloc) => bloc.population),
+				blocTurnouts: formState.blocs.map((bloc) => bloc.turnout),
+				blocPreferences: formState.blocPreferences,
+				blocCohesion: formState.blocCohesion,
+				voterBlocMode: formState.voterBlocMode,
+				totalVoters: formState.totalVoters,
+				createdAt: Date.now()
+			},
+			result: {
+				slateAElected: mockHistogramData(
+					formState.trials,
+					0.5,
+					formState.mode === 'multiseat' ? formState.stvNumSeats : 1
+				),
+				slateBElected: []
+			}
+		};
+		saveRun(run);
+		window.location.href = '/results';
+	}
 }
+
 export const formState = new FormState();
