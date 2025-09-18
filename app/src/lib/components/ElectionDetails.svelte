@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { formState } from '$lib/stores/formStore.svelte.ts';
-  const MAX_CANDIDATES = 12;
+  import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte.ts';
+
 </script>
 
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">

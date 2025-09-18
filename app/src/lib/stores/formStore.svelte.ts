@@ -8,7 +8,7 @@ import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
 
 // Constants
-const MAX_CANDIDATES = 12;
+export const MAX_CANDIDATES = 12;
 
 class FormState {
 	name: string = $state('');
