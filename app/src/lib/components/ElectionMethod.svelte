@@ -1,6 +1,6 @@
 <script lang="ts">
   // formState passed in
-  import { formState } from '$lib/stores/formStore.svelte.ts';
+  import { formState } from '$lib/stores/formStore.svelte';
   import OptionCard from '$lib/components/OptionCard.svelte';
 </script>
 

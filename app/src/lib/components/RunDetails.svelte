@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formState } from '$lib/stores/formStore.svelte.ts';
+	import { formState } from '$lib/stores/formStore.svelte';
 </script>
 
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">

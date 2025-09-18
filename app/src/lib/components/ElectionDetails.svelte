@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte.ts';
+  import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte';
 
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-	import { formState } from '$lib/stores/formStore.svelte.ts';
+	import { formState } from '$lib/stores/formStore.svelte';
   import ElectionMethod from '$lib/components/ElectionMethod.svelte';
   import ElectionDetails from '$lib/components/ElectionDetails.svelte';
   import VoterBlocs from '$lib/components/VoterBlocs.svelte';
