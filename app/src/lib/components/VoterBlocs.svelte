@@ -241,7 +241,13 @@
 									max="1"
 									step="0.01"
 									class="mt-1 w-full"
-									bind:value={cohesion}
+									value={cohesion}
+									on:input={(e) =>
+										formState.updateBlocCohesion(
+											blocIndex,
+											slateIndex,
+											Number((e.target as HTMLInputElement).value)
+										)}
 								/>
 							</label>
 						{/each}
