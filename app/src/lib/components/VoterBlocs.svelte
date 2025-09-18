@@ -73,13 +73,13 @@
 	{:else}
 		<div class="mb-3">
 			<label class="block text-sm"
-				>Total number of voters
+				>Total population of electorate
 				<input
 					type="number"
 					min="1"
 					class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
-					value={formState.totalVoters}
-					on:input={(e) => formState.updateTotalVoters(Number(e.target.value))}
+					value={formState.totalPopulation}
+					on:input={(e) => formState.updateTotalElectorate(Number(e.target.value))}
 				/>
 			</label>
 		</div>
@@ -95,16 +95,16 @@
 						/>
 					</label>
 					<label class="block text-sm"
-						>Share: {(formState.blocShares[index] * 100).toFixed(1)}%
+						>Share of total population: {(bloc.population / formState.totalPopulation * 100).toFixed(1)}%
 						<input
 							type="range"
 							min="0"
 							max="1"
 							step="0.01"
 							class="mt-1 w-full"
-							value={formState.blocShares[index]}
+							value={bloc.population / formState.totalPopulation}
 							on:input={(e) =>
-								formState.updateBlocShare(index, Number((e.target as HTMLInputElement).value))}
+								formState.updateBlocElectorateShare(index, Number((e.target as HTMLInputElement).value))}
 						/>
 					</label>
 					<div class="text-xs text-slate-500">Voters: {formState.blocCounts[index]}</div>
@@ -124,10 +124,10 @@
 		</button>
 		{#if formState.showTurnoutSettings}
 			<div class="mt-2 rounded-lg bg-slate-50 p-3">
-				{#if formState.voterBlocMode === 'count'}
-					<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-						{#each formState.blocs as bloc, index}
-							<div>
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+					{#each formState.blocs as bloc, index}
+					<div>
+								{#if formState.voterBlocMode === 'count'}
 								<label class="block text-sm"
 									>{formState.blocNames[index]} population
 									<input
@@ -137,6 +137,7 @@
 										bind:value={bloc.population}
 									/>
 								</label>
+								{/if}
 								<label class="mt-2 block text-sm"
 									>{formState.blocNames[index]} turnout rate
 									<input
@@ -160,37 +161,6 @@
 							)
 							.join(', ')}
 					</div>
-				{:else}
-					<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-						{#each formState.blocs as bloc, index}
-							<div>
-								<label class="block text-sm"
-									>{formState.blocNames[index]} turnout rate
-									<input
-										type="range"
-										min="0"
-										max="1"
-										step="0.01"
-										class="mt-1 w-full"
-										value={bloc.turnout}
-										on:input={(e) => {
-											console.log(e.target.value, bloc.population);
-											formState.blocs[index] = {
-												...bloc,
-												turnout: Number((e.target as HTMLInputElement).value),
-												population: Math.round(
-													(formState.totalVoters * formState.blocShares[index]) /
-														Number((e.target as HTMLInputElement).value)
-												)
-											};
-										}}
-									/>
-									<div class="text-xs text-slate-500">{(bloc.turnout * 100).toFixed(1)}%</div>
-								</label>
-							</div>
-						{/each}
-					</div>
-				{/if}
 			</div>
 		{/if}
 	</div>

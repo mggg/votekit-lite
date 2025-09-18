@@ -35,11 +35,16 @@ class FormState {
 		}
 	]);
 	// Derived from population and turnout
+	// blocParticipatingVoterCount
 	blocCounts: number[] = $derived(
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
 	totalVoters: number = $derived(this.blocCounts.reduce((a, b) => a + b, 0));
-	blocShares: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
+	totalPopulation: number = $derived(this.blocs.reduce((a, b) => a + b.population, 0));
+	populationShare: number[] = $derived(
+		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
+	);
+	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
 	blocPreferences: VoterPreference[][] = $state([
 		['random', 'random'],
@@ -74,6 +79,7 @@ class FormState {
 	initialize() {
 		this.name = randomRunName();
 	}
+
 	updateNumSlates(value: number) {
 		if (this.totalCandidates == MAX_CANDIDATES) {
 			console.log('Total candidates is at maximum');
@@ -109,7 +115,6 @@ class FormState {
 			this.blocCohesion = newBlocCohesion;
 			this.blocPreferences = newBlocPreferences;
 		}
-		this.totalCandidates = this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0);
 	}
 
 	updateNumVoterBlocs(value: number) {
@@ -132,11 +137,11 @@ class FormState {
 		}
 	}
 
-	updateTotalVoters(value: number) {
+	updateTotalElectorate(_value: number) {
+		const value = Math.max(1, _value);
 		const newBlocPopulations = this.blocs.map((bloc) => {
-			const shareOfVoters = (bloc.population * bloc.turnout) / this.totalVoters;
-			const newVotersTotal = shareOfVoters * value;
-			const newTotalPopulation = Math.round(newVotersTotal / bloc.turnout);
+			const shareOfTotalElectorate = bloc.population / this.totalPopulation;
+			const newTotalPopulation = shareOfTotalElectorate * value;
 			return {
 				...bloc,
 				population: Math.round(newTotalPopulation)
@@ -145,25 +150,23 @@ class FormState {
 		this.blocs = newBlocPopulations;
 	}
 
-	updateBlocShare(index: number, value: number) {
+	updateBlocElectorateShare(index: number, value: number) {
 		const newShares = balanceRemainingValue({
 			maxValue: 1,
 			newValue: value,
 			newIndex: index,
-			currentValues: this.blocShares
+			currentValues: this.populationShare
 		});
 
 		const newBlocPopulations = this.blocs.map((bloc, i) => {
 			if (index === i) {
-				const newTotalVoters = this.totalVoters * value;
-				const newTotalPopulation = Math.round(newTotalVoters / bloc.turnout);
+				const newTotalPopulation = Math.round(this.totalPopulation * value);
 				return {
 					...bloc,
 					population: newTotalPopulation
 				};
 			} else {
-				const newTotalVoters = this.totalVoters * newShares[i];
-				const newTotalPopulation = Math.round(newTotalVoters / bloc.turnout);
+				const newTotalPopulation = Math.round(this.totalPopulation * newShares[i]);
 				return {
 					...bloc,
 					population: newTotalPopulation
@@ -188,8 +191,8 @@ class FormState {
 		const run: Run = {
 			params: {
 				id,
-				name: formState.name,
-				voterBlocs: formState.blocCounts.map((count, index) => ({
+				name: this.name,
+				voterBlocs: this.blocCounts.map((count, index) => ({
 					count,
 					preference: {
 						forA: formState.blocPreferences[index][0] || 'random',
@@ -213,7 +216,7 @@ class FormState {
 				slateNames: formState.slates.map((slate) => slate.name),
 				numVoterBlocs: formState.numVoterBlocs,
 				blocCounts: formState.blocCounts,
-				blocShares: formState.blocShares,
+				blocShares: formState.voterShare,
 				blocNames: formState.blocNames,
 				blocPopulations: formState.blocs.map((bloc) => bloc.population),
 				blocTurnouts: formState.blocs.map((bloc) => bloc.turnout),
