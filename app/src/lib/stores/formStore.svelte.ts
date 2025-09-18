@@ -195,42 +195,42 @@ class FormState {
 				voterBlocs: this.blocCounts.map((count, index) => ({
 					count,
 					preference: {
-						forA: formState.blocPreferences[index][0] || 'random',
-						forB: formState.blocPreferences[index][1] || 'random'
+						forA: this.blocPreferences[index][0] || 'random',
+						forB: this.blocPreferences[index][1] || 'random'
 					},
-					cohesionPct: formState.blocCohesion[index][0] || 0.7
+					cohesionPct: this.blocCohesion[index][0] || 0.7
 				})),
 				slates: {
-					slateA: { numCandidates: formState.slates[0].numCandidates || 1 },
-					slateB: { numCandidates: formState.slates[1].numCandidates || 1 }
+					slateA: { numCandidates: this.slates[0].numCandidates || 1 },
+					slateB: { numCandidates: this.slates[1].numCandidates || 1 }
 				},
 				election:
-					formState.mode === 'blocPlurality'
+					this.mode === 'blocPlurality'
 						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: formState.stvNumSeats },
-				ballotGenerator: formState.ballotGenerator,
-				trials: formState.trials,
-				maxRankingCandidates: formState.maxRankingCandidatesInput,
-				numSlates: formState.slates.length,
-				slateCandidates: formState.slates.map((slate) => slate.numCandidates),
-				slateNames: formState.slates.map((slate) => slate.name),
-				numVoterBlocs: formState.numVoterBlocs,
-				blocCounts: formState.blocCounts,
-				blocShares: formState.voterShare,
-				blocNames: formState.blocNames,
-				blocPopulations: formState.blocs.map((bloc) => bloc.population),
-				blocTurnouts: formState.blocs.map((bloc) => bloc.turnout),
-				blocPreferences: formState.blocPreferences,
-				blocCohesion: formState.blocCohesion,
-				voterBlocMode: formState.voterBlocMode,
-				totalVoters: formState.totalVoters,
+						: { mode: 'multiseat', stv: true, numSeats: this.stvNumSeats },
+				ballotGenerator: this.ballotGenerator,
+				trials: this.trials,
+				maxRankingCandidates: this.maxRankingCandidatesInput,
+				numSlates: this.slates.length,
+				slateCandidates: this.slates.map((slate) => slate.numCandidates),
+				slateNames: this.slates.map((slate) => slate.name),
+				numVoterBlocs: this.numVoterBlocs,
+				blocCounts: this.blocCounts,
+				blocShares: this.voterShare,
+				blocNames: this.blocNames,
+				blocPopulations: this.blocs.map((bloc) => bloc.population),
+				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
+				blocPreferences: this.blocPreferences,
+				blocCohesion: this.blocCohesion,
+				voterBlocMode: this.voterBlocMode,
+				totalVoters: this.totalVoters,
 				createdAt: Date.now()
 			},
 			result: {
 				slateAElected: mockHistogramData(
-					formState.trials,
+					this.trials,
 					0.5,
-					formState.mode === 'multiseat' ? formState.stvNumSeats : 1
+					this.mode === 'multiseat' ? this.stvNumSeats : 1
 				),
 				slateBElected: []
 			}
