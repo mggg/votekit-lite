@@ -1,5 +1,6 @@
 <script lang="ts">
   import { listRuns, type Run } from '$lib';
+	import type { VotekitConfig } from '$lib/types/votekitConfig';
   import { onMount } from 'svelte';
 
   let runs: Run[] = [];
@@ -48,8 +49,8 @@
     return run.params.trials;
   }
 
-  function formatMode(election: any): string {
-    if (election.system === 'plurality') return `Bloc plurality`;
+  function formatMode(election: VotekitConfig['election']): string {
+    if (election.system === 'blocPlurality') return `Bloc plurality`;
     return `STV, ${election.numSeats} seats`;
   }
 
