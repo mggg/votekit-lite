@@ -49,7 +49,7 @@
   }
 
   function formatMode(election: any): string {
-    if (election.mode === 'plurality') return `Bloc plurality`;
+    if (election.system === 'plurality') return `Bloc plurality`;
     return `STV, ${election.numSeats} seats`;
   }
 
