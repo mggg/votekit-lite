@@ -191,9 +191,9 @@ class FormState {
 				voterBlocs: this.blocs.reduce((acc, bloc, index) => ({
 					...acc,
 					[bloc.name]: {
-						count: bloc.population * bloc.turnout,
+						proportion: this.voterShare[index],
 						preference: this.blocPreferences[index],
-						cohesionPct: this.blocCohesion[index]
+						cohesion: this.blocCohesion[index]
 					}
 				}), {}),
 				slates: this.slates.reduce((acc, slate) => ({

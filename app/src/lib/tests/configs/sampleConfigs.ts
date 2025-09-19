@@ -5,7 +5,7 @@ export const twoBlocTwoSlate: VotekitConfig = {
   name: "Test Run",
   voterBlocs: {
     bloc1: {
-      count: 50,
+      proportion: 0.5,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong"
@@ -16,7 +16,7 @@ export const twoBlocTwoSlate: VotekitConfig = {
       },
     },
     bloc2: {
-      count: 50,
+      proportion: 0.5,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong"
@@ -50,7 +50,7 @@ export const twoBlocThreeSlate: VotekitConfig = {
   name: "Test Run",
   voterBlocs: {
     bloc1: {
-      count: 50,
+      proportion: 0.5,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong",
@@ -63,7 +63,7 @@ export const twoBlocThreeSlate: VotekitConfig = {
       },
     },
     bloc2: {
-      count: 50,
+      proportion: 0.5,
       preference: {
         slate1: "strong",
         slate2: "strong",
@@ -102,7 +102,7 @@ export const threeBlocThreeSlate: VotekitConfig = {
   name: "Test Run",
   voterBlocs: {
     bloc1: {
-      count: 50,
+      proportion: 50/600,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong",
@@ -113,7 +113,7 @@ export const threeBlocThreeSlate: VotekitConfig = {
       },
     },
     bloc2: {
-      count: 50,
+      proportion: 50/600,
       preference: {
         slate1: "strong",
         slate2: "strong",
@@ -124,7 +124,7 @@ export const threeBlocThreeSlate: VotekitConfig = {
       },
     },
     bloc3: {
-      count: 500,
+      proportion: 500/600,
       preference: {
         slate1: "unif",
         slate2: "strong",
@@ -158,7 +158,7 @@ export const threeBlocFourSlate: VotekitConfig = {
   name: "Test Run",
   voterBlocs: {
     bloc1: {
-      count: 50,
+      proportion: 50/600,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong",
@@ -171,7 +171,7 @@ export const threeBlocFourSlate: VotekitConfig = {
       },
     },
     bloc2: {
-      count: 50,
+      proportion: 50/600,
       preference: {
         slate1: "strong",
         slate2: "strong",
@@ -184,7 +184,7 @@ export const threeBlocFourSlate: VotekitConfig = {
       },
     },
     bloc3: {
-      count: 500,
+      proportion: 500/600,
       preference: {
         slate1: "unif",
         slate2: "strong",

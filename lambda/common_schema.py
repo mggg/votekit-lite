@@ -16,7 +16,7 @@ validation_schema = {
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "count": {
+          "proportion": {
             "type": "number"
           },
           "preference": {
@@ -52,7 +52,7 @@ validation_schema = {
           }
         },
         "required": [
-          "count",
+          "proportion",
           "preference",
           "cohesion"
         ],

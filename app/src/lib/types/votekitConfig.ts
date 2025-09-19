@@ -12,7 +12,7 @@ const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);
 const CohesionSchema  = z.record(z.string(), z.coerce.number());
 // Voter bloc schema
 const BlocSchema = z.object({
-  count: z.coerce.number(),
+  proportion: z.coerce.number(),
   preference: PreferenceSchema,
   cohesion: CohesionSchema,
 });

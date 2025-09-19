@@ -27,7 +27,7 @@ describe('POST /api/invoke', () => {
       voterBlocs: {
         bloc1: {
           ...sampleConfigs.twoBlocTwoSlate.voterBlocs.bloc1,
-          count: 'not a number'
+          proportion: 'not a number'
         }
       }
     }
