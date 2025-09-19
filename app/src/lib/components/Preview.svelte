@@ -5,7 +5,7 @@
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 text-sm text-slate-600 backdrop-blur">
   <p class="font-medium">Preview:</p>
   <div class="mt-2 space-y-1 text-xs">
-    <div><strong>Election style:</strong> {formState.mode === 'blocPlurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>
+    <div><strong>Election style:</strong> {formState.system === 'blocPlurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>
     <div><strong>Voter blocs:</strong> {formState.blocs.map((bloc) => `${bloc.name}: ${bloc.population * bloc.turnout} voters`).join(', ')}</div>
     <div><strong>Cohesion:</strong></div>
     {#each formState.blocs as bloc, blocIndex}

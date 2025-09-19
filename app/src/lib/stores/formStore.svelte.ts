@@ -3,7 +3,7 @@ import type { VoterPreference } from '$lib';
 
 // Re-export types from storage for convenience
 export type { VoterPreference, Run } from '$lib';
-import type { BallotGenerator, ElectionMode, Slate, VoterBloc } from './types';
+import type { BallotGenerator, ElectionSystem, Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
 
@@ -13,13 +13,12 @@ export const MAX_CANDIDATES = 12;
 class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
-	mode: ElectionMode = $state('multiseat');
+	system: ElectionSystem = $state('stv');
 	ballotGenerator: BallotGenerator = $state('sPL');
-	stvNumSeats: number = $state(5);
+	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
-	blocNames: string[] = $state(['A', 'B']);
 
 	// Source of truth for blocs: Population and turnout
 	blocs: VoterBloc[] = $state([
@@ -35,11 +34,16 @@ class FormState {
 		}
 	]);
 	// Derived from population and turnout
+	// blocParticipatingVoterCount
 	blocCounts: number[] = $derived(
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
-	totalVoters: number = $derived(this.blocCounts.reduce((a, b) => a + b, 0));
-	blocShares: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
+	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
+	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, 0));
+	populationShare: number[] = $derived(
+		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
+	);
+	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
 	blocPreferences: VoterPreference[][] = $state([
 		['random', 'random'],
@@ -67,13 +71,14 @@ class FormState {
 		this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0)
 	);
 	remainingCandidates: number = $derived(MAX_CANDIDATES - this.totalCandidates);
-	stvMin: number = 2;
-	stvMax: number = $derived(Math.max(this.stvMin, this.totalCandidates));
+	seatsMin: number = 2;
+	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	recaptchaChecked: boolean = $state(false);
 	initialize() {
 		this.name = randomRunName();
 	}
+
 	updateNumSlates(value: number) {
 		if (this.totalCandidates == MAX_CANDIDATES) {
 			console.log('Total candidates is at maximum');
@@ -109,7 +114,6 @@ class FormState {
 			this.blocCohesion = newBlocCohesion;
 			this.blocPreferences = newBlocPreferences;
 		}
-		this.totalCandidates = this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0);
 	}
 
 	updateNumVoterBlocs(value: number) {
@@ -132,11 +136,11 @@ class FormState {
 		}
 	}
 
-	updateTotalVoters(value: number) {
+	updateTotalElectorate(_value: number) {
+		const value = Math.max(1, _value);
 		const newBlocPopulations = this.blocs.map((bloc) => {
-			const shareOfVoters = (bloc.population * bloc.turnout) / this.totalVoters;
-			const newVotersTotal = shareOfVoters * value;
-			const newTotalPopulation = Math.round(newVotersTotal / bloc.turnout);
+			const shareOfTotalElectorate = bloc.population / this.totalPopulation;
+			const newTotalPopulation = shareOfTotalElectorate * value;
 			return {
 				...bloc,
 				population: Math.round(newTotalPopulation)
@@ -145,25 +149,23 @@ class FormState {
 		this.blocs = newBlocPopulations;
 	}
 
-	updateBlocShare(index: number, value: number) {
+	updateBlocElectorateShare(index: number, value: number) {
 		const newShares = balanceRemainingValue({
 			maxValue: 1,
 			newValue: value,
 			newIndex: index,
-			currentValues: this.blocShares
+			currentValues: this.populationShare
 		});
 
 		const newBlocPopulations = this.blocs.map((bloc, i) => {
 			if (index === i) {
-				const newTotalVoters = this.totalVoters * value;
-				const newTotalPopulation = Math.round(newTotalVoters / bloc.turnout);
+				const newTotalPopulation = Math.round(this.totalPopulation * value);
 				return {
 					...bloc,
 					population: newTotalPopulation
 				};
 			} else {
-				const newTotalVoters = this.totalVoters * newShares[i];
-				const newTotalPopulation = Math.round(newTotalVoters / bloc.turnout);
+				const newTotalPopulation = Math.round(this.totalPopulation * newShares[i]);
 				return {
 					...bloc,
 					population: newTotalPopulation
@@ -188,46 +190,44 @@ class FormState {
 		const run: Run = {
 			params: {
 				id,
-				name: formState.name,
-				voterBlocs: formState.blocCounts.map((count, index) => ({
+				name: this.name,
+				voterBlocs: this.blocCounts.map((count, index) => ({
 					count,
 					preference: {
-						forA: formState.blocPreferences[index][0] || 'random',
-						forB: formState.blocPreferences[index][1] || 'random'
+						forA: this.blocPreferences[index][0] || 'random',
+						forB: this.blocPreferences[index][1] || 'random'
 					},
-					cohesionPct: formState.blocCohesion[index][0] || 0.7
+					cohesionPct: this.blocCohesion[index][0] || 0.7
 				})),
 				slates: {
-					slateA: { numCandidates: formState.slates[0].numCandidates || 1 },
-					slateB: { numCandidates: formState.slates[1].numCandidates || 1 }
+					slateA: { numCandidates: this.slates[0].numCandidates || 1 },
+					slateB: { numCandidates: this.slates[1].numCandidates || 1 }
 				},
 				election:
-					formState.mode === 'blocPlurality'
+					this.system === 'blocPlurality'
 						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: formState.stvNumSeats },
-				ballotGenerator: formState.ballotGenerator,
-				trials: formState.trials,
-				maxRankingCandidates: formState.maxRankingCandidatesInput,
-				numSlates: formState.slates.length,
-				slateCandidates: formState.slates.map((slate) => slate.numCandidates),
-				slateNames: formState.slates.map((slate) => slate.name),
-				numVoterBlocs: formState.numVoterBlocs,
-				blocCounts: formState.blocCounts,
-				blocShares: formState.blocShares,
-				blocNames: formState.blocNames,
-				blocPopulations: formState.blocs.map((bloc) => bloc.population),
-				blocTurnouts: formState.blocs.map((bloc) => bloc.turnout),
-				blocPreferences: formState.blocPreferences,
-				blocCohesion: formState.blocCohesion,
-				voterBlocMode: formState.voterBlocMode,
-				totalVoters: formState.totalVoters,
+						: { mode: 'multiseat', stv: true, numSeats: this.numSeats },
+				ballotGenerator: this.ballotGenerator,
+				trials: this.trials,
+				maxRankingCandidates: this.maxRankingCandidatesInput,
+				numSlates: this.slates.length,
+				slateCandidates: this.slates.map((slate) => slate.numCandidates),
+				numVoterBlocs: this.numVoterBlocs,
+				blocCounts: this.blocCounts,
+				blocShares: this.voterShare,
+				blocPopulations: this.blocs.map((bloc) => bloc.population),
+				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
+				blocPreferences: this.blocPreferences,
+				blocCohesion: this.blocCohesion,
+				voterBlocMode: this.voterBlocMode,
+				totalVoters: this.totalVoters,
 				createdAt: Date.now()
 			},
 			result: {
 				slateAElected: mockHistogramData(
-					formState.trials,
+					this.trials,
 					0.5,
-					formState.mode === 'multiseat' ? formState.stvNumSeats : 1
+					this.system === 'stv' ? this.numSeats : 1
 				),
 				slateBElected: []
 			}
