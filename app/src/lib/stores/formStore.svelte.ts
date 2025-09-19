@@ -73,7 +73,7 @@ class FormState {
 	);
 	remainingCandidates: number = $derived(MAX_CANDIDATES - this.totalCandidates);
 	stvMin: number = 2;
-	stvMax: number = $derived(Math.max(this.stvMin, this.totalCandidates));
+	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	recaptchaChecked: boolean = $state(false);
 	initialize() {
