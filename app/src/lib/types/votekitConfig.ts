@@ -7,7 +7,6 @@ const PreferenceValuesSchema = z.union([
   z.literal("unif"),
 ]);
 
-
 // Schema for a single bloc's preferences, keyed by bloc identifiers
 const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);
 const CohesionSchema  = z.record(z.string(), z.coerce.number());
@@ -25,7 +24,10 @@ const SlateSchema = z.object({
 
 // Election schema
 const ElectionSchema = z.object({
-  system: z.string(),
+  system: z.union([   
+    z.literal("STV"),
+    z.literal("blocPlurality"),
+  ]),
   numSeats: z.coerce.number(),
   maxBallotLength: z.coerce.number()
 
@@ -38,11 +40,15 @@ export const VotekitConfigSchema = z.object({
   voterBlocs: z.record(z.string(), BlocSchema),
   slates: z.record(z.string(), SlateSchema),
   election: ElectionSchema,
-  ballotGenerator: z.string(),
+  ballotGenerator: z.union([
+    z.literal("sBT"),
+    z.literal("sPL"),
+    z.literal("CS"),
+  ]),
   trials: z.coerce.number(),
   createdAt: z.string(),
 });
 
 // Example type
 export type VotekitConfig = z.infer<typeof VotekitConfigSchema>;
-
+export type VoterPreference = z.infer<typeof PreferenceValuesSchema>;

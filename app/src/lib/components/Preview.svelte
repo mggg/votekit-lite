@@ -14,7 +14,7 @@
     <div><strong>Candidate strength:</strong></div>
     {#each formState.blocPreferences as preferences, blocIndex}
       {#each preferences as preference, slateIndex}
-        <div class="ml-2">Do {formState.blocs[blocIndex].name} voters have preferred {formState.slates[slateIndex].name} candidates: {preference === 'strong' ? 'yes' : preference === 'indifferent' ? 'no' : 'unknown'}</div>
+        <div class="ml-2">Do {formState.blocs[blocIndex].name} voters have preferred {formState.slates[slateIndex].name} candidates: {preference === 'strong' ? 'yes' : preference === 'all_bets_off' ? 'no' : 'unknown'}</div>
       {/each}
     {/each}
       <div><strong>Candidate pool:</strong> {formState.slates.map((slate) => `${slate.name} fields ${slate.numCandidates} candidates`).join(', ')}</div>

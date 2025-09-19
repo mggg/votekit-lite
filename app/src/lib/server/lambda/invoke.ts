@@ -43,7 +43,7 @@ const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
 		})
 	);
 
-	if (!assumeRoleRes.Credentials) {
+	if (!assumeRoleRes.Credentials || !assumeRoleRes.Credentials.AccessKeyId || !assumeRoleRes.Credentials.SecretAccessKey || !assumeRoleRes.Credentials.SessionToken) {
 		throw new Error('Failed to assume role');
 	}
 

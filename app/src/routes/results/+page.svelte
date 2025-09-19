@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { listRuns, type Run, type ElectionConfig } from '$lib';
+  import { listRuns, type Run } from '$lib';
   import { onMount } from 'svelte';
 
   let runs: Run[] = [];
@@ -48,7 +48,7 @@
     return run.params.trials;
   }
 
-  function formatMode(election: ElectionConfig): string {
+  function formatMode(election: any): string {
     if (election.mode === 'plurality') return `Bloc plurality`;
     return `STV, ${election.numSeats} seats`;
   }

@@ -80,8 +80,17 @@ validation_schema = {
     "election": {
       "type": "object",
       "properties": {
-        "mode": {
-          "type": "string"
+        "system": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "STV"
+            },
+            {
+              "type": "string",
+              "const": "blocPlurality"
+            }
+          ]
         },
         "numSeats": {
           "type": "number"
@@ -91,14 +100,27 @@ validation_schema = {
         }
       },
       "required": [
-        "mode",
+        "system",
         "numSeats",
         "maxBallotLength"
       ],
       "additionalProperties": False
     },
     "ballotGenerator": {
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "sBT"
+        },
+        {
+          "type": "string",
+          "const": "sPL"
+        },
+        {
+          "type": "string",
+          "const": "CS"
+        }
+      ]
     },
     "trials": {
       "type": "number"

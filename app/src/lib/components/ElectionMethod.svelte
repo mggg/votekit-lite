@@ -10,8 +10,8 @@
     <OptionCard
       title="Single transferable vote (STV)"
       description="Votes transfer as candidates are elected/eliminated."
-      selected={formState.system === 'stv'}
-      onSelect={() => (formState.system = 'stv')}
+      selected={formState.system === 'STV'}
+      onSelect={() => (formState.system = 'STV')}
     />
     <OptionCard
       title="Bloc plurality"

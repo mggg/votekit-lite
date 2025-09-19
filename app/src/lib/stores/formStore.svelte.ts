@@ -1,12 +1,9 @@
 import { randomRunName } from '$lib';
-import type { VoterPreference } from '$lib';
-
 // Re-export types from storage for convenience
-export type { VoterPreference, Run } from '$lib';
-import type { BallotGenerator, ElectionSystem, Slate, VoterBloc } from './types';
+import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
-import type { VotekitConfig } from '$lib/types/votekitConfig';
+import type { VotekitConfig, VoterPreference } from '$lib/types/votekitConfig';
 
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -14,15 +11,15 @@ export const MAX_CANDIDATES = 12;
 class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
-	system: ElectionSystem = $state('stv');
-	ballotGenerator: BallotGenerator = $state('sPL');
+	system = $state<VotekitConfig['election']['system']>('STV');
+	ballotGenerator = $state<VotekitConfig['ballotGenerator']>('sPL');
 	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
 
 	// Source of truth for blocs: Population and turnout
-	blocs: VoterBloc[] = $state([
+	blocs = $state<VoterBloc[]>([
 		{
 			population: 50,
 			turnout: 1.0,
@@ -46,9 +43,9 @@ class FormState {
 	);
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
-	blocPreferences: VoterPreference[][] = $state([
-		['random', 'random'],
-		['random', 'random']
+	blocPreferences = $state<VoterPreference[][]>([
+		['all_bets_off', 'all_bets_off'],
+		['all_bets_off', 'all_bets_off']
 	]);
 	blocCohesion: number[][] = $state([
 		[1.0, 0],
@@ -107,7 +104,7 @@ class FormState {
 			const newBlocPreferences = this.blocPreferences.map((bloc) => {
 				const newBlocPreferences = [...bloc];
 				for (let i = bloc.length; i < value; i++) {
-					newBlocPreferences.push('random');
+					newBlocPreferences.push('all_bets_off');
 				}
 				return newBlocPreferences;
 			});
@@ -189,40 +186,34 @@ class FormState {
 	async submitMock() {
 		const id = crypto.randomUUID();
 		const config: VotekitConfig = {
-			params: {
 				id,
 				name: this.name,
-				voterBlocs: this.blocs.map((bloc, index) => ({
-					count: bloc.population * bloc.turnout,
-					preference: this.blocPreferences[index],
-					cohesionPct: this.blocCohesion[index]
-				})),
-				slates: this.slates,
+				voterBlocs: this.blocs.reduce((acc, bloc, index) => ({
+					...acc,
+					[bloc.name]: {
+						count: bloc.population * bloc.turnout,
+						preference: this.blocPreferences[index],
+						cohesionPct: this.blocCohesion[index]
+					}
+				}), {}),
+				slates: this.slates.reduce((acc, slate) => ({
+					...acc,
+					[slate.name]: {
+						numCandidates: slate.numCandidates
+					}
+				}), {}),
 				election:
 					this.system === 'blocPlurality'
-						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: this.numSeats },
+						? { system: 'blocPlurality', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput }
+						: { system: 'STV', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput },
 				ballotGenerator: this.ballotGenerator,
 				trials: this.trials,
-				maxRankingCandidates: this.maxRankingCandidatesInput,
-				numSlates: this.slates.length,
-				slateCandidates: this.slates.map((slate) => slate.numCandidates),
-				numVoterBlocs: this.numVoterBlocs,
-				blocCounts: this.blocCounts,
-				blocShares: this.voterShare,
-				blocPopulations: this.blocs.map((bloc) => bloc.population),
-				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
-				blocPreferences: this.blocPreferences,
-				blocCohesion: this.blocCohesion,
-				voterBlocMode: this.voterBlocMode,
-				totalVoters: this.totalVoters,
-				createdAt: Date.now()
-			}
+				createdAt: Date.now().toString()
 		};
 		const r = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
-				config,
+				votekitConfig: config,
 				recaptchaToken: this.recaptchaToken
 			})
 		});
