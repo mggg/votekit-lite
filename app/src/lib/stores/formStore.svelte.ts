@@ -13,7 +13,7 @@ export const MAX_CANDIDATES = 12;
 class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
-	mode: ElectionMode = $state('multiseat');
+	system: ElectionSystem = $state('stv');
 	ballotGenerator: BallotGenerator = $state('sPL');
 	stvNumSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
