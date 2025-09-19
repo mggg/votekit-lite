@@ -40,7 +40,7 @@ class FormState {
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
 	totalVoters: number = $derived(this.blocCounts.reduce((a, b) => a + b, 0));
-	totalPopulation: number = $derived(this.blocs.reduce((a, b) => a + b.population, 0));
+	totalPopulation: number = $derived(this.blocs.reduce((a, b) => a.population + b.population, 0));
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
