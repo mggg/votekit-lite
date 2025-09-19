@@ -3,7 +3,7 @@ import type { VoterPreference } from '$lib';
 
 // Re-export types from storage for convenience
 export type { VoterPreference, Run } from '$lib';
-import type { BallotGenerator, ElectionMode, Slate, VoterBloc } from './types';
+import type { BallotGenerator, ElectionSystem, Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
 
@@ -39,8 +39,8 @@ class FormState {
 	blocCounts: number[] = $derived(
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
-	totalVoters: number = $derived(this.blocCounts.reduce((a, b) => a + b, 0));
-	totalPopulation: number = $derived(this.blocs.reduce((a, b) => a.population + b.population, 0));
+	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
+	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, 0));
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
@@ -72,7 +72,7 @@ class FormState {
 		this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0)
 	);
 	remainingCandidates: number = $derived(MAX_CANDIDATES - this.totalCandidates);
-	stvMin: number = 2;
+	seatsMin: number = 2;
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	recaptchaChecked: boolean = $state(false);
@@ -205,9 +205,9 @@ class FormState {
 					slateB: { numCandidates: this.slates[1].numCandidates || 1 }
 				},
 				election:
-					this.mode === 'blocPlurality'
+					this.system === 'blocPlurality'
 						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: this.stvNumSeats },
+						: { mode: 'multiseat', stv: true, numSeats: this.numSeats },
 				ballotGenerator: this.ballotGenerator,
 				trials: this.trials,
 				maxRankingCandidates: this.maxRankingCandidatesInput,
@@ -230,7 +230,7 @@ class FormState {
 				slateAElected: mockHistogramData(
 					this.trials,
 					0.5,
-					this.mode === 'multiseat' ? this.stvNumSeats : 1
+					this.system === 'stv' ? this.numSeats : 1
 				),
 				slateBElected: []
 			}

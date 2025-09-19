@@ -10,14 +10,14 @@
     <OptionCard
       title="Single transferable vote (STV)"
       description="Votes transfer as candidates are elected/eliminated."
-      selected={formState.mode === 'multiseat'}
-      onSelect={() => (formState.mode = 'multiseat')}
+      selected={formState.system === 'stv'}
+      onSelect={() => (formState.system = 'stv')}
     />
     <OptionCard
       title="Bloc plurality"
       description="Most votes wins."
-      selected={formState.mode === 'blocPlurality'}
-      onSelect={() => (formState.mode = 'blocPlurality')}
+      selected={formState.system === 'blocPlurality'}
+      onSelect={() => (formState.system = 'blocPlurality')}
     />
   </div>
 </div>

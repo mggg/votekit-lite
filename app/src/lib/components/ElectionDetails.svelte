@@ -11,18 +11,18 @@
     <label class="block text-sm">Number of seats
       <input 
         type="number" 
-        min={formState.stvMin} 
-        max={formState.stvMax} 
+        min={formState.seatsMin} 
+        max={formState.seatsMax} 
         class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
-        bind:value={formState.stvNumSeats}
+        bind:value={formState.numSeats}
       />
     </label>
     <div class="mt-1 text-xs text-slate-500">
-      <span>Seats must be between {formState.stvMin} and total candidates ({formState.totalCandidates}).</span>
-      {#if formState.stvNumSeats === formState.stvMin}
+      <span>Seats must be between {formState.seatsMin} and total candidates ({formState.totalCandidates}).</span>
+      {#if formState.numSeats === formState.seatsMin}
         <span class="ml-2 text-amber-600">Minimum reached</span>
       {/if}
-      {#if formState.stvNumSeats === formState.stvMax}
+      {#if formState.numSeats === formState.seatsMax}
         <span class="ml-2 text-amber-600">Maximum reached</span>
       {/if}
     </div>
@@ -50,10 +50,10 @@
       <input 
         type="number" 
         min="1" 
-        max={MAX_CANDIDATES === formState.totalCandidates ? formState.slates.length : 5} 
+        max={MAX_CANDIDATES === formState.totalCandidates ? formState.slates.length : formState.seatsMax} 
         class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200" 
         value={formState.slates.length}
-        on:input={(e) => e.target?.value && formState.updateNumSlates(Number(e.target.value))}
+        oninput={(e) => formState.updateNumSlates(Number(e.currentTarget.value))}
       />
     </label>
     <div class="mt-1 text-xs text-slate-500">

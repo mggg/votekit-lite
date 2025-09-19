@@ -15,7 +15,7 @@
 				max="5"
 				class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
 				value={formState.blocs.length}
-				on:input={(e) => e.target?.value && formState.updateNumVoterBlocs(Number(e.target.value))}
+				on:input={(e) =>formState.updateNumVoterBlocs(Number(e.currentTarget.value))}
 			/>
 		</label>
 		<div class="mt-1 text-xs text-slate-500">At most 5.</div>
@@ -64,7 +64,7 @@
 							min="0"
 							class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
 							value={formState.blocCounts[i]}
-							on:input={(e) => (bloc.population = Number(e.target.value) * bloc.turnout)}
+							on:input={(e) => (bloc.population = Number(e.currentTarget.value) * bloc.turnout)}
 						/>
 					</label>
 				</div>
@@ -79,7 +79,7 @@
 					min="1"
 					class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
 					value={formState.totalPopulation}
-					on:input={(e) => formState.updateTotalElectorate(Number(e.target.value))}
+					on:input={(e) => formState.updateTotalElectorate(Number(e.currentTarget.value))}
 				/>
 			</label>
 		</div>
@@ -104,7 +104,7 @@
 							class="mt-1 w-full"
 							value={bloc.population / formState.totalPopulation}
 							on:input={(e) =>
-								formState.updateBlocElectorateShare(index, Number((e.target as HTMLInputElement).value))}
+								formState.updateBlocElectorateShare(index, Number(e.currentTarget.value))}
 						/>
 					</label>
 					<div class="text-xs text-slate-500">Voters: {formState.blocCounts[index]}</div>
@@ -216,7 +216,7 @@
 										formState.updateBlocCohesion(
 											blocIndex,
 											slateIndex,
-											Number((e.target as HTMLInputElement).value)
+											Number(e.currentTarget.value)
 										)}
 								/>
 							</label>

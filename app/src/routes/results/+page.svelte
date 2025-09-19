@@ -104,8 +104,9 @@
               <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                 <dt class="text-slate-500">Blocs</dt>
                 <dd>
-                  A {selected.params.voterBlocs.blocA.count} (A→A {selected.params.voterBlocs.blocA.preference.forA}, A→B {selected.params.voterBlocs.blocA.preference.forB}),
-                  B {selected.params.voterBlocs.blocB.count} (B→B {selected.params.voterBlocs.blocB.preference.forB}, B→A {selected.params.voterBlocs.blocB.preference.forA})
+                  <!-- TODO Fix run output -->
+                  <!-- A {selected.params.voterBlocs.blocA.count} (A→A {selected.params.voterBlocs.blocA.preference.forA}, A→B {selected.params.voterBlocs.blocA.preference.forB}), -->
+                  <!-- B {selected.params.voterBlocs.blocB.count} (B→B {selected.params.voterBlocs.blocB.preference.forB}, B→A {selected.params.voterBlocs.blocB.preference.forA}) -->
                 </dd>
                 <dt class="text-slate-500">Mode</dt>
                 <dd>{formatMode(selected.params.election)}</dd>
