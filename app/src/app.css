@@ -1,4 +1,10 @@
 @import 'tailwindcss';
-@plugin 'daisyui';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "emerald";
+  default: true;
+  --color-primary: hsl(296, 64%, 50%);
+  --color-secondary:rgb(130, 134, 138);
+}

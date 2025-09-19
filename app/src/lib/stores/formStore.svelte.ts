@@ -80,8 +80,12 @@ class FormState {
 	}
 
 	updateNumSlates(value: number) {
-		if (this.totalCandidates == MAX_CANDIDATES) {
+		if (this.totalCandidates == MAX_CANDIDATES && value >= this.slates.length) {
 			console.log('Total candidates is at maximum');
+			return;
+		}
+		if (value > 5 || value < 1) {
+			console.log('Number of slates must be between 1 and 5');
 			return;
 		}
 		if (value < this.slates.length) {
