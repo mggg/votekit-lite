@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { formState } from '$lib/stores/formStore.svelte';
-	import type { VoterPreference } from '$lib';
 </script>
-{JSON.stringify(formState.blocs)}
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter blocs</h2>
 	<!-- Number of voter blocs -->
