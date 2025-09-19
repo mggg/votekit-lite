@@ -22,10 +22,10 @@
 			bind:value={formState.trials}
 		/>
 	</label>
-	<Recaptcha 
+	<Recaptcha
 		siteKey={PUBLIC_CAPTCHA_KEY}
-		onVerify={token => formState.recaptchaToken = token}
-		onExpired={() => formState.recaptchaToken = ''}
+		onVerify={(token) => (formState.recaptchaToken = token)}
+		onExpired={() => (formState.recaptchaToken = '')}
 	/>
 	<button
 		class="mt-2 w-full rounded-full bg-indigo-600/90 px-4 py-2 text-white shadow-sm transition hover:bg-indigo-600 disabled:opacity-40"

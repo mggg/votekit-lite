@@ -39,8 +39,12 @@ class FormState {
 	blocCounts: number[] = $derived(
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
-	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
-	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, 0));
+	totalVoters: number = $derived(
+		this.blocCounts.reduce((current, blocCount) => current + blocCount, 0)
+	);
+	totalPopulation: number = $derived(
+		this.blocs.reduce((current, bloc) => current + bloc.population, 0)
+	);
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
@@ -189,40 +193,41 @@ class FormState {
 	async submitMock() {
 		const id = crypto.randomUUID();
 		const config: VotekitConfig = {
-			params: {
-				id,
-				name: this.name,
-				voterBlocs: this.blocs.map((bloc, index) => ({
-					count: bloc.population * bloc.turnout,
-					preference: this.blocPreferences[index],
-					cohesionPct: this.blocCohesion[index]
-				})),
-				slates: this.slates,
-				election:
-					this.system === 'blocPlurality'
-						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: this.numSeats },
-				ballotGenerator: this.ballotGenerator,
-				trials: this.trials,
-				maxRankingCandidates: this.maxRankingCandidatesInput,
-				numSlates: this.slates.length,
-				slateCandidates: this.slates.map((slate) => slate.numCandidates),
-				numVoterBlocs: this.numVoterBlocs,
-				blocCounts: this.blocCounts,
-				blocShares: this.voterShare,
-				blocPopulations: this.blocs.map((bloc) => bloc.population),
-				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
-				blocPreferences: this.blocPreferences,
-				blocCohesion: this.blocCohesion,
-				voterBlocMode: this.voterBlocMode,
-				totalVoters: this.totalVoters,
-				createdAt: Date.now()
-			}
+			id,
+			name: this.name,
+			voterBlocs: this.blocs.reduce(
+				(acc, bloc, index) => ({
+					...acc,
+					[bloc.name]: {
+						count: bloc.population * bloc.turnout,
+						preference: this.blocPreferences[index],
+						cohesionPct: this.blocCohesion[index]
+					}
+				}),
+				{}
+			),
+			slates: this.slates.reduce(
+				(acc, slate) => ({
+					...acc,
+					[slate.name]: {
+						numCandidates: slate.numCandidates
+					}
+				}),
+				{}
+			),
+			election: {
+				mode: this.system === 'blocPlurality' ? 'plurality' : 'multiseat',
+				numSeats: this.numSeats,
+				maxBallotLength: this.maxRankingCandidatesInput
+			},
+			ballotGenerator: this.ballotGenerator,
+			trials: this.trials,
+			createdAt: Date.now().toString()
 		};
 		const r = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
-				config,
+				votekitConfig: config,
 				recaptchaToken: this.recaptchaToken
 			})
 		});
