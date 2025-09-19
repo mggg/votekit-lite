@@ -2,7 +2,7 @@
 	import { formState } from '$lib/stores/formStore.svelte';
 	import type { VoterPreference } from '$lib';
 </script>
-
+{JSON.stringify(formState.blocs)}
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter blocs</h2>
 	<!-- Number of voter blocs -->
@@ -129,7 +129,7 @@
 					<div>
 								{#if formState.voterBlocMode === 'count'}
 								<label class="block text-sm"
-									>{formState.blocNames[index]} population
+									>{bloc.name} population
 									<input
 										type="number"
 										min="1"
@@ -139,7 +139,7 @@
 								</label>
 								{/if}
 								<label class="mt-2 block text-sm"
-									>{formState.blocNames[index]} turnout rate
+									>{bloc.name} turnout rate
 									<input
 										type="range"
 										min="0"
@@ -157,7 +157,7 @@
 						Calculated voters: {formState.blocs
 							.map(
 								(bloc, i) =>
-									`${formState.blocNames[i]} = ${Math.round(bloc.population * bloc.turnout)}`
+									`${bloc.name} = ${Math.round(bloc.population * bloc.turnout)}`
 							)
 							.join(', ')}
 					</div>

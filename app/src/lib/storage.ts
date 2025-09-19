@@ -30,11 +30,9 @@ export type RunParams = {
   maxRankingCandidates?: number;
   numSlates?: number;
   slateCandidates?: number[];
-  slateNames?: string[];
   numVoterBlocs?: number;
   blocCounts?: number[];
   blocShares?: number[];
-  blocNames?: string[];
   blocPopulations?: number[];
   blocTurnouts?: number[];
   blocPreferences?: VoterPreference[][];

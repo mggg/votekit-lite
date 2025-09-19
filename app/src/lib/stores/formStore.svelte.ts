@@ -19,7 +19,6 @@ class FormState {
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
-	blocNames: string[] = $state(['A', 'B']);
 
 	// Source of truth for blocs: Population and turnout
 	blocs: VoterBloc[] = $state([
@@ -213,11 +212,9 @@ class FormState {
 				maxRankingCandidates: this.maxRankingCandidatesInput,
 				numSlates: this.slates.length,
 				slateCandidates: this.slates.map((slate) => slate.numCandidates),
-				slateNames: this.slates.map((slate) => slate.name),
 				numVoterBlocs: this.numVoterBlocs,
 				blocCounts: this.blocCounts,
 				blocShares: this.voterShare,
-				blocNames: this.blocNames,
 				blocPopulations: this.blocs.map((bloc) => bloc.population),
 				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
 				blocPreferences: this.blocPreferences,
