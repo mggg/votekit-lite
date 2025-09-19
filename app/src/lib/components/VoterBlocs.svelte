@@ -176,7 +176,7 @@
 					>
 					{#each Array(formState.slates.length) as _, slateIndex}
 						<label class="block text-xs"
-							>Towards {formState.slates[slateIndex].name} candidates
+							>Strong preference towards {formState.slates[slateIndex].name} candidates
 							<select
 								class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
 								bind:value={preferences[slateIndex]}
