@@ -1,4 +1,4 @@
-import { mockHistogramData, randomRunName, saveRun, type Run } from '$lib';
+import { randomRunName } from '$lib';
 import type { VoterPreference } from '$lib';
 
 // Re-export types from storage for convenience
@@ -6,6 +6,7 @@ export type { VoterPreference, Run } from '$lib';
 import type { BallotGenerator, ElectionSystem, Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
+import type { VotekitConfig } from '$lib/types/votekitConfig';
 
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -74,7 +75,7 @@ class FormState {
 	seatsMin: number = 2;
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
-	recaptchaChecked: boolean = $state(false);
+	recaptchaToken: string = $state('');
 	initialize() {
 		this.name = randomRunName();
 	}
@@ -187,22 +188,16 @@ class FormState {
 
 	async submitMock() {
 		const id = crypto.randomUUID();
-		const run: Run = {
+		const config: VotekitConfig = {
 			params: {
 				id,
 				name: this.name,
-				voterBlocs: this.blocCounts.map((count, index) => ({
-					count,
-					preference: {
-						forA: this.blocPreferences[index][0] || 'random',
-						forB: this.blocPreferences[index][1] || 'random'
-					},
-					cohesionPct: this.blocCohesion[index][0] || 0.7
+				voterBlocs: this.blocs.map((bloc, index) => ({
+					count: bloc.population * bloc.turnout,
+					preference: this.blocPreferences[index],
+					cohesionPct: this.blocCohesion[index]
 				})),
-				slates: {
-					slateA: { numCandidates: this.slates[0].numCandidates || 1 },
-					slateB: { numCandidates: this.slates[1].numCandidates || 1 }
-				},
+				slates: this.slates,
 				election:
 					this.system === 'blocPlurality'
 						? { mode: 'plurality' }
@@ -222,18 +217,17 @@ class FormState {
 				voterBlocMode: this.voterBlocMode,
 				totalVoters: this.totalVoters,
 				createdAt: Date.now()
-			},
-			result: {
-				slateAElected: mockHistogramData(
-					this.trials,
-					0.5,
-					this.system === 'stv' ? this.numSeats : 1
-				),
-				slateBElected: []
 			}
 		};
-		saveRun(run);
-		window.location.href = '/results';
+		const r = await fetch('/api/invoke', {
+			method: 'POST',
+			body: JSON.stringify({
+				config,
+				recaptchaToken: this.recaptchaToken
+			})
+		});
+		const result = await r.json();
+		console.log(result);
 	}
 }
 

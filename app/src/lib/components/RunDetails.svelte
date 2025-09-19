@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { formState } from '$lib/stores/formStore.svelte';
+	import { PUBLIC_CAPTCHA_KEY } from '$env/static/public';
+	import Recaptcha from './Recaptcha.svelte';
 </script>
 
 <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
@@ -11,7 +13,7 @@
 			bind:value={formState.name}
 		/>
 	</label>
-	<label class="mt-2 block text-sm"
+	<label class="my-2 block text-sm"
 		>Number of trials
 		<input
 			type="number"
@@ -20,14 +22,15 @@
 			bind:value={formState.trials}
 		/>
 	</label>
-	<label class="mt-2 flex items-center gap-2 text-sm">
-		<input type="checkbox" bind:checked={formState.recaptchaChecked} class="accent-indigo-600" />
-		I'm not a robot (mock reCAPTCHA)
-	</label>
+	<Recaptcha 
+		siteKey={PUBLIC_CAPTCHA_KEY}
+		onVerify={token => formState.recaptchaToken = token}
+		onExpired={() => formState.recaptchaToken = ''}
+	/>
 	<button
 		class="mt-2 w-full rounded-full bg-indigo-600/90 px-4 py-2 text-white shadow-sm transition hover:bg-indigo-600 disabled:opacity-40"
 		on:click={formState.submitMock}
-		disabled={!formState.recaptchaChecked}
+		disabled={!formState.recaptchaToken.length}
 	>
 		Run simulation (mock)
 	</button>
