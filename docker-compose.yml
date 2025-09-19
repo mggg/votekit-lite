@@ -4,9 +4,12 @@ services:
       context: ./app
       dockerfile: Dockerfile.dev
     container_name: votekit-app
-    command: sh -c "pnpm i && pnpm dev --host 0.0.0.0 --port 5173"
+    command: sh -c "pnpm i --store-dir .pnpm-store && pnpm dev --host 0.0.0.0 --port 5173"
     volumes:
       - ./app:/app
+      - /app/node_modules
+      - /app/.pnpm-store
+      - ./lambda:/lambda
     ports:
       - "5173:5173"
     environment:

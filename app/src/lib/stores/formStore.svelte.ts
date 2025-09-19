@@ -1,11 +1,9 @@
-import { mockHistogramData, randomRunName, saveRun, type Run } from '$lib';
-import type { VoterPreference } from '$lib';
-
+import { randomRunName } from '$lib';
 // Re-export types from storage for convenience
-export type { VoterPreference, Run } from '$lib';
-import type { BallotGenerator, ElectionSystem, Slate, VoterBloc } from './types';
+import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
+import type { VotekitConfig, VoterPreference } from '$lib/types/votekitConfig';
 
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -13,15 +11,15 @@ export const MAX_CANDIDATES = 12;
 class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
-	system: ElectionSystem = $state('stv');
-	ballotGenerator: BallotGenerator = $state('sPL');
+	system = $state<VotekitConfig['election']['system']>('STV');
+	ballotGenerator = $state<VotekitConfig['ballotGenerator']>('sPL');
 	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
 
 	// Source of truth for blocs: Population and turnout
-	blocs: VoterBloc[] = $state([
+	blocs = $state<VoterBloc[]>([
 		{
 			population: 50,
 			turnout: 1.0,
@@ -45,9 +43,9 @@ class FormState {
 	);
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
-	blocPreferences: VoterPreference[][] = $state([
-		['random', 'random'],
-		['random', 'random']
+	blocPreferences = $state<VoterPreference[][]>([
+		['all_bets_off', 'all_bets_off'],
+		['all_bets_off', 'all_bets_off']
 	]);
 	blocCohesion: number[][] = $state([
 		[1.0, 0],
@@ -74,7 +72,7 @@ class FormState {
 	seatsMin: number = 2;
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
-	recaptchaChecked: boolean = $state(false);
+	recaptchaToken: string = $state('');
 	initialize() {
 		this.name = randomRunName();
 	}
@@ -106,7 +104,7 @@ class FormState {
 			const newBlocPreferences = this.blocPreferences.map((bloc) => {
 				const newBlocPreferences = [...bloc];
 				for (let i = bloc.length; i < value; i++) {
-					newBlocPreferences.push('random');
+					newBlocPreferences.push('all_bets_off');
 				}
 				return newBlocPreferences;
 			});
@@ -187,53 +185,40 @@ class FormState {
 
 	async submitMock() {
 		const id = crypto.randomUUID();
-		const run: Run = {
-			params: {
+		const config: VotekitConfig = {
 				id,
 				name: this.name,
-				voterBlocs: this.blocCounts.map((count, index) => ({
-					count,
-					preference: {
-						forA: this.blocPreferences[index][0] || 'random',
-						forB: this.blocPreferences[index][1] || 'random'
-					},
-					cohesionPct: this.blocCohesion[index][0] || 0.7
-				})),
-				slates: {
-					slateA: { numCandidates: this.slates[0].numCandidates || 1 },
-					slateB: { numCandidates: this.slates[1].numCandidates || 1 }
-				},
+				voterBlocs: this.blocs.reduce((acc, bloc, index) => ({
+					...acc,
+					[bloc.name]: {
+						proportion: this.voterShare[index],
+						preference: this.blocPreferences[index],
+						cohesion: this.blocCohesion[index]
+					}
+				}), {}),
+				slates: this.slates.reduce((acc, slate) => ({
+					...acc,
+					[slate.name]: {
+						numCandidates: slate.numCandidates
+					}
+				}), {}),
 				election:
 					this.system === 'blocPlurality'
-						? { mode: 'plurality' }
-						: { mode: 'multiseat', stv: true, numSeats: this.numSeats },
+						? { system: 'blocPlurality', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput }
+						: { system: 'STV', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput },
 				ballotGenerator: this.ballotGenerator,
 				trials: this.trials,
-				maxRankingCandidates: this.maxRankingCandidatesInput,
-				numSlates: this.slates.length,
-				slateCandidates: this.slates.map((slate) => slate.numCandidates),
-				numVoterBlocs: this.numVoterBlocs,
-				blocCounts: this.blocCounts,
-				blocShares: this.voterShare,
-				blocPopulations: this.blocs.map((bloc) => bloc.population),
-				blocTurnouts: this.blocs.map((bloc) => bloc.turnout),
-				blocPreferences: this.blocPreferences,
-				blocCohesion: this.blocCohesion,
-				voterBlocMode: this.voterBlocMode,
-				totalVoters: this.totalVoters,
-				createdAt: Date.now()
-			},
-			result: {
-				slateAElected: mockHistogramData(
-					this.trials,
-					0.5,
-					this.system === 'stv' ? this.numSeats : 1
-				),
-				slateBElected: []
-			}
+				createdAt: Date.now().toString()
 		};
-		saveRun(run);
-		window.location.href = '/results';
+		const r = await fetch('/api/invoke', {
+			method: 'POST',
+			body: JSON.stringify({
+				votekitConfig: config,
+				recaptchaToken: this.recaptchaToken
+			})
+		});
+		const result = await r.json();
+		console.log(result);
 	}
 }
 

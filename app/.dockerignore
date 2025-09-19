@@ -1,4 +1,2 @@
-node_modules
 .pnpm-store
-.netlify
-build
+node_modules
