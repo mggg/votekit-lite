@@ -25,7 +25,7 @@ const SlateSchema = z.object({
 
 // Election schema
 const ElectionSchema = z.object({
-  mode: z.string(),
+  system: z.string(),
   numSeats: z.coerce.number(),
   maxBallotLength: z.coerce.number()
 
