@@ -209,7 +209,7 @@ export const threeBlocFourSlate: VotekitConfig = {
     }
   },
   election: {
-    mode: "blocPlurality",
+    system: "blocPlurality",
     numSeats: 3,
     maxBallotLength:10
   },
