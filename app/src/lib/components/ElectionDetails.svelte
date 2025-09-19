@@ -75,7 +75,7 @@
 		<li class="text-md pt-4 font-semibold">Slates</li>
 		{#each formState.slates as slate, slateIndex}
 			<li class="list-row my-0 grid grid-cols-2 px-0 py-1 pr-4">
-				<label class="input input-sm">
+        <label class="input input-sm">
 					<span class="text-gray-400">Slate name</span>
 					<input
 						type="text"
