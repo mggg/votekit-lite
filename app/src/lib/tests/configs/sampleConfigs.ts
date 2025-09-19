@@ -36,7 +36,7 @@ export const twoBlocTwoSlate: VotekitConfig = {
     }
   },
   election: {
-    mode: "multiseat",
+    system: "STV",
     numSeats: 5,
     maxBallotLength:6
   },
