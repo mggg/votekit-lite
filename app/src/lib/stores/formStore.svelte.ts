@@ -15,7 +15,7 @@ class FormState {
 	trials: number = $state(100);
 	system: ElectionSystem = $state('stv');
 	ballotGenerator: BallotGenerator = $state('sPL');
-	stvNumSeats: number = $state(5);
+	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
