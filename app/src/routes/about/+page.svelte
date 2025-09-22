@@ -9,21 +9,21 @@
 </script>
 
 <div class="prose prose-slate max-w-none">
-  <div class="not-prose mb-8 rounded-2xl border border-slate-200/70 bg-white/70 p-6 text-center shadow-sm backdrop-blur">
+  <div class="not-prose mb-8 card bg-base-100 p-6 text-center shadow-sm">
     <h1 class="text-2xl font-semibold text-slate-800">About this project</h1>
     <p class="mt-2 text-slate-600">A friendly mock interface for a voting simulation library, built with SvelteKit and Tailwind CSS.</p>
   </div>
 
   <div class="not-prose grid grid-cols-1 gap-4 md:grid-cols-2">
     {#each sections as s}
-      <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm backdrop-blur">
-        <h2 class="text-lg font-semibold text-green-300">{s.title}</h2>
+      <div class="card bg-base-100 p-5 shadow-sm">
+        <h2 class="text-lg font-semibold text-slate-800">{s.title}</h2>
         <p class="mt-2 text-slate-600">{s.body}</p>
       </div>
     {/each}
   </div>
 
-  <div class="not-prose mt-8 rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm backdrop-blur">
+  <div class="not-prose mt-8 card bg-base-100 p-5 shadow-sm">
     <h2 class="text-lg font-semibold text-slate-800">Next steps</h2>
     <ul class="mt-2 list-disc space-y-1 pl-5 text-slate-700">
       <li>Wire form to the simulation engine</li>

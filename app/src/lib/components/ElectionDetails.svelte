@@ -1,15 +1,8 @@
 <script lang="ts">
 	import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte';
+	import { COLOR_MAP } from '$lib/constants';
+	import PalettePip from './PalettePip.svelte';
 	const candidatesRange = new Array(MAX_CANDIDATES).fill(0).map((_, index) => index + 1);
-  export const slateColors = {
-  bg: [
-    '!bg-primary',
-    '!bg-accent',
-    '!bg-info',
-    '!bg-success',
-    '!bg-warning',
-  ]
-}
 </script>
 
 <div class="card bg-base-100 p-4 shadow-sm">
@@ -74,17 +67,21 @@
 	<ul class="list bg-base-100 p-0">
 		<li class="text-md pt-4 font-semibold">Slates</li>
 		{#each formState.slates as slate, slateIndex}
-			<li class="list-row my-0 grid grid-cols-2 px-0 py-1 pr-4">
-        <label class="input input-sm">
-					<span class="text-gray-400">Slate name</span>
-					<input
-						type="text"
-						class="grow text-sm"
-						placeholder="Slate name"
-						bind:value={slate.name}
-					/>
-				</label>
-				<div class="flex w-full max-w-xs flex-row items-center gap-2">
+			<li class="list-row my-0 grid grid-cols-9 gap-2 px-0 py-1 pr-4">
+				<div class="col-span-3 flex items-center gap-2">
+					<PalettePip color={COLOR_MAP.SLATES[slateIndex]} />
+					<label class="input input-sm">
+						<span class="text-gray-400">Slate name</span>
+						<input
+							type="text"
+							class="grow text-sm"
+							placeholder="Slate name"
+							bind:value={slate.name}
+						/>
+					</label>
+				</div>
+				<div class="col-span-1"></div>
+				<div class="col-span-4 flex w-full max-w-xs flex-row items-center gap-2">
 					<label class="label text-sm">Number of candidates</label>
 					<div class="rating-xs rating gap-1">
 						{#each candidatesRange as index}
@@ -95,11 +92,12 @@
               ${
 								formState.remainingCandidates < index - slate.numCandidates
 									? 'pointer-events-none cursor-not-allowed bg-gray-200'
-									: slate.numCandidates >= index
-										? `${slateColors.bg[slateIndex]}`
-										: 'bg-secondary'
+									: slate.numCandidates <= index
+										? 'bg-secondary'
+										: ''
 							}
               `}
+								style={`background-color: ${slate.numCandidates >= index ? COLOR_MAP.SLATES[slateIndex] : ''}`}
 								aria-label={`${index} star`}
 								checked={slate.numCandidates === index}
 								onclick={(e) => {
@@ -111,17 +109,15 @@
 							/>
 						{/each}
 					</div>
-				</div>
-				<!-- <label class="input input-sm"
-					>Number of candidates
+
 					<input
 						type="number"
 						min="1"
 						max={slate.numCandidates + formState.remainingCandidates}
-						class="input input-sm"
+						class="input input-sm text-center"
 						bind:value={slate.numCandidates}
 					/>
-				</label> -->
+				</div>
 			</li>
 		{/each}
 	</ul>

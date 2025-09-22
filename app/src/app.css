@@ -8,3 +8,14 @@
   --color-primary: hsl(296, 64%, 50%);
   --color-secondary:rgb(130, 134, 138);
 }
+
+
+/* In your main CSS file or a custom component CSS file */
+.slate-1-range-track {
+  @apply [&::-webkit-slider-runnable-track]:bg-gray-300 
+         [&::-moz-range-track]:bg-gray-300;
+}
+
+.proportion-selector input[type="range"] {
+  display: none !important;
+}

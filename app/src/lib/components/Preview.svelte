@@ -2,7 +2,7 @@
   import { formState } from '$lib/stores/formStore.svelte';
 </script>
 
-<div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 text-sm text-slate-600 backdrop-blur">
+<div class="card bg-base-100 p-4 text-sm text-slate-600 shadow-sm">
   <p class="font-medium">Preview:</p>
   <div class="mt-2 space-y-1 text-xs">
     <div><strong>Election style:</strong> {formState.system === 'blocPlurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>

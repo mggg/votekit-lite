@@ -57,12 +57,12 @@
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-  <aside class="lg:col-span-1 rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
+  <aside class="lg:col-span-1 card bg-base-100 p-4 shadow-sm">
     <div class="mb-3 flex items-center justify-between">
       <h2 class="text-sm font-semibold text-slate-800">My runs</h2>
       <div class="flex gap-1">
-        <button class="rounded-full px-2 py-1 text-xs text-slate-600 hover:bg-white/70 hover:ring-1 hover:ring-slate-200" on:click={selectAll}>Select all</button>
-        <button class="rounded-full px-2 py-1 text-xs text-slate-600 hover:bg-white/70 hover:ring-1 hover:ring-slate-200" on:click={clearSelection}>Clear</button>
+        <button class="btn btn-xs btn-soft" on:click={selectAll}>Select all</button>
+        <button class="btn btn-xs btn-soft" on:click={clearSelection}>Clear</button>
       </div>
     </div>
     <div class="space-y-1">
@@ -70,13 +70,15 @@
         <p class="text-sm text-slate-500">No runs yet. Create one on the Run page.</p>
       {:else}
         {#each runs as run}
-          <button class="relative w-full rounded-xl px-2 py-2 pl-3 text-left text-sm hover:bg-white/70 hover:ring-1 hover:ring-slate-200 transition {selectedIds.includes(run.params.id) ? 'bg-white/70 ring-1 ring-slate-200' : ''}"
+          <button class="relative w-full btn btn-soft justify-start {selectedIds.includes(run.params.id) ? 'btn-primary' : 'btn-secondary'}"
             on:click={() => toggleSelected(run.params.id)}>
             {#if selectedIds.includes(run.params.id)}
-              <span class="absolute left-1 top-1/2 -translate-y-1/2" style={`background-color:${getColorHexForId(run.params.id)}; width:8px; height:8px; border-radius:9999px`}></span>
+              <span class="absolute left-2 top-1/2 -translate-y-1/2" style={`background-color:${getColorHexForId(run.params.id)}; width:8px; height:8px; border-radius:9999px`}></span>
             {/if}
-            <div class="truncate">{run.params.name}</div>
-            <div class="text-xs text-slate-500">{new Date(run.params.createdAt).toLocaleString()}</div>
+            <div class="truncate">
+              <div class="text-sm">{run.params.name}</div>
+              <div class="text-xs text-slate-500">{new Date(run.params.createdAt).toLocaleString()}</div>
+            </div>
           </button>
         {/each}
       {/if}
@@ -84,14 +86,14 @@
   </aside>
 
   <section class="lg:col-span-3 space-y-6">
-    <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm backdrop-blur">
+    <div class="card bg-base-100 p-5 shadow-sm">
       <h2 class="mb-2 text-lg font-semibold text-slate-800">Report</h2>
       {#if selectedIds.length === 0}
         <p class="text-sm text-slate-500">Select at least one run to view results.</p>
       {:else}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {#each selectedRuns as selected}
-            <div class="rounded-xl border border-slate-200/70 bg-white/70 p-4" style={`border-top:4px solid ${getColorHexForId(selected.params.id)}` }>
+            <div class="card bg-base-100 p-4 shadow-sm" style={`border-top:4px solid ${getColorHexForId(selected.params.id)}`}>
               <h3 class="mb-2 text-sm font-medium text-slate-700 truncate">{selected.params.name}</h3>
               <div class="grid grid-cols-6 items-end gap-2 rounded-xl border border-slate-200/70 bg-gradient-to-b from-indigo-50/60 to-white p-3">
                 {#each selected.result.slateAElected as count, seats}
@@ -102,12 +104,6 @@
                 {/each}
               </div>
               <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                <dt class="text-slate-500">Blocs</dt>
-                <dd>
-                  <!-- TODO Fix run output -->
-                  <!-- A {selected.params.voterBlocs.blocA.count} (A→A {selected.params.voterBlocs.blocA.preference.forA}, A→B {selected.params.voterBlocs.blocA.preference.forB}), -->
-                  <!-- B {selected.params.voterBlocs.blocB.count} (B→B {selected.params.voterBlocs.blocB.preference.forB}, B→A {selected.params.voterBlocs.blocB.preference.forA}) -->
-                </dd>
                 <dt class="text-slate-500">Mode</dt>
                 <dd>{formatMode(selected.params.election)}</dd>
                 <dt class="text-slate-500">Behavior</dt>
@@ -121,7 +117,7 @@
       {/if}
     </div>
 
-    <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-5 text-sm text-slate-600 backdrop-blur">
+    <div class="card bg-base-100 p-5 text-sm text-slate-600 shadow-sm">
       <p>Recent runs are stored locally in your browser for this mockup.</p>
     </div>
   </section>
