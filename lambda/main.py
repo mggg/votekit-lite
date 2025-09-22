@@ -19,6 +19,7 @@ from votekit.ballot_generator import (
     BlocSlateConfig,
     slate_pl_profile_generator,
     slate_bt_profile_generator,
+    cambridge_profile_generator,
 )
 from votekit.pref_profile import (
     PreferenceProfile,
@@ -74,9 +75,9 @@ def _generate_profile(
     elif ballot_generator == "sPL":
         profile = slate_pl_profile_generator(config)
     elif ballot_generator == "CS":
-        # handle that 2 bloc and 2 slates, and have to name match.
-        # each bloc must have a >.5 preferred slate
-        raise NotImplementedError("CS not implemented yet.")
+        # TODO handle that 2 bloc and 2 slates, and have to name match.
+        # each bloc must have a distinct >.5 preferred slate
+        profile = cambridge_profile_generator(config)
     else:
         raise ValueError(f"Invalid ballot generator: {ballot_generator}.")
 
