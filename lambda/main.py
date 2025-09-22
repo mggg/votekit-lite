@@ -12,7 +12,168 @@ import json
 import os
 from typing import Any, Dict
 from common_schema import validation_schema
-from jsonschema import validate
+import jsonschema
+
+# TODO cambridge
+from votekit.ballot_generator import (
+    BlocSlateConfig,
+    slate_pl_profile_generator,
+    slate_bt_profile_generator,
+)
+from votekit.pref_profile import PreferenceProfile
+
+
+from votekit.elections import STV, BlocPlurality
+
+STRONG_ALPHA = 1 / 2
+UNIF_ALPHA = 2
+
+ALPHA_MAP = {"all_bets_off": 1, "strong": STRONG_ALPHA, "unif": UNIF_ALPHA}
+
+
+def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
+    """Convert the event to a Votekit BlocSlateConfig"""
+    config = BlocSlateConfig(
+        n_voters=event["numVoters"],
+        slate_to_candidates={
+            slate_name: [
+                f"{slate_name}_{i}" for i in range(slate_data["numCandidates"])
+            ]
+            for slate_name, slate_data in event["slates"].items()
+        },
+        bloc_proportions={
+            bloc_name: bloc_data["proportion"]
+            for bloc_name, bloc_data in event["voterBlocs"].items()
+        },
+        cohesion_mapping={
+            bloc_name: bloc_data["cohesion"]
+            for bloc_name, bloc_data in event["voterBlocs"].items()
+        },
+    )
+    config.set_dirichlet_alphas(
+        alphas={
+            bloc_name: {
+                slate_name: ALPHA_MAP[bloc_data["preference"][slate_name]]
+                for slate_name in event["slates"].keys()
+            }
+            for bloc_name, bloc_data in event["voterBlocs"].items()
+        }
+    )
+    return config
+
+
+def _generate_profile(
+    config: BlocSlateConfig, ballot_generator: str, max_ranking_length: int
+) -> PreferenceProfile:
+    """Generate the profile"""
+    if ballot_generator == "sBT":
+        profile = slate_bt_profile_generator(config)
+    elif ballot_generator == "sPL":
+        profile = slate_pl_profile_generator(config)
+    elif ballot_generator == "CS":
+        raise NotImplementedError("CS not implemented yet.")
+    else:
+        raise ValueError(f"Invalid ballot generator: {ballot_generator}.")
+
+    if max_ranking_length < profile.max_ranking_length:
+        profile = _truncate_profile(profile, max_ranking_length)
+    return profile
+
+
+def _truncate_profile(profile: PreferenceProfile, new_max_ranking_length: int):
+    """Truncate the profile to the new max ranking length
+
+    Returns:
+        PreferenceProfile: The truncated profile.
+    """
+    return PreferenceProfile(
+        df=profile.df.drop(
+            columns=[
+                f"Ranking_{i+1}"
+                for i in range(new_max_ranking_length, profile.max_ranking_length)
+            ]
+        ),
+        candidates=profile.candidates,
+        max_ranking_length=new_max_ranking_length,
+    )
+
+
+def _convert_rank_profile_to_approval_profile(profile: PreferenceProfile):
+    """Convert the rank profile to an approval profile"""
+
+    pass
+
+
+def _run_election(
+    profile: PreferenceProfile, election_dict: dict[str, Any], config: BlocSlateConfig
+):
+    """
+    Run the election.
+
+    Returns:
+        dict[str, int]: Number of elected candidates by slate.
+    """
+    m = election_dict["numSeats"]
+    system = election_dict["system"]
+    if system == "blocPlurality":
+        raise NotImplementedError("Bloc plurality not implemented yet.")
+        profile = _convert_rank_profile_to_approval_profile(profile)
+        election = BlocPlurality(profile=profile, m=m)
+    elif system == "STV":
+        election = STV(profile=profile, m=m)
+    else:
+        raise ValueError(f"Invalid election system: {election_dict['system']}.")
+
+    elected = [c for c_set in election.get_elected() for c in c_set]
+    num_elected_by_slate = {
+        slate_name: len([c for c in slate_cand_list if c in elected])
+        for slate_name, slate_cand_list in config.slate_to_candidates.items()
+    }
+
+    return num_elected_by_slate
+
+
+def _run_simulations(
+    num_trials: int,
+    ballot_generator: str,
+    config: BlocSlateConfig,
+    election_dict: dict[str, Any],
+) -> dict[str, list[int]]:
+    """Run the simulations
+
+
+    Returns:
+        dict[str, list[int]]: Number of elected candidates by slate for each trial.
+    """
+
+    results = {
+        slate_name: [-1] * num_trials
+        for slate_name in config.slate_to_candidates.keys()
+    }
+    for i in range(num_trials):
+        print(i)
+        profile = _generate_profile(
+            config=config,
+            ballot_generator=ballot_generator,
+            max_ranking_length=election_dict["maxBallotLength"],
+        )
+        print(profile.df.to_string())
+        num_elected_by_slate = _run_election(
+            profile=profile,
+            election_dict=election_dict,
+            config=config,
+        )
+        print(num_elected_by_slate)
+        for slate_name, num_elected in num_elected_by_slate.items():
+            results[slate_name][i] = num_elected
+
+        print(config.preference_df.to_string())
+        config.resample_preference_intervals_from_dirichlet_alphas()
+        print(config.preference_df.to_string())
+
+        break
+    print(results)
+    return results
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -22,21 +183,40 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     - Includes environment metadata helpful for diagnostics
     """
     try:
-        validate(event, validation_schema)
+        jsonschema.validate(event, validation_schema)
     except jsonschema.exceptions.ValidationError as e:
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"message": "Invalid event", "errors": str(e)}),
         }
-        
+
+    config = _convert_event_to_votekit_config(event)
+
+    try:
+        config.is_valid(raise_errors=True)
+    except Exception as e:
+        return {
+            "statusCode": 400,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"message": "Invalid config", "errors": str(e)}),
+        }
+
+    print(config)
+    results = _run_simulations(
+        num_trials=event["trials"],
+        ballot_generator=event["ballotGenerator"],
+        config=config,
+        election_dict=event["election"],
+    )
+
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
         "body": json.dumps(
             {
-                "message": "votekit lambda alive",
-                "event": event,
+                "message": "votekit lambda simulation results",
+                "results": results,
                 "env": {
                     "AWS_REGION": os.getenv("AWS_REGION"),
                     "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
@@ -54,5 +234,3 @@ if __name__ == "__main__":
             indent=2,
         )
     )
-
-
