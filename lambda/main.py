@@ -146,33 +146,29 @@ def _run_simulations(
         dict[str, list[int]]: Number of elected candidates by slate for each trial.
     """
 
-    results = {
-        slate_name: [-1] * num_trials
-        for slate_name in config.slate_to_candidates.keys()
-    }
+    results = {slate_name: [-1] * num_trials for slate_name in config.slates}
     for i in range(num_trials):
-        print(i)
         profile = _generate_profile(
             config=config,
             ballot_generator=ballot_generator,
             max_ranking_length=election_dict["maxBallotLength"],
         )
-        print(profile.df.to_string())
         num_elected_by_slate = _run_election(
             profile=profile,
             election_dict=election_dict,
             config=config,
         )
-        print(num_elected_by_slate)
+
         for slate_name, num_elected in num_elected_by_slate.items():
             results[slate_name][i] = num_elected
 
-        print(config.preference_df.to_string())
         config.resample_preference_intervals_from_dirichlet_alphas()
-        print(config.preference_df.to_string())
 
-        break
-    print(results)
+    if any(
+        any(trial_result == -1 for trial_result in result_list)
+        for result_list in results.values()
+    ):
+        raise ValueError("Some trials resulted in an error.")
     return results
 
 
@@ -202,7 +198,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             "body": json.dumps({"message": "Invalid config", "errors": str(e)}),
         }
 
-    print(config)
     results = _run_simulations(
         num_trials=event["trials"],
         ballot_generator=event["ballotGenerator"],
