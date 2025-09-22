@@ -2,4 +2,4 @@
 # Example:
 # requests==2.32.3
 jsonschema==4.25.1
-git+https://github.com/mggg/votekit.git@f486353
+git+https://github.com/mggg/votekit.git@e6b71f0

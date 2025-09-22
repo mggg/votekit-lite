@@ -20,7 +20,10 @@ from votekit.ballot_generator import (
     slate_pl_profile_generator,
     slate_bt_profile_generator,
 )
-from votekit.pref_profile import PreferenceProfile
+from votekit.pref_profile import (
+    PreferenceProfile,
+    convert_rank_profile_to_score_profile_via_score_vector,
+)
 
 
 from votekit.elections import STV, BlocPlurality
@@ -71,6 +74,8 @@ def _generate_profile(
     elif ballot_generator == "sPL":
         profile = slate_pl_profile_generator(config)
     elif ballot_generator == "CS":
+        # handle that 2 bloc and 2 slates, and have to name match.
+        # each bloc must have a >.5 preferred slate
         raise NotImplementedError("CS not implemented yet.")
     else:
         raise ValueError(f"Invalid ballot generator: {ballot_generator}.")
@@ -98,12 +103,6 @@ def _truncate_profile(profile: PreferenceProfile, new_max_ranking_length: int):
     )
 
 
-def _convert_rank_profile_to_approval_profile(profile: PreferenceProfile):
-    """Convert the rank profile to an approval profile"""
-
-    pass
-
-
 def _run_election(
     profile: PreferenceProfile, election_dict: dict[str, Any], config: BlocSlateConfig
 ):
@@ -116,9 +115,10 @@ def _run_election(
     m = election_dict["numSeats"]
     system = election_dict["system"]
     if system == "blocPlurality":
-        raise NotImplementedError("Bloc plurality not implemented yet.")
-        profile = _convert_rank_profile_to_approval_profile(profile)
-        election = BlocPlurality(profile=profile, m=m)
+        profile = convert_rank_profile_to_score_profile_via_score_vector(
+            profile, score_vector=[1] * m
+        )  # each candidate in the top m of the ranking gets an approval score of 1
+        election = BlocPlurality(profile=profile, m=m, tiebreak="random")
     elif system == "STV":
         election = STV(profile=profile, m=m)
     else:
