@@ -19,7 +19,7 @@
     <button
         class="btn btn-primary btn-soft btn-block mt-2"
         on:click={formState.submitMock}
-        disabled={!formState.recaptchaChecked}
+        disabled={!formState.recaptchaChecked || formState.unallocatedPopulation > 0}
     >
         Run simulation (mock)
     </button>

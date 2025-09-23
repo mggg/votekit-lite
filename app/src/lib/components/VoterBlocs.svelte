@@ -2,8 +2,11 @@
 	import { formState } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
 	import PalettePip from './PalettePip.svelte';
-</script>
+	const remainingShare = $derived(
+		1 - formState.populationShare.reduce((sum, share) => sum + share, 0)
+	);
 
+</script>
 <div class="card bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter blocs</h2>
 	<!-- Number of voter blocs -->
@@ -140,7 +143,7 @@
 					type="number"
 					min="1"
 					class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
-					value={formState.totalPopulation}
+					value={Math.round(formState.totalPopulation)}
 					oninput={(e) => formState.updateTotalElectorate(Number(e.currentTarget.value))}
 				/>
 			</label>
@@ -177,15 +180,21 @@
 					<div
 						class={`flex flex-row items-center gap-2 ${formState.showTurnoutSettings ? 'col-span-5 pr-4' : 'col-span-6'}`}
 					>
-						<label class="block flex-grow text-sm">
+						<label class="block flex-grow text-sm relative">
+							{#if formState.blocs.length > 2}
+							<span class="absolute left-0 rounded-full pointer-events-none"
+							style={`height: 16px; top:5px; border:2px dashed ${COLOR_MAP.BLOCS[i]}88; border-white:2px; width:${formState.maxPercentages[i] * 100}%;`}
+							></span>
+							{/if}
 							<input
 								type="range"
 								min="0"
 								max="1"
 								step="0.01"
 								class="range mt-1 w-full range-xs"
-								value={bloc.population / formState.totalPopulation}
-								oninput={(e) => updateBlocElectorateShare(e, i, Number(e.currentTarget.value))}
+								value={formState.populationShare[i]}
+								style={`--range-progress:${COLOR_MAP.BLOCS[i]};`}
+								oninput={(e) => formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value))}
 							/>
 						</label>
 
@@ -196,7 +205,7 @@
 							step="1"
 							class="input input-sm max-w-14 flex-none text-center"
 							value={Math.round((bloc.population / formState.totalPopulation) * 100)}
-							oninput={(e) => updateBlocElectorateShare(e, i, Number(e.currentTarget.value) / 100)}
+							oninput={(e) => formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value) / 100)}
 						/>
 					</div>
 					{#if formState.showTurnoutSettings}
@@ -214,88 +223,18 @@
 					{/if}
 				</li>
 			{/each}
+			<li>
+<!-- at the end of the row add a message if there is remaining unallocated population -->
+<div class="text-xs w-full text-right text-amber-500 pt-1">
+						{#if formState.unallocatedPopulation > 0}
+						Remaining unallocated population: {formState.unallocatedPopulation}
+						{:else}
+						&nbsp;
+					{/if}
+				</div>
+			</li>
 		</ul>
-		<!-- <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-			{#each formState.blocs as bloc, index}
-				<div class="space-y-2">
-					<label class="block text-sm"
-						>Bloc name
-						<input
-							type="text"
-							class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
-							bind:value={bloc.name}
-						/>
-					</label>
-					<label class="block text-sm"
-						>Share of total population {(
-							(bloc.population / formState.totalPopulation) *
-							100
-						).toFixed(1)}%
-						<input
-							type="range"
-							min="0"
-							max="1"
-							step="0.01"
-							class="mt-1 w-full"
-							value={bloc.population / formState.totalPopulation}
-							oninput={(e) =>
-								formState.updateBlocElectorateShare(index, Number(e.currentTarget.value))}
-						/>
-					</label>
-					<div class="text-xs text-slate-500">Voters: {formState.blocCounts[index]}</div>
-				</div>
-			{/each}
-		</div> -->
 	{/if}
-
-	<!-- Advanced settings -->
-	<!-- <div class="mt-3">
-		<button
-			type="button"
-			class="text-sm text-indigo-600 hover:text-indigo-800"
-			onclick={() => (formState.showTurnoutSettings = !formState.showTurnoutSettings)}
-		>
-			{formState.showTurnoutSettings ? '▼' : '▶'} Turnout settings
-		</button>
-		{#if formState.showTurnoutSettings}
-			<div class="mt-2 rounded-lg bg-slate-50 p-3">
-				<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-					{#each formState.blocs as bloc, index}
-						<div>
-							{#if formState.voterBlocMode === 'count'}
-								<label class="block text-sm"
-									>{bloc.name} population
-									<input
-										type="number"
-										min="1"
-										class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
-										bind:value={bloc.population}
-									/>
-								</label>
-							{/if}
-							<label class="mt-2 block text-sm"
-								>{bloc.name} turnout rate
-								<input
-									type="range"
-									min="0"
-									max="1"
-									step="0.01"
-									class="mt-1 w-full"
-									bind:value={bloc.turnout}
-								/>
-								<div class="text-xs text-slate-500">{(bloc.turnout * 100).toFixed(1)}%</div>
-							</label>
-						</div>
-					{/each}
-				</div>
-				<div class="mt-2 text-xs text-slate-500">
-					Calculated voters: {formState.blocs
-						.map((bloc, i) => `${bloc.name} = ${Math.round(bloc.population * bloc.turnout)}`)
-						.join(', ')}
-				</div>
-			</div>
-		{/if}
-	</div> -->
 
 	<!-- Candidate strength breakdown -->
 	<div class="mt-4">

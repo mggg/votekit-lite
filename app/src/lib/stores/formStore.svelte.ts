@@ -39,7 +39,9 @@ class FormState {
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
 	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
-	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, 0));
+	unallocatedPopulation: number = $state(0);
+	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, this.unallocatedPopulation));
+	maxPercentages = $derived(this.blocs.map((bloc) => (bloc.population+this.unallocatedPopulation) / this.totalPopulation));
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
@@ -154,36 +156,42 @@ class FormState {
 			const newTotalPopulation = shareOfTotalElectorate * value;
 			return {
 				...bloc,
-				population: Math.round(newTotalPopulation)
+				population: newTotalPopulation
 			};
 		});
 		this.blocs = newBlocPopulations;
 	}
 
-	updateBlocElectorateShare(index: number, value: number) {
-		const newShares = balanceRemainingValue({
-			maxValue: 1,
-			newValue: value,
-			newIndex: index,
-			currentValues: this.populationShare
-		});
-
-		const newBlocPopulations = this.blocs.map((bloc, i) => {
-			if (index === i) {
-				const newTotalPopulation = Math.round(this.totalPopulation * value);
-				return {
-					...bloc,
-					population: newTotalPopulation
-				};
-			} else {
-				const newTotalPopulation = Math.round(this.totalPopulation * newShares[i]);
-				return {
-					...bloc,
-					population: newTotalPopulation
-				};
-			}
-		});
-		this.blocs = newBlocPopulations;
+	updateBlocElectorateShare(e: Event, index: number, value: number) {
+		const numBlocs = this.blocs.length;
+		let newShares = this.populationShare;
+		const currentValue = this.populationShare[index];
+		if (numBlocs === 2) {
+			newShares = balanceRemainingValue({
+				maxValue: 1,
+				newValue: value,
+				newIndex: index,
+				currentValues: this.populationShare
+			});
+			const newBlocs = this.blocs.map((bloc, i) => ({...bloc, population: this.totalPopulation * newShares[i]}));
+			this.blocs = newBlocs;
+		} else if (this.unallocatedPopulation === 0 && value > currentValue) {
+			(e.currentTarget as HTMLInputElement).value = currentValue.toString();
+			return;
+		} else {
+			const newPopulationValue = Math.min(this.blocs[index].population + this.unallocatedPopulation, this.totalPopulation * value);
+			(e.currentTarget as HTMLInputElement).value = (newPopulationValue / this.totalPopulation).toString();
+			const newBlocs = this.blocs.map((bloc, i) => {
+				if (index === i) {
+					return { ...bloc, population: newPopulationValue };
+				} else {
+					return {...bloc};
+				}
+			});
+			const newUnallocatedPopulation = this.totalPopulation - newBlocs.reduce((sum, bloc) => sum + bloc.population, 0);
+			this.unallocatedPopulation = Math.round(newUnallocatedPopulation);
+			this.blocs = newBlocs;
+		}
 	}
 
 	updateBlocCohesion(blocIndex: number, slateIndex: number, value: number) {
