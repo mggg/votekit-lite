@@ -29,8 +29,8 @@
 									<input
 										type="number"
 										min="0"
-										max="1"
-										step="0.01"
+										max="100"
+										step="1"
 										class="text-sm"
 										value={Math.round(blocCohesionArray[slateIndex] * 100)}
 										oninput={(e) =>
@@ -38,7 +38,7 @@
 												e,
 												blocIndex,
 												slateIndex,
-												Number(e.currentTarget.value)
+												Number(e.currentTarget.value)/100
 											)}
 									/>
 									<span>%</span>
@@ -74,8 +74,8 @@
 									<input
 										type="number"
 										min="0"
-										max="1"
-										step="0.01"
+										max="100"
+										step="1"
 										class="grow text-sm"
 										value={Math.round(cohesion * 100)}
 										oninput={(e) =>
@@ -83,7 +83,7 @@
 												e,
 												blocIndex,
 												slateIndex,
-												Number(e.currentTarget.value)
+												Number(e.currentTarget.value)/100
 											)}
 									/>
 									<span>%</span>
