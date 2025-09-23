@@ -69,7 +69,38 @@ def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
 def _generate_profile(
     config: BlocSlateConfig, ballot_generator: str, max_ranking_length: int
 ) -> PreferenceProfile:
-    """Generate the profile"""
+    f"""
+    Generate the profile
+
+    Args:
+        config (BlocSlateConfig): The Votekit BlocSlateConfig
+        ballot_generator (str): The ballot generator to use. sPL, sBT, or CS.
+        max_ranking_length (int): The maximum ranking length to return.
+
+    Returns:
+        PreferenceProfile: The generated profile, truncated to the max ranking length.
+
+    Doctests:
+        >>> config = BlocSlateConfig(
+        ...     n_voters=100,
+        ...     slate_to_candidates={"slate1": ["c1", "c2", "c3"], "slate2": ["d1", "d2", "d3"]},
+        ...     bloc_proportions={"bloc1": 0.5, "bloc2": 0.5},
+        ...     cohesion_mapping={"bloc1": {"slate1": .6, "slate2": .4}, 
+        ...                         "bloc2": {"slate1": .7, "slate2": .3}},
+        ... )
+        >>> config.set_dirichlet_alphas(
+        ...     alphas={"bloc1": {"slate1": 1, "slate2": 2}, "bloc2": {"slate1": 1/2, "slate2": 1/2}}
+        ... )
+        >>> profile = _generate_profile(config, "sPL", 3)
+        >>> profile.max_ranking_length == 3 and profile.total_ballot_wt == 100
+        True
+        >>> profile = _generate_profile(config, "sBT", 6)
+        >>> profile.max_ranking_length == 6 and profile.total_ballot_wt == 100
+        True
+        >>> profile = _generate_profile(config, "CS", 4)
+        >>> profile.max_ranking_length == 4 and profile.total_ballot_wt == 100
+        True
+    """
     if ballot_generator == "sBT":
         profile = slate_bt_profile_generator(config)
     elif ballot_generator == "sPL":
