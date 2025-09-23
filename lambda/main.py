@@ -370,10 +370,5 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    # Simple local test harness
-    print(
-        json.dumps(
-            handler({"local": True, "ping": "pong"}, context=None),
-            indent=2,
-        )
-    )
+    import doctest
+    doctest.testmod()
