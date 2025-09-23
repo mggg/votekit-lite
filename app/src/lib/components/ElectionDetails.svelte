@@ -123,7 +123,7 @@
               `}
 								style={`
 									background-color: ${slate.numCandidates >= index ? COLOR_MAP.SLATES[slateIndex] : formState.remainingCandidates >= index - slate.numCandidates ? 'white' : undefined};
-									border: 2px solid ${COLOR_MAP.SLATES[slateIndex]};
+									border: 2px dotted ${COLOR_MAP.SLATES[slateIndex]};
 								`}
 								aria-label={`${index} star`}
 								aria-labelledby={`slate-candidates-label-${slateIndex}`}

@@ -3,7 +3,7 @@
 	import { formState } from '$lib/stores/formStore.svelte';
   import ElectionMethod from '$lib/components/ElectionMethod.svelte';
   import ElectionDetails from '$lib/components/ElectionDetails.svelte';
-  import VoterBlocs from '$lib/components/VoterBlocs.svelte';
+  import VoterBlocs from '$lib/components/VoterBlocs/VoterBlocs.svelte';
   import VoterBehavior from '$lib/components/VoterBehavior.svelte';
   import RunDetails from '$lib/components/RunDetails.svelte';
   import Preview from '$lib/components/Preview.svelte';
