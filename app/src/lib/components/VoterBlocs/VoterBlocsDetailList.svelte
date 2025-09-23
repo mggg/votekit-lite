@@ -135,17 +135,19 @@
 								formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value))}
 						/>
 					</label>
-
-					<input
-						type="number"
-						min="0"
-						max="100"
-						step="1"
-						class="input input-sm max-w-14 flex-none text-center"
-						value={Math.round((bloc.population / formState.totalPopulation) * 100)}
-						oninput={(e) =>
-							formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value) / 100)}
-					/>
+					<label class="input input-sm max-w-24 flex-none">
+						<input
+							type="number"
+							min="0"
+							max="100"
+							step="1"
+							class="input input-sm text-left"
+							value={Math.round((bloc.population / formState.totalPopulation) * 100)}
+							oninput={(e) =>
+								formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value) / 100)}
+						/>
+						<span class="p-0 text-right">% </span>
+					</label>
 				</div>
 				{#if formState.showTurnoutSettings}
 					<div class="col-span-4 flex flex-col items-start">
@@ -166,7 +168,9 @@
 			<!-- at the end of the row add a message if there is remaining unallocated population -->
 			<div class="w-full pt-1 text-right text-xs text-amber-500">
 				{#if formState.unallocatedPopulation > 0}
-					Remaining unallocated population: {Math.round(formState.unallocatedPopulation/formState.totalPopulation*100)}%
+					Remaining unallocated population: {Math.round(
+						(formState.unallocatedPopulation / formState.totalPopulation) * 100
+					)}%
 				{:else}
 					&nbsp;
 				{/if}

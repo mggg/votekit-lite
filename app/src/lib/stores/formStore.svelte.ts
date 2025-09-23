@@ -197,7 +197,7 @@ class FormState {
 			const currentCohesion = this.blocCohesion[blocIndex];
 			const currentCohesionSlateValue = currentCohesion[slateIndex];
 			const newCohesionValue = Math.min(value, 1 - this.blocCohesionSum[blocIndex] + currentCohesionSlateValue);
-			(e.currentTarget as HTMLInputElement).value = newCohesionValue.toString();
+			(e.currentTarget as HTMLInputElement).value = Math.round(newCohesionValue * 100).toString();
 			const newCohesion = currentCohesion.map((cohesion, i) => i === slateIndex ? newCohesionValue : cohesion);
 			this.blocCohesion[blocIndex] = newCohesion;
 		}
