@@ -22,7 +22,7 @@ from votekit.ballot_generator import (
     cambridge_profile_generator,
 )
 from votekit.pref_profile import (
-    PreferenceProfile,
+    RankProfile,
     convert_rank_profile_to_score_profile_via_score_vector,
 )
 
@@ -68,7 +68,7 @@ def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
 
 def _generate_profile(
     config: BlocSlateConfig, ballot_generator: str, max_ranking_length: int
-) -> PreferenceProfile:
+) -> RankProfile:
     f"""
     Generate the profile
 
@@ -78,7 +78,7 @@ def _generate_profile(
         max_ranking_length (int): The maximum ranking length to return.
 
     Returns:
-        PreferenceProfile: The generated profile, truncated to the max ranking length.
+        RankProfile: The generated profile, truncated to the max ranking length.
 
     Doctests:
         >>> config = BlocSlateConfig(
@@ -117,6 +117,7 @@ def _generate_profile(
     return profile
 
 
+def _truncate_profile(profile: RankProfile, new_max_ranking_length: int):
     """
     Truncate the profile to the new max ranking length.
 
@@ -138,6 +139,8 @@ def _generate_profile(
         True
         >>> bool(truncated_profile.total_ballot_wt == 2)
         True
+    """
+    return RankProfile(
         df=profile.df.drop(
             columns=[
                 f"Ranking_{i+1}"
@@ -150,7 +153,7 @@ def _generate_profile(
 
 
 def _run_election(
-    profile: PreferenceProfile, election_dict: dict[str, Any], config: BlocSlateConfig
+    profile: RankProfile, election_dict: dict[str, Any], config: BlocSlateConfig
 ):
     """
     Run the election.
