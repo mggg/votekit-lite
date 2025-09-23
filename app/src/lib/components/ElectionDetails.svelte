@@ -7,10 +7,9 @@
 
 <div class="card bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Election details</h2>
-	<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-		<fieldset class="fieldset">
+	<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+		<fieldset class="fieldset col-span-2">
 			<legend class="fieldset-legend">Number of candidate slates</legend>
-
 			<div class="w-full max-w-xs">
 				<input
 					type="range"
@@ -46,7 +45,7 @@
 			</p>
 		</fieldset>
 		<!-- Number of seats (moved up) -->
-		<fieldset class="fieldset w-full">
+		<fieldset class="fieldset w-full col-span-1">
 			<legend class="fieldset-legend">Number of seats</legend>
 			<input
 				type="number"
@@ -69,7 +68,7 @@
 			</p>
 		</fieldset>
 		<!-- Max candidates that can be ranked -->
-		<fieldset class="fieldset w-full">
+		<fieldset class="fieldset w-full col-span-1">
 			<legend class="fieldset-legend">Maximum ballot length</legend>
 			<input
 				type="number"
@@ -78,27 +77,10 @@
 				class="input input-sm w-full"
 				bind:value={formState.maxRankingCandidatesInput}
 			/>
-			<p class="label">
+			<p class="label flex-col items-start whitespace-pre-wrap ">
 				Must be ≤ total number of candidates ({formState.totalCandidates})
 			</p>
 		</fieldset>
-
-		<!-- Number of slates -->
-		<!-- 		 
-		<fieldset class="fieldset w-full">
-			<legend class="fieldset-legend">Number of slates</legend>
-			<input
-				type="number"
-				min="1"
-				max={MAX_CANDIDATES === formState.totalCandidates
-					? formState.slates.length
-					: formState.seatsMax}
-				class="input input-sm w-full"
-				value={formState.slates.length}
-				oninput={(e) => formState.updateNumSlates(Number(e.currentTarget.value))}
-			/>
-			<p class="label">Positive integer less than or equal to 5</p>
-		</fieldset> -->
 	</div>
 
 	<!-- Number of candidates per slate -->
@@ -110,14 +92,13 @@
 	</p>
 	<ul class="list bg-base-100 p-0">
 		<!-- headers -->
-		<li class="list-row my-0 grid grid-cols-9 gap-2 px-0 py-1 pr-4">
-			<span class="col-span-4 pl-6">Slate name</span>
-			<span class="col-span-1"></span>
-			<span class="col-span-4">Number of candidates</span>
+		<li class="list-row my-0 grid grid-cols-2 px-0 py-1 pr-4">
+			<span class="col-span-1 pl-6">Slate name</span>
+			<span class="col-span-1 pl-1">Number of candidates</span>
 		</li>
 		{#each formState.slates as slate, slateIndex}
-			<li class="list-row my-0 grid grid-cols-9 gap-2 px-0 py-1 pr-4">
-				<div class="col-span-4 flex items-center gap-2">
+			<li class="list-row my-0 grid grid-cols-2 gap-2 px-0 py-1 pr-4">
+				<div class="col-span-1 flex items-center gap-2">
 					<PalettePip color={COLOR_MAP.SLATES[slateIndex]} />
 					<label class="input input-sm">
 						<span class="sr-only text-gray-400">Slate name</span>
@@ -129,8 +110,7 @@
 						/>
 					</label>
 				</div>
-				<div class="col-span-1"></div>
-				<div class="col-span-4 flex w-full max-w-xs flex-row items-center gap-2">
+				<div class="col-span-1 pl-2 flex w-full max-w-xs flex-row items-center gap-2">
 					<label class="sr-only label text-sm">Number of candidates</label>
 					<div class="rating-xs rating gap-1">
 						{#each candidatesRange as index}
