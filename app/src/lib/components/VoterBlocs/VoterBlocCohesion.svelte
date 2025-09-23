@@ -108,7 +108,12 @@
 									step="1"
 									class={`range range-xs w-full`}
 									value={Math.round(cohesion * 100)}
-									style={`--range-progress:${COLOR_MAP.SLATES[slateIndex]}; padding:0;`}
+									style={`
+										--range-progress:${COLOR_MAP.SLATES[slateIndex]}; 
+										--range-bg:${formState.blocCohesionSum[blocIndex]  === 1 ? COLOR_MAP.SLATES[slateIndex]+'88' : 'lightgray'};
+										transition:all 0.3s ease;
+										padding:0;
+									`}
 									oninput={(e) =>
 										formState.updateBlocCohesion(
 											e,
