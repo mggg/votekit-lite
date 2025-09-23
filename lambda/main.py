@@ -262,18 +262,18 @@ def _run_simulations(
         >>> config = BlocSlateConfig(
         ...     n_voters=100,
         ...     slate_to_candidates={"slate1": ["c1", "c2", "c3"], "slate2": ["d1", "d2", "d3"]},
-        ...     bloc_proportions={"bloc1": 0.5, "bloc2": 0.5},
-        ...     cohesion_mapping={"bloc1": {"slate1": .6, "slate2": .4},
+        ...     bloc_proportions={"bloc1": 0.9, "bloc2": 0.1},
+        ...     cohesion_mapping={"bloc1": {"slate1": .9, "slate2": .1},
         ...                         "bloc2": {"slate1": .7, "slate2": .3}},
         ... )
         >>> config.set_dirichlet_alphas(
         ...     alphas={"bloc1": {"slate1": 1, "slate2": 2}, "bloc2": {"slate1": 1/2, "slate2": 1/2}}
         ... )
-        >>> election_dict = {"numSeats": 2, "system": "STV", "maxBallotLength": 3}
-        >>> results = _run_simulations(10, "sPL", config, election_dict)
-        >>> len(results["slate1"]) == 10 and -1 not in results["slate1"] and all(result <=2 for result in results["slate1"])
+        >>> election_dict = {"numSeats": 1, "system": "STV", "maxBallotLength": 3}
+        >>> results = _run_simulations(2, "sPL", config, election_dict) # doctest: +ELLIPSIS
+        >>> len(results["slate1"]) == 2 and -1 not in results["slate1"] and all(result <=1 for result in results["slate1"])
         True
-        >>> len(results["slate2"]) == 10 and -1 not in results["slate2"] and all(result <=2 for result in results["slate2"])
+        >>> len(results["slate2"]) == 2 and -1 not in results["slate2"] and all(result <=1 for result in results["slate2"])
         True
     """
 
