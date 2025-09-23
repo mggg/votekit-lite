@@ -1,56 +1,5 @@
-export type SlateConfig = {
-  slateA: { numCandidates: number };
-  slateB: { numCandidates: number };
-};
 
-export type VoterPreference = 'strong' | 'random' | 'indifferent';
-
-export type BlocCrossPreferences = {
-  forA: VoterPreference;
-  forB: VoterPreference;
-};
-
-export type VoterBlocConfig = {
-  blocA: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
-  blocB: { count: number; preference: BlocCrossPreferences; cohesionPct: number };
-} | Array<{ count: number; preference: BlocCrossPreferences; cohesionPct: number }>;
-
-export type ElectionConfig =
-  | { mode: 'plurality' }
-  | { mode: 'multiseat'; stv: true; numSeats: number };
-
-export type RunParams = {
-  id: string;
-  name: string;
-  voterBlocs: VoterBlocConfig;
-  slates: SlateConfig;
-  election: ElectionConfig;
-  ballotGenerator: 'sBT' | 'sPL' | 'CS';
-  trials: number;
-  maxRankingCandidates?: number;
-  numSlates?: number;
-  slateCandidates?: number[];
-  numVoterBlocs?: number;
-  blocCounts?: number[];
-  blocShares?: number[];
-  blocPopulations?: number[];
-  blocTurnouts?: number[];
-  blocPreferences?: VoterPreference[][];
-  blocCohesion?: number[][];
-  voterBlocMode?: 'count' | 'share';
-  totalVoters?: number;
-  createdAt: number;
-};
-
-export type RunResult = {
-  slateAElected: number[]; // histogram raw data per trial
-  slateBElected: number[];
-};
-
-export type Run = {
-  params: RunParams;
-  result: RunResult;
-};
+export type Run = any;
 
 const RUNS_KEY = 'votekit_runs';
 

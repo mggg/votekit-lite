@@ -1,3 +1,4 @@
 # Add Python dependencies here. The base AWS Lambda Python image includes the runtime only.
 # Example:
 # requests==2.32.3
+jsonschema==4.25.1

@@ -24,3 +24,4 @@ export const COLOR_MAP = {
     '#148731',
   ]
 }
+export const IS_DEV = import.meta.env.MODE === 'development';
