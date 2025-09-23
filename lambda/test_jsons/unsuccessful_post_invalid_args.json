@@ -6,7 +6,7 @@
         "A": {
             "proportion": 0.6,
             "preference": {
-                "R": "all_bets_off",
+                "R": "strong",
                 "D": "strong"
             },
             "cohesion": {
@@ -21,7 +21,7 @@
                 "D": "unif"
             },
             "cohesion": {
-                "R": 0.8,
+                "R": 0.9,
                 "D": 0.2
             }
         }
@@ -35,7 +35,7 @@
         }
     },
     "election": {
-        "system": "blocPlurality",
+        "system": "STV",
         "numSeats": 4,
         "maxBallotLength": 9
     },
