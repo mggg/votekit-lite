@@ -13,7 +13,7 @@
 			<div class="w-full max-w-xs">
 				<input
 					type="range"
-					min="1"
+					min="2"
 					max="5"
 					class="range"
 					step="1"
