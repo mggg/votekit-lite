@@ -192,13 +192,7 @@ class FormState {
 	updateBlocCohesion(e: Event, blocIndex: number, slateIndex: number, value: number) {
 		const numSlates = this.slates.length;
 		if (numSlates === 2) {
-			const newCohesion = balanceRemainingValue({
-				maxValue: 1,
-				newValue: value,
-				newIndex: slateIndex,
-				currentValues: this.blocCohesion[blocIndex]
-			});
-			this.blocCohesion[blocIndex] = newCohesion;
+			this.blocCohesion[blocIndex] = this.blocCohesion[blocIndex].map((cohesion, i) => i === slateIndex ? value : 1 - value);
 		} else {
 			const currentCohesion = this.blocCohesion[blocIndex];
 			const currentCohesionSlateValue = currentCohesion[slateIndex];
