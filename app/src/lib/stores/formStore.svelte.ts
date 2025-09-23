@@ -48,12 +48,12 @@ class FormState {
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
 	blocPreferences: VoterPreference[][] = $state([
-		['random', 'random', 'random'],
-		['random', 'random', 'random']
+		['random', 'random'],
+		['random', 'random']
 	]);
 	blocCohesion: number[][] = $state([
-		[1.0, 0, 0],
-		[0, 1.0, 0]
+		[1.0, 0],
+		[0, 1.0]
 	]);
 
 	// Source of truth for slates: Number of candidates and name
@@ -66,10 +66,6 @@ class FormState {
 			numCandidates: 3,
 			name: 'B'
 		},
-		{
-			numCandidates: 3,
-			name: 'C'
-		}
 	]);
 
 	showTurnoutSettings = $state<boolean>(false);
