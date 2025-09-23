@@ -97,10 +97,13 @@ class FormState {
 			this.blocCohesion = this.blocCohesion.map((bloc) => bloc.slice(0, value));
 			this.blocPreferences = this.blocPreferences.map((bloc) => bloc.slice(0, value));
 		} else {
+			const remainingCandidates = MAX_CANDIDATES - this.totalCandidates;
+			const numNewSlates = value - this.slates.length;
+			const numCandidatesPerSlate = Math.floor(remainingCandidates / numNewSlates);
 			const newSlates = [...this.slates];
 			for (let i = this.slates.length; i < value; i++) {
 				newSlates.push({
-					numCandidates: Math.min(3, MAX_CANDIDATES - this.totalCandidates),
+					numCandidates: numCandidatesPerSlate,
 					name: String.fromCharCode(65 + i)
 				});
 			}
