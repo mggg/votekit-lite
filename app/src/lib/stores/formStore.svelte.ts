@@ -96,7 +96,7 @@ class FormState {
 		} else {
 			const remainingCandidates = MAX_CANDIDATES - this.totalCandidates;
 			const numNewSlates = value - this.slates.length;
-			const numCandidatesPerSlate = Math.floor(remainingCandidates / numNewSlates);
+			const numCandidatesPerSlate = Math.min(3, Math.floor(remainingCandidates / numNewSlates));
 			const newSlates = [...this.slates];
 			for (let i = this.slates.length; i < value; i++) {
 				newSlates.push({
