@@ -53,6 +53,7 @@ class FormState {
 		[1.0, 0],
 		[0, 1.0]
 	]);
+	blocCohesionSum: number[] = $derived(this.blocCohesion.map((cohesion) => cohesion.reduce((sum, cohesion) => sum + cohesion, 0)));
 
 	// Source of truth for slates: Number of candidates and name
 	slates: Slate[] = $state([
@@ -188,14 +189,24 @@ class FormState {
 		}
 	}
 
-	updateBlocCohesion(blocIndex: number, slateIndex: number, value: number) {
-		const newCohesion = balanceRemainingValue({
-			maxValue: 1,
-			newValue: value,
-			newIndex: slateIndex,
-			currentValues: this.blocCohesion[blocIndex]
-		});
-		this.blocCohesion[blocIndex] = newCohesion;
+	updateBlocCohesion(e: Event, blocIndex: number, slateIndex: number, value: number) {
+		const numSlates = this.slates.length;
+		if (numSlates === 2) {
+			const newCohesion = balanceRemainingValue({
+				maxValue: 1,
+				newValue: value,
+				newIndex: slateIndex,
+				currentValues: this.blocCohesion[blocIndex]
+			});
+			this.blocCohesion[blocIndex] = newCohesion;
+		} else {
+			const currentCohesion = this.blocCohesion[blocIndex];
+			const currentCohesionSlateValue = currentCohesion[slateIndex];
+			const newCohesionValue = Math.min(value, 1 - this.blocCohesionSum[blocIndex] + currentCohesionSlateValue);
+			(e.currentTarget as HTMLInputElement).value = newCohesionValue.toString();
+			const newCohesion = currentCohesion.map((cohesion, i) => i === slateIndex ? newCohesionValue : cohesion);
+			this.blocCohesion[blocIndex] = newCohesion;
+		}
 	}
 
 	async submitMock() {

@@ -7,9 +7,9 @@
 			formState.unallocatedPopulation > 0
 				? 'Your voter bloc population shares do not add up to 100%.'
 				: null,
-			formState.blocCohesion.some(
-				(cohesionList) =>
-					Math.round(cohesionList.reduce((sum, cohesion) => sum + cohesion, 0)) !== 1
+			formState.blocCohesionSum.some(
+				(cohesionSum) =>
+					Math.round(cohesionSum) !== 1
 			)
 				? 'Your voter bloc cohesion settings do not add up to 100%. for all blocs.'
 				: null,
@@ -17,7 +17,6 @@
 		].filter(Boolean)
 	);
 </script>
-
 <div class="card w-full max-w-none bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">

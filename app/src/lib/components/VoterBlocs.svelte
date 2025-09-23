@@ -286,7 +286,7 @@
 						<span class="font-medium">{formState.blocs[blocIndex].name} voters</span>
 						<span class="ml-2 text-xs text-slate-500">(must sum to 100%)</span>
 					</div>
-					<div class="flex flex-row flex-wrap gap-0 pl-6">
+					<div class="flex flex-row flex-wrap gap-2 pl-6">
 						{#if blocCohesionArray.length <= 2}
 							<label class="flex flex-grow flex-col items-start text-xs">
 								<span
@@ -304,19 +304,23 @@
 									value={blocCohesionArray[0]}
 									style={`--range-progress:${COLOR_MAP.SLATES[0]}; --range-bg:${COLOR_MAP.SLATES[1]};background-color:${COLOR_MAP.SLATES[1]};padding:0;`}
 									oninput={(e) =>
-										formState.updateBlocCohesion(blocIndex, 0, Number(e.currentTarget.value))}
+										formState.updateBlocCohesion(e, blocIndex, 0, Number(e.currentTarget.value))}
 								/>
 							</label>
 						{:else}
 							<div class="relative w-full"></div>
 							{#each blocCohesionArray as cohesion, slateIndex}
-								<label class="flex flex-grow flex-col items-start text-xs">
+								<label class="flex flex-grow flex-col items-start text-xs relative">
 									<span
 										class=" mb-1"
-										style={`border-left: 4px solid ${COLOR_MAP.SLATES[slateIndex]}; padding-left: 4px`}
 									>
 										{formState.slates[slateIndex].name}: {(cohesion * 100).toFixed(0)}%
 									</span>
+									{#if formState.slates.length > 2}
+									<span class="absolute left-0 rounded-full pointer-events-none"
+									style={`height: 16px; bottom:0px; border:2px dashed ${COLOR_MAP.SLATES[slateIndex]}88; border-white:2px; width:${(1-formState.blocCohesionSum[blocIndex] + cohesion) * 100}%;`}
+									></span>
+									{/if}
 									<input
 										type="range"
 										min="0"
@@ -327,6 +331,7 @@
 										style={`--range-progress:${COLOR_MAP.SLATES[slateIndex]}; padding:0;`}
 										oninput={(e) =>
 											formState.updateBlocCohesion(
+												e,
 												blocIndex,
 												slateIndex,
 												Number(e.currentTarget.value)
@@ -336,7 +341,7 @@
 							{/each}
 						{/if}
 					</div>
-					<div class="mt-2 pl-6 text-xs text-slate-500">
+					<div class={`mt-2 pl-6 text-xs ${formState.blocCohesionSum[blocIndex] < 1 ? 'text-amber-500' : 'text-slate-500'}`}>
 						Sum: {(blocCohesionArray.reduce((sum, val) => sum + val, 0) * 100).toFixed(1)}%
 					</div>
 				</li>
