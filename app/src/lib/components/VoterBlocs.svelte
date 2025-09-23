@@ -19,7 +19,7 @@
 					class="range"
 					step="1"
 					value={formState.blocs.length}
-					on:input={(e) => formState.updateNumVoterBlocs(Number(e.currentTarget.value))}
+					oninput={(e) => formState.updateNumVoterBlocs(Number(e.currentTarget.value))}
 				/>
 				<div class="mt-2 flex justify-between px-2.5 text-xs">
 					<span>1</span>
@@ -40,7 +40,7 @@
 				class="btn btn-soft btn-sm {formState.voterBlocMode === 'count'
 					? 'btn-primary'
 					: 'btn-secondary'}"
-				on:click={() => (formState.voterBlocMode = 'count')}
+				onclick={() => (formState.voterBlocMode = 'count')}
 			>
 				Count of voters
 			</button>
@@ -49,7 +49,7 @@
 				class="btn btn-soft btn-sm {formState.voterBlocMode === 'share'
 					? 'btn-primary'
 					: 'btn-secondary'}"
-				on:click={() => (formState.voterBlocMode = 'share')}
+				onclick={() => (formState.voterBlocMode = 'share')}
 			>
 				Share of total population
 			</button>
@@ -102,7 +102,8 @@
 							class="w-full px-0 text-sm"
 							placeholder="Number of voters"
 							value={formState.blocCounts[i]}
-							on:input={(e) => (bloc.population = Number(e.currentTarget.value) * bloc.turnout)}
+							oninput={(e) => (bloc.population = Number(e.currentTarget.value) * bloc.turnout)}
+							disabled={formState.showTurnoutSettings}
 						/>
 					</label>
 					{#if formState.showTurnoutSettings}
@@ -140,7 +141,7 @@
 					min="1"
 					class="mt-1 w-full rounded-lg border-slate-200 bg-white/70 focus:border-indigo-300 focus:ring-indigo-200"
 					value={formState.totalPopulation}
-					on:input={(e) => formState.updateTotalElectorate(Number(e.currentTarget.value))}
+					oninput={(e) => formState.updateTotalElectorate(Number(e.currentTarget.value))}
 				/>
 			</label>
 		</div>
@@ -184,8 +185,7 @@
 								step="0.01"
 								class="range mt-1 w-full range-xs"
 								value={bloc.population / formState.totalPopulation}
-								on:input={(e) =>
-									formState.updateBlocElectorateShare(i, Number(e.currentTarget.value))}
+								oninput={(e) => updateBlocElectorateShare(e, i, Number(e.currentTarget.value))}
 							/>
 						</label>
 
@@ -196,8 +196,7 @@
 							step="1"
 							class="input input-sm max-w-14 flex-none text-center"
 							value={Math.round((bloc.population / formState.totalPopulation) * 100)}
-							on:input={(e) =>
-								formState.updateBlocElectorateShare(i, Number(e.currentTarget.value) / 100)}
+							oninput={(e) => updateBlocElectorateShare(e, i, Number(e.currentTarget.value) / 100)}
 						/>
 					</div>
 					{#if formState.showTurnoutSettings}
@@ -228,7 +227,7 @@
 						/>
 					</label>
 					<label class="block text-sm"
-						>Share of total population: {(
+						>Share of total population {(
 							(bloc.population / formState.totalPopulation) *
 							100
 						).toFixed(1)}%
@@ -239,7 +238,7 @@
 							step="0.01"
 							class="mt-1 w-full"
 							value={bloc.population / formState.totalPopulation}
-							on:input={(e) =>
+							oninput={(e) =>
 								formState.updateBlocElectorateShare(index, Number(e.currentTarget.value))}
 						/>
 					</label>
@@ -254,7 +253,7 @@
 		<button
 			type="button"
 			class="text-sm text-indigo-600 hover:text-indigo-800"
-			on:click={() => (formState.showTurnoutSettings = !formState.showTurnoutSettings)}
+			onclick={() => (formState.showTurnoutSettings = !formState.showTurnoutSettings)}
 		>
 			{formState.showTurnoutSettings ? '▼' : '▶'} Turnout settings
 		</button>
@@ -365,7 +364,7 @@
 									class={`range w-full range-xs`}
 									value={blocCohesionArray[0]}
 									style={`--range-progress:${COLOR_MAP.SLATES[0]}; --range-bg:${COLOR_MAP.SLATES[1]};background-color:${COLOR_MAP.SLATES[1]};padding:0;`}
-									on:input={(e) =>
+									oninput={(e) =>
 										formState.updateBlocCohesion(blocIndex, 0, Number(e.currentTarget.value))}
 								/>
 							</label>
@@ -374,7 +373,7 @@
 							{#each blocCohesionArray as cohesion, slateIndex}
 								<label class="flex flex-grow flex-col items-start text-xs">
 									<span
-										class="mb-1"
+										class=" mb-1"
 										style={`border-left: 4px solid ${COLOR_MAP.SLATES[slateIndex]}; padding-left: 4px`}
 									>
 										{formState.slates[slateIndex].name}: {(cohesion * 100).toFixed(0)}%
@@ -387,7 +386,7 @@
 										class={`range w-full range-xs`}
 										value={cohesion}
 										style={`--range-progress:${COLOR_MAP.SLATES[slateIndex]}; padding:0;`}
-										on:input={(e) =>
+										oninput={(e) =>
 											formState.updateBlocCohesion(
 												blocIndex,
 												slateIndex,

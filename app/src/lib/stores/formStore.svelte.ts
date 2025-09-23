@@ -70,7 +70,7 @@ class FormState {
 		}
 	]);
 
-	showTurnoutSettings: boolean = false;
+	showTurnoutSettings = $state<boolean>(false);
 	totalCandidates: number = $derived(
 		this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0)
 	);
