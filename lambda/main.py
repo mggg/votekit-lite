@@ -14,7 +14,6 @@ from typing import Any, Dict
 from common_schema import validation_schema
 import jsonschema
 
-# TODO cambridge
 from votekit.ballot_generator import (
     BlocSlateConfig,
     slate_pl_profile_generator,
@@ -36,7 +35,18 @@ ALPHA_MAP = {"all_bets_off": 1, "strong": STRONG_ALPHA, "unif": UNIF_ALPHA}
 
 
 def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
-    """Convert the event to a Votekit BlocSlateConfig"""
+    """
+    Convert the event to a Votekit BlocSlateConfig
+
+    Args:
+        event (Dict[str, Any]): The event to convert to a Votekit BlocSlateConfig
+
+    Returns:
+        BlocSlateConfig: The Votekit BlocSlateConfig
+
+
+    Doctests:
+    """
     config = BlocSlateConfig(
         n_voters=event["numVoters"],
         slate_to_candidates={
@@ -153,13 +163,37 @@ def _truncate_profile(profile: RankProfile, new_max_ranking_length: int):
 
 
 def _run_election(
-    profile: RankProfile, election_dict: dict[str, Any], config: BlocSlateConfig
+    profile: RankProfile,
+    election_dict: dict[str, Any],
+    slate_to_candidates: dict[str, list[str]],
 ):
     """
     Run the election.
 
+    Args:
+        profile (RankProfile): The profile to run the election on.
+        election_dict (dict[str, Any]): The election dictionary, which is a subset of the JSON
+            event.
+        slate_to_candidates (dict[str, list[str]]): The slate to candidates mapping.
+
     Returns:
         dict[str, int]: Number of elected candidates by slate.
+
+    Doctests:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"Ranking_1": [frozenset({"Chris"})], "Ranking_2": [frozenset({"Peter"})],
+        ...                     "Ranking_3": [frozenset({"Dylan"})], "Weight": [2], "Voter Set": [set()]})
+        >>> df.index.name = "Ballot Index"
+        >>> profile = RankProfile(df=df, max_ranking_length=3, candidates=["Chris", "Peter", "Dylan"])
+        >>> slate_to_candidates={"slate1": ["Chris"], "slate2": ["Dylan", "Peter"]}
+        >>> election_dict = {"numSeats": 1, "system": "STV", "maxBallotLength": 3}
+        >>> num_elected_by_slate = _run_election(profile, election_dict, slate_to_candidates)
+        >>> num_elected_by_slate == {"slate1": 1, "slate2": 0}
+        True
+        >>> election_dict = {"numSeats": 1, "system": "blocPlurality", "maxBallotLength": 3}
+        >>> num_elected_by_slate = _run_election(profile, election_dict, slate_to_candidates)
+        >>> num_elected_by_slate == {"slate1": 1, "slate2": 0}
+        True
     """
     m = election_dict["numSeats"]
     system = election_dict["system"]
@@ -176,7 +210,7 @@ def _run_election(
     elected = [c for c_set in election.get_elected() for c in c_set]
     num_elected_by_slate = {
         slate_name: len([c for c in slate_cand_list if c in elected])
-        for slate_name, slate_cand_list in config.slate_to_candidates.items()
+        for slate_name, slate_cand_list in slate_to_candidates.items()
     }
 
     return num_elected_by_slate
