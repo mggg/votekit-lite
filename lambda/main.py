@@ -13,7 +13,6 @@ import os
 from typing import Any, Dict
 from common_schema import validation_schema
 import jsonschema
-
 from votekit.ballot_generator import (
     BlocSlateConfig,
     slate_pl_profile_generator,
@@ -50,7 +49,7 @@ def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
         >>> config = _convert_event_to_votekit_config(event)
         >>> bool(config.is_valid())
         True
-        >>> event = json.load(open("test_jsons/unsuccessful_post.json"))
+        >>> event = json.load(open("test_jsons/unsuccessful_post_invalid_types.json"))
         >>> try:
         ...     config = _convert_event_to_votekit_config(event)
         ... except Exception as e:
@@ -219,7 +218,6 @@ def _run_election(
     """
     m = election_dict["numSeats"]
     system = election_dict["system"]
-
     if system == "blocPlurality":
         profile = convert_rank_profile_to_score_profile_via_score_vector(
             profile, score_vector=[1] * m
@@ -284,6 +282,7 @@ def _run_simulations(
             ballot_generator=ballot_generator,
             max_ranking_length=election_dict["maxBallotLength"],
         )
+
         num_elected_by_slate = _run_election(
             profile=profile,
             election_dict=election_dict,
@@ -304,10 +303,28 @@ def _run_simulations(
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    """Basic Lambda handler.
+    """
+    Lambda handler.
 
-    - Echoes the incoming event
-    - Includes environment metadata helpful for diagnostics
+    Args:
+        event (Dict[str, Any]): The event to handle.
+        context (Any): The context of the event.
+
+    Returns:
+        Dict[str, Any]: The response to the event.
+    Doctests:
+        >>> event = json.load(open("test_jsons/successful_post.json"))
+        >>> returned = handler(event, context=None)
+        >>> returned["statusCode"] == 200 and "votekit lambda simulation results" in returned["body"]
+        True
+        >>> event = json.load(open("test_jsons/unsuccessful_post_invalid_types.json"))
+        >>> returned = handler(event, context=None)
+        >>> returned["statusCode"] == 400 and "Invalid event" in returned["body"]
+        True
+        >>> event = json.load(open("test_jsons/unsuccessful_post_invalid_args.json"))
+        >>> returned = handler(event, context=None)
+        >>> returned["statusCode"] == 400 and "Invalid config" in returned["body"]
+        True
     """
     try:
         jsonschema.validate(event, validation_schema)
