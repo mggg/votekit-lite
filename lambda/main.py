@@ -233,11 +233,36 @@ def _run_simulations(
     config: BlocSlateConfig,
     election_dict: dict[str, Any],
 ) -> dict[str, list[int]]:
-    """Run the simulations
+    """
+    Run the simulations
 
+    Args:
+        num_trials (int): The number of trials to run.
+        ballot_generator (str): The ballot generator to use. sPL, sBT, or CS.
+        config (BlocSlateConfig): The Votekit BlocSlateConfig.
+        election_dict (dict[str, Any]): The election dictionary, which is a subset of the JSON
+            event.
 
     Returns:
         dict[str, list[int]]: Number of elected candidates by slate for each trial.
+
+    Doctests:
+        >>> config = BlocSlateConfig(
+        ...     n_voters=100,
+        ...     slate_to_candidates={"slate1": ["c1", "c2", "c3"], "slate2": ["d1", "d2", "d3"]},
+        ...     bloc_proportions={"bloc1": 0.5, "bloc2": 0.5},
+        ...     cohesion_mapping={"bloc1": {"slate1": .6, "slate2": .4},
+        ...                         "bloc2": {"slate1": .7, "slate2": .3}},
+        ... )
+        >>> config.set_dirichlet_alphas(
+        ...     alphas={"bloc1": {"slate1": 1, "slate2": 2}, "bloc2": {"slate1": 1/2, "slate2": 1/2}}
+        ... )
+        >>> election_dict = {"numSeats": 2, "system": "STV", "maxBallotLength": 3}
+        >>> results = _run_simulations(10, "sPL", config, election_dict)
+        >>> len(results["slate1"]) == 10 and -1 not in results["slate1"] and all(result <=2 for result in results["slate1"])
+        True
+        >>> len(results["slate2"]) == 10 and -1 not in results["slate2"] and all(result <=2 for result in results["slate2"])
+        True
     """
 
     results = {slate_name: [-1] * num_trials for slate_name in config.slates}
