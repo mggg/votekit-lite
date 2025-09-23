@@ -11,7 +11,7 @@
 		? 'btn-primary'
 		: 'btn-secondary'}"
 	aria-pressed={selected}
-	on:click={() => onSelect && onSelect()}
+	onclick={() => onSelect && onSelect()}
 >
 	<div class="text-md">{title}</div>
 	{#if description}

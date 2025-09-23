@@ -8,7 +8,7 @@
 		<button
 			type="button"
 			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'sPL' ? 'btn-primary' : 'btn-secondary'}"
-			on:click={() => (formState.ballotGenerator = 'sPL')}
+			onclick={() => (formState.ballotGenerator = 'sPL')}
 		>
 			<div class="text-left">
 				<div class="font-medium">Impulsive voter</div>
@@ -20,7 +20,7 @@
 		<button
 			type="button"
 			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'sBT' ? 'btn-primary' : 'btn-secondary'}"
-			on:click={() => (formState.ballotGenerator = 'sBT')}
+			onclick={() => (formState.ballotGenerator = 'sBT')}
 		>
 			<div class="text-left">
 				<div class="font-medium">Deliberative voter</div>
@@ -32,7 +32,7 @@
 		<button
 			type="button"
 			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'CS' ? 'btn-primary' : 'btn-secondary'}"
-			on:click={() => (formState.ballotGenerator = 'CS')}
+			onclick={() => (formState.ballotGenerator = 'CS')}
 		>
 			<div class="text-left">
 				<div class="font-medium">Cambridge voter</div>
