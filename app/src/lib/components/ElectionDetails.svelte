@@ -111,7 +111,7 @@
 					</label>
 				</div>
 				<div class="col-span-1 pl-2 flex w-full max-w-xs flex-row items-center gap-2">
-					<label class="sr-only label text-sm">Number of candidates</label>
+					<span class="sr-only" id={`slate-candidates-label-${slateIndex}`}>Number of candidates</span>
 					<div class="rating-xs rating gap-1">
 						{#each candidatesRange as index}
 							<input
@@ -126,6 +126,7 @@
 									border: 2px solid ${COLOR_MAP.SLATES[slateIndex]};
 								`}
 								aria-label={`${index} star`}
+								aria-labelledby={`slate-candidates-label-${slateIndex}`}
 								checked={slate.numCandidates === index}
 								onclick={(e) => {
 									e.preventDefault();

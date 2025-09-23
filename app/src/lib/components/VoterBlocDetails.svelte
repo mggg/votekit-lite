@@ -109,7 +109,7 @@
 						class="mt-1 w-full"
 						value={bloc.population / formState.totalPopulation}
 						on:input={(e) =>
-							formState.updateBlocElectorateShare(index, Number(e.currentTarget.value))}
+							formState.updateBlocElectorateShare(e, index, Number(e.currentTarget.value))}
 					/>
 				</label>
 				<div class="text-xs text-slate-500">Voters: {formState.blocCounts[index]}</div>
