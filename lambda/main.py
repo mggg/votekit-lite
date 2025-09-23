@@ -117,13 +117,27 @@ def _generate_profile(
     return profile
 
 
-def _truncate_profile(profile: PreferenceProfile, new_max_ranking_length: int):
-    """Truncate the profile to the new max ranking length
+    """
+    Truncate the profile to the new max ranking length.
+
+    Args:
+        profile (RankProfile): The profile to truncate.
+        new_max_ranking_length (int): The new max ranking length.
 
     Returns:
-        PreferenceProfile: The truncated profile.
-    """
-    return PreferenceProfile(
+        RankProfile: The truncated profile.
+
+    Doctests:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"Ranking_1": [frozenset({"Chris"})], "Ranking_2": [frozenset({"Peter"})],
+        ...                     "Ranking_3": [frozenset({"Dylan"})], "Weight": [2], "Voter Set": [set()]})
+        >>> df.index.name = "Ballot Index"
+        >>> profile = RankProfile(df=df, max_ranking_length=3, candidates=["Chris", "Peter", "Dylan"])
+        >>> truncated_profile = _truncate_profile(profile, 2)
+        >>> truncated_profile.max_ranking_length == 2 and "Ranking_3" not in truncated_profile.df.columns
+        True
+        >>> bool(truncated_profile.total_ballot_wt == 2)
+        True
         df=profile.df.drop(
             columns=[
                 f"Ranking_{i+1}"
