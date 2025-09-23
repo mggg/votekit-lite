@@ -64,17 +64,28 @@
 	</div>
 
 	<!-- Number of candidates per slate -->
+	<h2 class="mt-4 mb-2 text-lg font-semibold text-slate-800">Candidate slates</h2>
+	<p class="mb-4 text-sm text-slate-500">
+		Slates are groups of candidates that are ranked together. Use the controls below to adjust how
+		many groups of candidates you want, and how many candidates each group should have. Slates are
+		not necessarily the same as voter blocs.
+	</p>
 	<ul class="list bg-base-100 p-0">
-		<li class="text-md pt-4 font-semibold">Slates</li>
+		<!-- headers -->
+		<li class="list-row my-0 grid grid-cols-9 gap-2 px-0 py-1 pr-4">
+			<span class="col-span-4 pl-6">Slate name</span>
+			<span class="col-span-1"></span>
+			<span class="col-span-4">Number of candidates</span>
+		</li>
 		{#each formState.slates as slate, slateIndex}
 			<li class="list-row my-0 grid grid-cols-9 gap-2 px-0 py-1 pr-4">
-				<div class="col-span-3 flex items-center gap-2">
+				<div class="col-span-4 flex items-center gap-2">
 					<PalettePip color={COLOR_MAP.SLATES[slateIndex]} />
 					<label class="input input-sm">
-						<span class="text-gray-400">Slate name</span>
+						<span class="sr-only text-gray-400">Slate name</span>
 						<input
 							type="text"
-							class="grow text-sm"
+							class="w-full grow px-0 text-sm"
 							placeholder="Slate name"
 							bind:value={slate.name}
 						/>
@@ -82,22 +93,20 @@
 				</div>
 				<div class="col-span-1"></div>
 				<div class="col-span-4 flex w-full max-w-xs flex-row items-center gap-2">
-					<label class="label text-sm">Number of candidates</label>
+					<label class="sr-only label text-sm">Number of candidates</label>
 					<div class="rating-xs rating gap-1">
 						{#each candidatesRange as index}
 							<input
 								type="radio"
 								name={`rating-${index}-${slate.name}`}
-								class={`mask mask-circle opacity-100 transition-all duration-300
-              ${
-								formState.remainingCandidates < index - slate.numCandidates
-									? 'pointer-events-none cursor-not-allowed bg-gray-200'
-									: slate.numCandidates <= index
-										? 'bg-secondary'
-										: ''
-							}
+								class={`mask rounded-full mask-circle opacity-100 transition-all
+								duration-300
+              ${formState.remainingCandidates < index - slate.numCandidates && '!opacity-5'}
               `}
-								style={`background-color: ${slate.numCandidates >= index ? COLOR_MAP.SLATES[slateIndex] : ''}`}
+								style={`
+									background-color: ${slate.numCandidates >= index ? COLOR_MAP.SLATES[slateIndex] : formState.remainingCandidates >= index - slate.numCandidates ? 'white' : undefined};
+									border: 2px solid ${COLOR_MAP.SLATES[slateIndex]};
+								`}
 								aria-label={`${index} star`}
 								checked={slate.numCandidates === index}
 								onclick={(e) => {
