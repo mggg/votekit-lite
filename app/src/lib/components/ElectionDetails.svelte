@@ -28,7 +28,6 @@
 					}}
 				/>
 				<div class="mt-2 flex justify-between px-2.5 text-xs">
-					<span>1</span>
 					<span>2</span>
 					<span>3</span>
 					<span>4</span>
