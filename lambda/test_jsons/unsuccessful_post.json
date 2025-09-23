@@ -1,0 +1,45 @@
+{
+    "id": "314444",
+    "name": "test parameters",
+    "numVoters": "a",
+    "voterBlocs": {
+        "A": {
+            "proportion": 0.6,
+            "preference": {
+                "R": "u",
+                "D": "strong"
+            },
+            "cohesion": {
+                "R": 0.4,
+                "D": 0.6
+            }
+        },
+        "B": {
+            "proportion": 0.4,
+            "preference": {
+                "R": "unif",
+                "D": "unif"
+            },
+            "cohesion": {
+                "R": 0.8,
+                "D": 0.2
+            }
+        }
+    },
+    "slates": {
+        "X": {
+            "numCandidates": 4
+        },
+        "D": {
+            "numCandidates": 5
+        }
+    },
+    "election": {
+        "system": "youuuuuu",
+        "numSeats": 4,
+        "maxBallotLength": 9
+    },
+    "ballotGenerator": "meeeee",
+    "trials": 100,
+    "createdAt": "111111"
+}
