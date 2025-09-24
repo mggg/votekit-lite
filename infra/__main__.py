@@ -70,7 +70,9 @@ fn = aws.lambda_.Function(
     # Add these parameters to help with image compatibility
     architectures=["arm64"],
     environment={
-        "variables": {}
+        "variables": {
+            "NUMBA_CACHE_DIR": "/tmp/numba_cache"
+        }
     }
 )
 
