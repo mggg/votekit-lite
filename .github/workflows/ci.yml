@@ -25,9 +25,7 @@ jobs:
 
       - name: Build and start services (app, lambda)
         run: |
-          docker compose pull || true
-          docker compose build app lambda
-          docker compose up -d app lambda
+          docker compose up -d --build app lambda
 
       - name: Wait briefly for containers to initialize
         run: sleep 10
