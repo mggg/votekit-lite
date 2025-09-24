@@ -4,7 +4,7 @@
   import OptionCard from '$lib/components/OptionCard.svelte';
 </script>
 
-<div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 shadow-sm backdrop-blur">
+<div class="card bg-base-100 p-4 shadow-sm">
   <h2 class="mb-2 text-lg font-semibold text-slate-800">Election method</h2>
   <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
     <OptionCard

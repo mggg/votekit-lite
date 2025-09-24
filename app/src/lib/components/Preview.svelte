@@ -2,11 +2,11 @@
   import { formState } from '$lib/stores/formStore.svelte';
 </script>
 
-<div class="rounded-2xl border border-slate-200/70 bg-white/70 p-3 text-sm text-slate-600 backdrop-blur">
+<div class="card bg-base-100 p-4 text-sm text-slate-600 shadow-sm">
   <p class="font-medium">Preview:</p>
   <div class="mt-2 space-y-1 text-xs">
     <div><strong>Election style:</strong> {formState.system === 'blocPlurality' ? 'Bloc plurality' : 'Single transferable vote (STV)'}</div>
-    <div><strong>Voter blocs:</strong> {formState.blocs.map((bloc) => `${bloc.name}: ${bloc.population * bloc.turnout} voters`).join(', ')}</div>
+    <div><strong>Voter blocs:</strong> {formState.blocs.map((bloc) => `${bloc.name}: ${Math.round(bloc.population * bloc.turnout)} voters`).join(', ')}</div>
     <div><strong>Cohesion:</strong></div>
     {#each formState.blocs as bloc, blocIndex}
       <div class="ml-2">{bloc.name} voters: {formState.blocCohesion[blocIndex].map((cohesion, index) => (cohesion * 100).toFixed(0) + '% to ' + formState.slates[index].name).join(', ')}</div>

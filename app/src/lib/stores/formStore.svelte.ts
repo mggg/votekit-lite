@@ -12,14 +12,14 @@ class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
 	system = $state<VotekitConfig['election']['system']>('STV');
-	ballotGenerator = $state<VotekitConfig['ballotGenerator']>('sPL');
+	ballotGenerator: VotekitConfig['ballotGenerator'] = $state('sPL');
 	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
 
 	// Source of truth for blocs: Population and turnout
-	blocs = $state<VoterBloc[]>([
+	blocs: VoterBloc[] = $state([
 		{
 			population: 50,
 			turnout: 1.0,
@@ -37,13 +37,15 @@ class FormState {
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
 	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
-	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, 0));
+	unallocatedPopulation: number = $state(0);
+	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, this.unallocatedPopulation));
+	maxPercentages = $derived(this.blocs.map((bloc) => (bloc.population+this.unallocatedPopulation) / this.totalPopulation));
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
-	blocPreferences = $state<VoterPreference[][]>([
+	blocPreferences: VoterPreference[][] = $state([
 		['all_bets_off', 'all_bets_off'],
 		['all_bets_off', 'all_bets_off']
 	]);
@@ -51,6 +53,7 @@ class FormState {
 		[1.0, 0],
 		[0, 1.0]
 	]);
+	blocCohesionSum: number[] = $derived(this.blocCohesion.map((cohesion) => cohesion.reduce((sum, cohesion) => sum + cohesion, 0)));
 
 	// Source of truth for slates: Number of candidates and name
 	slates: Slate[] = $state([
@@ -61,10 +64,10 @@ class FormState {
 		{
 			numCandidates: 3,
 			name: 'B'
-		}
+		},
 	]);
 
-	showTurnoutSettings: boolean = false;
+	showTurnoutSettings = $state<boolean>(false);
 	totalCandidates: number = $derived(
 		this.slates.reduce((sum, slate) => sum + slate.numCandidates, 0)
 	);
@@ -78,8 +81,12 @@ class FormState {
 	}
 
 	updateNumSlates(value: number) {
-		if (this.totalCandidates == MAX_CANDIDATES) {
+		if (this.totalCandidates == MAX_CANDIDATES && value >= this.slates.length) {
 			console.log('Total candidates is at maximum');
+			return;
+		}
+		if (value > 5 || value < 1) {
+			console.log('Number of slates must be between 1 and 5');
 			return;
 		}
 		if (value < this.slates.length) {
@@ -87,10 +94,13 @@ class FormState {
 			this.blocCohesion = this.blocCohesion.map((bloc) => bloc.slice(0, value));
 			this.blocPreferences = this.blocPreferences.map((bloc) => bloc.slice(0, value));
 		} else {
+			const remainingCandidates = MAX_CANDIDATES - this.totalCandidates;
+			const numNewSlates = value - this.slates.length;
+			const numCandidatesPerSlate = Math.min(3, Math.floor(remainingCandidates / numNewSlates));
 			const newSlates = [...this.slates];
 			for (let i = this.slates.length; i < value; i++) {
 				newSlates.push({
-					numCandidates: Math.min(3, MAX_CANDIDATES - this.totalCandidates),
+					numCandidates: numCandidatesPerSlate,
 					name: String.fromCharCode(65 + i)
 				});
 			}
@@ -126,7 +136,7 @@ class FormState {
 			for (let i = this.blocs.length; i < value; i++) {
 				newBlocs.push({ population: 50, turnout: 1.0, name: String.fromCharCode(65 + i) });
 				newBlocCohesion.push(new Array(this.slates.length).fill(1 / this.slates.length));
-				newBlocPreferences.push(new Array(this.slates.length).fill('random'));
+				newBlocPreferences.push(new Array(this.slates.length).fill('all_bets_off'));
 			}
 			this.blocs = newBlocs;
 			this.blocCohesion = newBlocCohesion;
@@ -141,46 +151,56 @@ class FormState {
 			const newTotalPopulation = shareOfTotalElectorate * value;
 			return {
 				...bloc,
-				population: Math.round(newTotalPopulation)
+				population: newTotalPopulation
 			};
 		});
 		this.blocs = newBlocPopulations;
 	}
 
-	updateBlocElectorateShare(index: number, value: number) {
-		const newShares = balanceRemainingValue({
-			maxValue: 1,
-			newValue: value,
-			newIndex: index,
-			currentValues: this.populationShare
-		});
-
-		const newBlocPopulations = this.blocs.map((bloc, i) => {
-			if (index === i) {
-				const newTotalPopulation = Math.round(this.totalPopulation * value);
-				return {
-					...bloc,
-					population: newTotalPopulation
-				};
-			} else {
-				const newTotalPopulation = Math.round(this.totalPopulation * newShares[i]);
-				return {
-					...bloc,
-					population: newTotalPopulation
-				};
-			}
-		});
-		this.blocs = newBlocPopulations;
+	updateBlocElectorateShare(e: Event, index: number, value: number) {
+		const numBlocs = this.blocs.length;
+		let newShares = this.populationShare;
+		const currentValue = this.populationShare[index];
+		if (numBlocs === 2) {
+			newShares = balanceRemainingValue({
+				maxValue: 1,
+				newValue: value,
+				newIndex: index,
+				currentValues: this.populationShare
+			});
+			const newBlocs = this.blocs.map((bloc, i) => ({...bloc, population: this.totalPopulation * newShares[i]}));
+			this.blocs = newBlocs;
+		} else if (this.unallocatedPopulation === 0 && value > currentValue) {
+			(e.currentTarget as HTMLInputElement).value = currentValue.toString();
+			return;
+		} else {
+			const newPopulationValue = Math.min(this.blocs[index].population + this.unallocatedPopulation, this.totalPopulation * value);
+			(e.currentTarget as HTMLInputElement).value = (newPopulationValue / this.totalPopulation).toString();
+			const newBlocs = this.blocs.map((bloc, i) => {
+				if (index === i) {
+					return { ...bloc, population: newPopulationValue };
+				} else {
+					return {...bloc};
+				}
+			});
+			const newUnallocatedPopulation = this.totalPopulation - newBlocs.reduce((sum, bloc) => sum + bloc.population, 0);
+			this.unallocatedPopulation = Math.round(newUnallocatedPopulation);
+			this.blocs = newBlocs;
+		}
 	}
 
-	updateBlocCohesion(blocIndex: number, slateIndex: number, value: number) {
-		const newCohesion = balanceRemainingValue({
-			maxValue: 1,
-			newValue: value,
-			newIndex: slateIndex,
-			currentValues: this.blocCohesion[blocIndex]
-		});
-		this.blocCohesion[blocIndex] = newCohesion;
+	updateBlocCohesion(e: Event, blocIndex: number, slateIndex: number, value: number) {
+		const numSlates = this.slates.length;
+		if (numSlates === 2) {
+			this.blocCohesion[blocIndex] = this.blocCohesion[blocIndex].map((cohesion, i) => i === slateIndex ? value : 1 - value);
+		} else {
+			const currentCohesion = this.blocCohesion[blocIndex];
+			const currentCohesionSlateValue = currentCohesion[slateIndex];
+			const newCohesionValue = Math.min(value, 1 - this.blocCohesionSum[blocIndex] + currentCohesionSlateValue);
+			(e.currentTarget as HTMLInputElement).value = Math.round(newCohesionValue * 100).toString();
+			const newCohesion = currentCohesion.map((cohesion, i) => i === slateIndex ? newCohesionValue : cohesion);
+			this.blocCohesion[blocIndex] = newCohesion;
+		}
 	}
 
 	async submitMock() {
