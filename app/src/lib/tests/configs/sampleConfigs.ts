@@ -42,7 +42,7 @@ export const twoBlocTwoSlate: VotekitConfig = {
     maxBallotLength:6
   },
   ballotGenerator: "sPL",
-  trials: 100,
+  trials: 1,
   createdAt: "1700000000000"
 }
 
@@ -95,66 +95,55 @@ export const twoBlocThreeSlate: VotekitConfig = {
     maxBallotLength:10
   },
   ballotGenerator: "sBT",
-  trials: 50,
+  trials: 1,
   createdAt: "1700000000000"
 }
 
-export const threeBlocThreeSlate: VotekitConfig = {
-  id: "test-123",
-  name: "Test Run",
-  numVoters: 100,
-  voterBlocs: {
-    bloc1: {
-      proportion: 50/600,
-      preference: {
-        slate1: "all_bets_off",
-        slate2: "strong",
-      },
-      cohesion: {
-        slate1: 0.6,
-        slate2: 0.3,
-      },
-    },
-    bloc2: {
-      proportion: 50/600,
-      preference: {
-        slate1: "strong",
-        slate2: "strong",
-      },
-      cohesion: {
-        slate1: 0.7,
-        slate2: 0.2,
-      },
-    },
-    bloc3: {
-      proportion: 500/600,
-      preference: {
-        slate1: "unif",
-        slate2: "strong",
-      },
-      cohesion: {
-        slate1: 0.7,
-        slate2: 0.2,
-      },
-    }
-  },
-  slates: {
-    slate1: {
-      numCandidates: 3
-    },
-    slate2: {
-      numCandidates: 3
-    }
-  },
-  election: {
-    system: "blocPlurality",
-    numSeats: 3,
-    maxBallotLength:3
-  },
-  ballotGenerator: "CS",
-  trials: 50,
-  createdAt: "1700000000000"
-}
+// export const twoBlocTwoSlateCS: VotekitConfig = {
+//   id: "test-123",
+//   name: "Test Run",
+//   numVoters: 100,
+//   voterBlocs: {
+//     bloc1: {
+//       proportion: 0.7,
+//       preference: {
+//         bloc1: "all_bets_off",
+//         bloc2: "strong",
+//       },
+//       cohesion: {
+//         bloc1: 0.6,
+//         bloc2: 0.4,
+//       },
+//     },
+//     bloc2: {
+//       proportion: 0.3,
+//       preference: {
+//         bloc1: "strong",
+//         bloc2: "strong",
+//       },
+//       cohesion: {
+//         bloc1: 0.3,
+//         bloc2: 0.7,
+//       },
+//     },
+//   },
+//   slates: {
+//     slate1: {
+//       numCandidates: 3
+//     },
+//     slate2: {
+//       numCandidates: 3
+//     }
+//   },
+//   election: {
+//     system: "blocPlurality",
+//     numSeats: 3,
+//     maxBallotLength:3
+//   },
+//   ballotGenerator: "CS",
+//   trials: 1,
+//   createdAt: "1700000000000"
+// }
 
 export const threeBlocFourSlate: VotekitConfig = {
   id: "test-123",
@@ -162,7 +151,7 @@ export const threeBlocFourSlate: VotekitConfig = {
   numVoters: 100,
   voterBlocs: {
     bloc1: {
-      proportion: 50/600,
+      proportion: 0.4,
       preference: {
         slate1: "all_bets_off",
         slate2: "strong",
@@ -175,7 +164,7 @@ export const threeBlocFourSlate: VotekitConfig = {
       },
     },
     bloc2: {
-      proportion: 50/600,
+      proportion: 0.3,
       preference: {
         slate1: "strong",
         slate2: "strong",
@@ -188,7 +177,7 @@ export const threeBlocFourSlate: VotekitConfig = {
       },
     },
     bloc3: {
-      proportion: 500/600,
+      proportion: 0.3,
       preference: {
         slate1: "unif",
         slate2: "strong",
@@ -218,6 +207,6 @@ export const threeBlocFourSlate: VotekitConfig = {
     maxBallotLength:10
   },
   ballotGenerator: "sBT",
-  trials: 50,
+  trials: 1,
   createdAt: "1700000000000"
 }

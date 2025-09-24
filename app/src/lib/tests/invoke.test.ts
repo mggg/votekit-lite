@@ -1,6 +1,7 @@
 // src/routes/api/todos/+server.test.ts
 import { describe, it, expect } from 'vitest';
 import * as sampleConfigs from '$lib/tests/configs/sampleConfigs';
+import { VotekitConfigSchema } from '$lib/types/votekitConfig';
 
 const runTestConfig = async (config: any) => {
   const req = new Request('http://localhost:5173/api/invoke', {
@@ -8,7 +9,7 @@ const runTestConfig = async (config: any) => {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ 
       votekitConfig: config,
-      recaptchaToken: '1234567890'
+      captchaToken: '1234567890'
     })
   });
   return await fetch(req);
@@ -20,9 +21,10 @@ describe('POST /api/invoke', () => {
       `Invokes a lambda function with good configs: ${key}`,
       async () => {
         const res = await runTestConfig(config);
+        const data = await res.json();
         expect(res.ok).toBe(true)
       },
-      60000 // 60 seconds timeout
+      10000 // 10 seconds timeout
     );
   });
   it(
