@@ -35,10 +35,9 @@
 				</div>
 			</div>
 			<p class="label max-w-full whitespace-pre-wrap flex-col items-start text-left">
-				{#if MAX_CANDIDATES === formState.totalCandidates}
+				{#if MAX_CANDIDATES === formState.totalCandidates && formState.slates.length < 5}
 					<span class="text-amber-600"
-						>Maximum number of candidates (12) reached. To add more slates, reduce the number of
-						candidates per slate.</span
+						>To add more slates, reduce the number of candidates per slate.</span
 					>
 				{/if}
 			</p>
@@ -150,9 +149,6 @@
 	</ul>
 
 	<div class="mt-1 flex items-center justify-between text-xs text-slate-500">
-		<span>Total candidates: {formState.totalCandidates} out of a maximum of {MAX_CANDIDATES}</span>
-		{#if formState.totalCandidates >= MAX_CANDIDATES}
-			<span class="text-amber-600">Maximum of {MAX_CANDIDATES} candidates reached</span>
-		{/if}
+		<span class={formState.totalCandidates >= MAX_CANDIDATES ? 'text-amber-600' : ''}>Total candidates: {formState.totalCandidates} out of a maximum of {MAX_CANDIDATES}</span>
 	</div>
 </div>
