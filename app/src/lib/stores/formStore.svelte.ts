@@ -12,14 +12,14 @@ class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
 	system = $state<VotekitConfig['election']['system']>('STV');
-	ballotGenerator = $state<VotekitConfig['ballotGenerator']>('sPL');
+	ballotGenerator: VotekitConfig['ballotGenerator'] = $state('sPL');
 	numSeats: number = $state(5);
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
 
 	// Source of truth for blocs: Population and turnout
-	blocs = $state<VoterBloc[]>([
+	blocs: VoterBloc[] = $state([
 		{
 			population: 50,
 			turnout: 1.0,
@@ -45,7 +45,7 @@ class FormState {
 	);
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
-	blocPreferences = $state<VoterPreference[][]>([
+	blocPreferences: VoterPreference[][] = $state([
 		['all_bets_off', 'all_bets_off'],
 		['all_bets_off', 'all_bets_off']
 	]);
@@ -136,7 +136,7 @@ class FormState {
 			for (let i = this.blocs.length; i < value; i++) {
 				newBlocs.push({ population: 50, turnout: 1.0, name: String.fromCharCode(65 + i) });
 				newBlocCohesion.push(new Array(this.slates.length).fill(1 / this.slates.length));
-				newBlocPreferences.push(new Array(this.slates.length).fill('random'));
+				newBlocPreferences.push(new Array(this.slates.length).fill('all_bets_off'));
 			}
 			this.blocs = newBlocs;
 			this.blocCohesion = newBlocCohesion;
