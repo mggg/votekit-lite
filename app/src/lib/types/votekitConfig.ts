@@ -37,6 +37,7 @@ const ElectionSchema = z.object({
 export const VotekitConfigSchema = z.object({
   id: z.string(),
   name: z.string(),
+  numVoters: z.coerce.number(),
   voterBlocs: z.record(z.string(), BlocSchema),
   slates: z.record(z.string(), SlateSchema),
   election: ElectionSchema,

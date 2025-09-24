@@ -30,16 +30,36 @@ fi
 echo "Logging in to ECR..."
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URL}
 
-# Build the image for linux/arm64 platform with Lambda-compatible format
-echo "Building Docker image for ARM64..."
-# Use Buildx for cross-platform builds (ARM64 on AMD64 runner)
-# Build with explicit platform and no cache to ensure clean build
-docker buildx build \
-  --platform linux/arm64 \
-  --no-cache \
-  --tag ${ECR_REPO_URL}:latest \
-  --push \
-  ./lambda
+# Detect host architecture
+HOST_ARCH=$(uname -m)
+echo "Detected host architecture: ${HOST_ARCH}"
+
+if [ "${HOST_ARCH}" = "aarch64" ] || [ "${HOST_ARCH}" = "arm64" ]; then
+    echo "Building natively for ARM64..."
+    docker build \
+      --no-cache \
+      --output type=docker,dest=./image.tar \
+      ./lambda
+
+    docker load < ./image.tar
+    IMAGE_ID=$(docker images --format "{{.ID}}" | head -n1)
+    docker tag $IMAGE_ID ${ECR_REPO_URL}:latest
+else
+    echo "Building for ARM64 on x86 using buildx..."
+    docker buildx build \
+      --platform linux/arm64 \
+      --no-cache \
+      --output type=docker,dest=./image.tar \
+      ./lambda
+
+    docker load < ./image.tar
+
+    IMAGE_ID=$(docker images --format "{{.ID}}" | head -n1)
+    docker tag $IMAGE_ID ${ECR_REPO_URL}:latest
+fi
+
+echo "Pushing image to ECR..."
+docker push ${ECR_REPO_URL}:latest
 
 echo "Successfully built and pushed Lambda image to ECR!"
 echo "Image URI: ${ECR_REPO_URL}:latest"

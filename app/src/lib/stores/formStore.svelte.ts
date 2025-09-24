@@ -208,6 +208,7 @@ class FormState {
 		const config: VotekitConfig = {
 				id,
 				name: this.name,
+				numVoters: this.totalVoters,
 				voterBlocs: this.blocs.reduce((acc, bloc, index) => ({
 					...acc,
 					[bloc.name]: {
