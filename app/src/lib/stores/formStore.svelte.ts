@@ -3,7 +3,7 @@ import { randomRunName } from '$lib';
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue } from './utils';
-import type { VotekitConfig, VoterPreference } from '$lib/types/votekitConfig';
+import { VotekitConfigSchema, type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
 
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -213,8 +213,14 @@ class FormState {
 					...acc,
 					[bloc.name]: {
 						proportion: this.voterShare[index],
-						preference: this.blocPreferences[index],
-						cohesion: this.blocCohesion[index]
+						preference: this.blocPreferences[index].reduce((acc, preference, index) => ({
+							...acc,
+							[this.slates[index].name]: preference
+						}), {}),
+						cohesion: this.blocCohesion[index].reduce((acc, cohesion, index) => ({
+							...acc,
+							[this.slates[index].name]: cohesion
+						}), {}),
 					}
 				}), {}),
 				slates: this.slates.reduce((acc, slate) => ({

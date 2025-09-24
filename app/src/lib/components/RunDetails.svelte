@@ -43,7 +43,7 @@
 	/>
 	<button
 		class="btn mt-2 btn-block btn-soft btn-primary"
-		onclick={formState.submitMock}
+		onclick={() => formState.submitMock()}
 		disabled={!formState.recaptchaToken.length || formState.unallocatedPopulation > 0}
 	>
 		Run simulation (mock)
