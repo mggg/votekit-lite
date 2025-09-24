@@ -15,8 +15,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx (optional)
-        uses: docker/setup-buildx-action@v3
+      - name: Make temp env files
+        run: |
+          cp ./app/.env.example ./app/.env
+          cp ./infra/.env.example ./infra/.env
+          sed -i 's/CAPTCHA_SECRET_KEY=.*/CAPTCHA_SECRET_KEY=${{ secrets.CAPTCHA_SECRET_KEY_TEST }}/' ./app/.env
+          sed -i 's/PUBLIC_CAPTCHA_KEY=.*/PUBLIC_CAPTCHA_KEY=${{ secrets.PUBLIC_CAPTCHA_KEY_TEST }}/' ./app/.env
 
       - name: Show Docker versions
         run: |
