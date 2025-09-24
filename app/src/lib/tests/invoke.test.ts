@@ -15,28 +15,35 @@ const runTestConfig = async (config: any) => {
 }
 
 describe('POST /api/invoke', () => {
-  Object.entries(sampleConfigs).forEach(async ([key, config]) => {
-    it(`Invokes a lambda function with good configs: ${key}`, async () => {
-      const res = await runTestConfig(config);
-      expect(res.ok).toBe(true)
-    });
+  Object.entries(sampleConfigs).forEach(([key, config]) => {
+    it(
+      `Invokes a lambda function with good configs: ${key}`,
+      async () => {
+        const res = await runTestConfig(config);
+        expect(res.ok).toBe(true)
+      },
+      60000 // 60 seconds timeout
+    );
   });
-  it('Fails a bad configs', async () => {
-    const badConfig = {
-      ...sampleConfigs.twoBlocTwoSlate,
-      voterBlocs: {
-        bloc1: {
-          ...sampleConfigs.twoBlocTwoSlate.voterBlocs.bloc1,
-          proportion: 'not a number'
+  it(
+    'Fails a bad configs',
+    async () => {
+      const badConfig = {
+        ...sampleConfigs.twoBlocTwoSlate,
+        voterBlocs: {
+          bloc1: {
+            ...sampleConfigs.twoBlocTwoSlate.voterBlocs.bloc1,
+            proportion: 'not a number'
+          }
         }
       }
+      const res = await runTestConfig(badConfig);
+      const data = await res.json();
+      const error = JSON.parse(data.error);
+      expect(error[0].expected).toBe('number');
+      expect(error[0].code).toBe('invalid_type');
+      expect(error[0].received).toBe('NaN');
+      expect(error[0].message).toBe('Invalid input: expected number, received NaN');
     }
-    const res = await runTestConfig(badConfig);
-    const data = await res.json();
-    const error = JSON.parse(data.error);
-    expect(error[0].expected).toBe('number');
-    expect(error[0].code).toBe('invalid_type');
-    expect(error[0].received).toBe('NaN');
-    expect(error[0].message).toBe('Invalid input: expected number, received NaN');
-  });
+  );
 });

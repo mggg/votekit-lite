@@ -3,6 +3,7 @@ import type { VotekitConfig } from "$lib/types/votekitConfig";
 export const twoBlocTwoSlate: VotekitConfig = {
   id: "test-123",
   name: "Test Run",
+  numVoters: 100,
   voterBlocs: {
     bloc1: {
       proportion: 0.5,
@@ -48,6 +49,7 @@ export const twoBlocTwoSlate: VotekitConfig = {
 export const twoBlocThreeSlate: VotekitConfig = {
   id: "test-123",
   name: "Test Run",
+  numVoters: 100,
   voterBlocs: {
     bloc1: {
       proportion: 0.5,
@@ -100,6 +102,7 @@ export const twoBlocThreeSlate: VotekitConfig = {
 export const threeBlocThreeSlate: VotekitConfig = {
   id: "test-123",
   name: "Test Run",
+  numVoters: 100,
   voterBlocs: {
     bloc1: {
       proportion: 50/600,
@@ -156,6 +159,7 @@ export const threeBlocThreeSlate: VotekitConfig = {
 export const threeBlocFourSlate: VotekitConfig = {
   id: "test-123",
   name: "Test Run",
+  numVoters: 100,
   voterBlocs: {
     bloc1: {
       proportion: 50/600,
