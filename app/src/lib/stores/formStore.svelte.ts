@@ -219,7 +219,7 @@ class FormState {
 						}), {}),
 						cohesion: this.blocCohesion[index].reduce((acc, cohesion, index) => ({
 							...acc,
-							[this.slates[index].name]: cohesion
+							[this.slates[index].name]: cohesion || 1e-10
 						}), {}),
 					}
 				}), {}),
@@ -237,6 +237,8 @@ class FormState {
 				trials: this.trials,
 				createdAt: Date.now().toString()
 		};
+		console.log("Invoking with config:", VotekitConfigSchema.parse(config));
+		const t0 = performance.now();
 		const r = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -244,8 +246,10 @@ class FormState {
 				recaptchaToken: this.recaptchaToken
 			})
 		});
+		const t1 = performance.now();
 		const result = await r.json();
-		console.log(result);
+		console.log("Result:", result);
+		console.log("Time taken:", t1 - t0, "ms");
 	}
 }
 
