@@ -110,7 +110,7 @@
 									value={Math.round(cohesion * 100)}
 									style={`
 										--range-progress:${COLOR_MAP.SLATES[slateIndex]}; 
-										--range-bg:${formState.blocCohesionSum[blocIndex]  === 1 ? COLOR_MAP.SLATES[slateIndex]+'88' : 'lightgray'};
+										--range-bg:${formState.blocCohesionSum[blocIndex]  === 1 ? COLOR_MAP.SLATES[slateIndex]+'11' : 'lightgray'};
 										transition:all 0.3s ease;
 										padding:0;
 									`}
