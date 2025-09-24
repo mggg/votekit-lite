@@ -7,11 +7,8 @@
 			formState.unallocatedPopulation > 0
 				? 'Your voter bloc population shares do not add up to 100%.'
 				: null,
-			formState.blocCohesionSum.some(
-				(cohesionSum) =>
-					Math.round(cohesionSum) !== 1
-			)
-				? 'Your voter bloc cohesion settings do not add up to 100%. for all blocs.'
+			formState.blocCohesionSum.some((cohesionSum) => cohesionSum !== 1)
+				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
 			formState.recaptchaToken.length === 0 ? 'Please verify you are not a robot.' : null
 		].filter(Boolean)
