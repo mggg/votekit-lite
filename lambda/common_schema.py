@@ -8,6 +8,9 @@ validation_schema = {
     "name": {
       "type": "string"
     },
+    "numVoters": {
+      "type": "number"
+    },
     "voterBlocs": {
       "type": "object",
       "propertyNames": {
@@ -132,6 +135,7 @@ validation_schema = {
   "required": [
     "id",
     "name",
+    "numVoters",
     "voterBlocs",
     "slates",
     "election",
