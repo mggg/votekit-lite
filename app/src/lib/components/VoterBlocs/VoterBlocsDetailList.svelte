@@ -41,7 +41,7 @@
 						min="0"
 						class="w-full px-0 text-sm"
 						placeholder="Number of voters"
-						value={formState.blocCounts[i]}
+						value={Math.round(formState.blocCounts[i])}
 						oninput={(e) => (bloc.population = Number(e.currentTarget.value) * bloc.turnout)}
 						disabled={formState.showTurnoutSettings}
 					/>
@@ -54,7 +54,8 @@
 							type="number"
 							class="grow px-0 text-sm"
 							placeholder="Population"
-							bind:value={bloc.population}
+							value={Math.round(bloc.population)}
+							oninput={(e) => (bloc.population = Number(e.currentTarget.value))}
 						/>
 					</label>
 					<div class="col-span-4 flex flex-col items-start">
