@@ -17,7 +17,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (!captchaResult.success) {
 			return new Response(
 				JSON.stringify({
-					error: captchaResult['error-codes']
+					error: 'Captcha error: ' + captchaResult['error-codes'].join(', ')
 				}),
 				{
 					status: 400,
