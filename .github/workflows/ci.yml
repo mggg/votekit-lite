@@ -1,0 +1,56 @@
+name: CI (docker-compose app+lambda)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  compose-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make temp env files
+        run: |
+          cp ./app/.env.example ./app/.env
+          cp ./infra/.env.example ./infra/.env
+          sed -i 's/CAPTCHA_SECRET_KEY=.*/CAPTCHA_SECRET_KEY=${{ secrets.CAPTCHA_SECRET_KEY_TEST }}/' ./app/.env
+          sed -i 's/PUBLIC_CAPTCHA_KEY=.*/PUBLIC_CAPTCHA_KEY=${{ secrets.PUBLIC_CAPTCHA_KEY_TEST }}/' ./app/.env
+
+      - name: Show Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Build and start services (app, lambda)
+        run: |
+          docker compose up -d --build app lambda
+
+      - name: Wait briefly for containers to initialize
+        run: sleep 10
+
+      - name: Run tests in app (pnpm test)
+        run: |
+          docker compose exec -T app sh -lc "pnpm test"
+
+      - name: Run lambda validation (python main.py -v)
+        run: |
+          docker compose exec -T lambda python main.py -v
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          echo '==== app logs ===='
+          docker compose logs app || true
+          echo '==== lambda logs ===='
+          docker compose logs lambda || true
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose down -v
