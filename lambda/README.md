@@ -61,6 +61,14 @@ aws lambda update-function-code \
   --region "$AWS_REGION"
 ```
 
+## Test local functions and unit tests
+We use doctests for local function coverage.
+
+```bash
+docker-compose exec lambda sh
+python main.py -v
+```
+
 ## Test Invocation
 ```bash
 aws lambda invoke \
@@ -71,6 +79,8 @@ aws lambda invoke \
   response.json
 cat response.json | jq .
 ```
+
+
 
 ## Notes
 - Adjust the IAM role ARN to a role with `AWSLambdaBasicExecutionRole` policy.

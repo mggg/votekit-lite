@@ -8,6 +8,9 @@ validation_schema = {
     "name": {
       "type": "string"
     },
+    "numVoters": {
+      "type": "number"
+    },
     "voterBlocs": {
       "type": "object",
       "propertyNames": {
@@ -16,7 +19,7 @@ validation_schema = {
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "count": {
+          "proportion": {
             "type": "number"
           },
           "preference": {
@@ -52,7 +55,7 @@ validation_schema = {
           }
         },
         "required": [
-          "count",
+          "proportion",
           "preference",
           "cohesion"
         ],
@@ -80,8 +83,17 @@ validation_schema = {
     "election": {
       "type": "object",
       "properties": {
-        "mode": {
-          "type": "string"
+        "system": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "STV"
+            },
+            {
+              "type": "string",
+              "const": "blocPlurality"
+            }
+          ]
         },
         "numSeats": {
           "type": "number"
@@ -91,14 +103,27 @@ validation_schema = {
         }
       },
       "required": [
-        "mode",
+        "system",
         "numSeats",
         "maxBallotLength"
       ],
       "additionalProperties": False
     },
     "ballotGenerator": {
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "sBT"
+        },
+        {
+          "type": "string",
+          "const": "sPL"
+        },
+        {
+          "type": "string",
+          "const": "CS"
+        }
+      ]
     },
     "trials": {
       "type": "number"
@@ -110,6 +135,7 @@ validation_schema = {
   "required": [
     "id",
     "name",
+    "numVoters",
     "voterBlocs",
     "slates",
     "election",

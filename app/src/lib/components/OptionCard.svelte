@@ -7,14 +7,14 @@
 
 <button
 	type="button"
-	class="rounded-xl border border-slate-200/70 bg-white/60 p-3 text-left text-sm transition hover:bg-white/80 focus:outline-none {selected
-		? 'ring-2 ring-indigo-300'
-		: ''}"
+	class="btn flex h-auto flex-col items-start gap-0 px-4 py-2 btn-soft {selected
+		? 'btn-primary'
+		: 'btn-secondary'}"
 	aria-pressed={selected}
-	on:click={() => onSelect && onSelect()}
+	onclick={() => onSelect && onSelect()}
 >
-	<div class="font-medium">{title}</div>
+	<div class="text-md">{title}</div>
 	{#if description}
-		<div class="mt-1 text-xs text-slate-600">{description}</div>
+		<div class="mt-1 text-xs font-light">{description}</div>
 	{/if}
 </button>
