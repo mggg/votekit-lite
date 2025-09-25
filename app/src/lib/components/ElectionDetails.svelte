@@ -8,7 +8,7 @@
 <div class="card bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Election details</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-		<fieldset class="fieldset col-span-2">
+		<fieldset class="col-span-2 fieldset">
 			<legend class="fieldset-legend">Number of candidate slates</legend>
 			<div class="w-full max-w-xs">
 				<input
@@ -34,7 +34,7 @@
 					<span>5</span>
 				</div>
 			</div>
-			<p class="label max-w-full whitespace-pre-wrap flex-col items-start text-left">
+			<p class="label max-w-full flex-col items-start text-left whitespace-pre-wrap">
 				{#if MAX_CANDIDATES === formState.totalCandidates && formState.slates.length < 5}
 					<span class="text-amber-600"
 						>To add more slates, reduce the number of candidates per slate.</span
@@ -43,7 +43,7 @@
 			</p>
 		</fieldset>
 		<!-- Number of seats (moved up) -->
-		<fieldset class="fieldset w-full col-span-1">
+		<fieldset class="col-span-1 fieldset w-full">
 			<legend class="fieldset-legend">Number of seats</legend>
 			<input
 				type="number"
@@ -66,7 +66,7 @@
 			</p>
 		</fieldset>
 		<!-- Max candidates that can be ranked -->
-		<fieldset class="fieldset w-full col-span-1">
+		<fieldset class="col-span-1 fieldset w-full">
 			<legend class="fieldset-legend">Maximum ballot length</legend>
 			<input
 				type="number"
@@ -75,7 +75,7 @@
 				class="input input-sm w-full"
 				bind:value={formState.maxRankingCandidatesInput}
 			/>
-			<p class="label flex-col items-start whitespace-pre-wrap ">
+			<p class="label flex-col items-start whitespace-pre-wrap">
 				Must be ≤ total number of candidates ({formState.totalCandidates})
 			</p>
 		</fieldset>
@@ -108,8 +108,10 @@
 						/>
 					</label>
 				</div>
-				<div class="col-span-1 pl-2 flex w-full max-w-xs flex-row items-center gap-2">
-					<span class="sr-only" id={`slate-candidates-label-${slateIndex}`}>Number of candidates</span>
+				<div class="col-span-1 flex w-full max-w-xs flex-row items-center gap-2 pl-2">
+					<span class="sr-only" id={`slate-candidates-label-${slateIndex}`}
+						>Number of candidates</span
+					>
 					<div class="rating-xs rating gap-1">
 						{#each candidatesRange as index}
 							<input
@@ -149,6 +151,8 @@
 	</ul>
 
 	<div class="mt-1 flex items-center justify-between text-xs text-slate-500">
-		<span class={formState.totalCandidates >= MAX_CANDIDATES ? 'text-amber-600' : ''}>Total candidates: {formState.totalCandidates} out of a maximum of {MAX_CANDIDATES}</span>
+		<span class={formState.totalCandidates >= MAX_CANDIDATES ? 'text-amber-600' : ''}
+			>Total candidates: {formState.totalCandidates} out of a maximum of {MAX_CANDIDATES}</span
+		>
 	</div>
 </div>

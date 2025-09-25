@@ -1,9 +1,3 @@
 export const slateColors = {
-  bg: [
-    'bg-primary',
-    'bg-secondary',
-    'bg-accent',
-    'bg-info',
-    'bg-success',
-  ]
-}
+	bg: ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-info', 'bg-success']
+};
