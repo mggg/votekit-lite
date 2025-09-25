@@ -2,7 +2,6 @@ import { RUNS_KEY } from '$lib/constants';
 import type { Run } from './types';
 import { getCandidateCountRange, getMaxRunCount } from './utils';
 
-
 class ResultsState {
 	constructor() {
 		this.runs = this.readRuns();
@@ -11,8 +10,10 @@ class ResultsState {
 	runs: Run[] = $state([]);
 	activeRuns: Set<string> = $state(new Set());
 	maxCount: number = $derived(getMaxRunCount(this.runs, this.activeRuns));
-	candidateCountRange: { min: number, max: number } = $derived(getCandidateCountRange(this.runs, this.activeRuns));
-	
+	candidateCountRange: { min: number; max: number } = $derived(
+		getCandidateCountRange(this.runs, this.activeRuns)
+	);
+
 	readRuns(): Run[] {
 		if (typeof localStorage === 'undefined') return [];
 		const raw = localStorage.getItem(RUNS_KEY);
@@ -23,7 +24,7 @@ class ResultsState {
 			return [];
 		}
 	}
-	
+
 	upsertRun(runInfo: Partial<Run>) {
 		if (!runInfo.id) {
 			return;
@@ -47,7 +48,7 @@ class ResultsState {
 		this.writeRuns(runs);
 		this.runs = runs;
 	}
-	
+
 	writeRuns(runs: Run[]) {
 		if (typeof localStorage === 'undefined') return;
 		localStorage.setItem(RUNS_KEY, JSON.stringify(runs));

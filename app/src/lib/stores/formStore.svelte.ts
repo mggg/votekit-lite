@@ -4,7 +4,11 @@ import { goto } from '$app/navigation';
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue, convertListToCount } from './utils';
-import { VotekitConfigSchema, type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
+import {
+	VotekitConfigSchema,
+	type VotekitConfig,
+	type VoterPreference
+} from '$lib/types/votekitConfig';
 import { resultsState } from './resultsStore.svelte';
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -241,14 +245,20 @@ class FormState {
 					...acc,
 					[bloc.name]: {
 						proportion: this.voterShare[index],
-						preference: this.blocPreferences[index].reduce((acc, preference, index) => ({
-							...acc,
-							[this.slates[index].name]: preference
-						}), {}),
-						cohesion: this.blocCohesion[index].reduce((acc, cohesion, index) => ({
-							...acc,
-							[this.slates[index].name]: cohesion || 1e-10
-						}), {}),
+						preference: this.blocPreferences[index].reduce(
+							(acc, preference, index) => ({
+								...acc,
+								[this.slates[index].name]: preference
+							}),
+							{}
+						),
+						cohesion: this.blocCohesion[index].reduce(
+							(acc, cohesion, index) => ({
+								...acc,
+								[this.slates[index].name]: cohesion || 1e-10
+							}),
+							{}
+						)
 					}
 				}),
 				{}
@@ -278,7 +288,7 @@ class FormState {
 			trials: this.trials,
 			createdAt: Date.now().toString()
 		};
-		console.log("Invoking with config:", VotekitConfigSchema.parse(config));
+		console.log('Invoking with config:', VotekitConfigSchema.parse(config));
 		resultsState.upsertRun({
 			id,
 			name: this.name,
@@ -290,7 +300,7 @@ class FormState {
 				votekitConfig: config,
 				recaptchaToken: this.recaptchaToken
 			})
-		}).then(res => res.json());
+		}).then((res) => res.json());
 		const convertedResult = convertListToCount(response.results, config.election.numSeats);
 		resultsState.upsertRun({
 			id,
@@ -301,7 +311,7 @@ class FormState {
 		});
 		resultsState.toggleActiveRun(id);
 		this.isLoading = false;
-		goto('/results');	
+		goto('/results');
 	}
 }
 

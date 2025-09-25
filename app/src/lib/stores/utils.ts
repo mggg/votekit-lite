@@ -1,4 +1,4 @@
-import type { OutcomeCandidateCount, SlateName, Run, Frequency } from "./types";
+import type { OutcomeCandidateCount, SlateName, Run, Frequency } from './types';
 
 interface BalanceRemainingValueProps {
 	maxValue: number;
@@ -47,12 +47,12 @@ export const convertListToCount = (
 			}
 			output[slateName][candidateCount] = (output[slateName][candidateCount] || 0) + 1;
 		});
-	})
+	});
 	// Backfill missing values
 	const valueRange = new Array(maxCandidates - minValue + 1).fill(0).map((_, i) => minValue + i);
 	Object.entries(output).forEach(([slateName]) => {
 		valueRange.forEach((value) => {
-			output[slateName][value] = (output[slateName][value] || 0);
+			output[slateName][value] = output[slateName][value] || 0;
 		});
 	});
 	return output;
@@ -66,14 +66,14 @@ export const getMaxRunCount = (runs: Run[], activeRuns: Set<string>) => {
 			const runResult = run.result;
 			if (runResult) {
 				Object.values(runResult).forEach((result) => {
-					const values = Object.values(result)
+					const values = Object.values(result);
 					max = Math.max(max, ...values);
 				});
 			}
 		}
 	});
 	return max;
-}
+};
 
 export const getCandidateCountRange = (runs: Run[], activeRuns: Set<string>) => {
 	let min = Infinity;
@@ -83,8 +83,8 @@ export const getCandidateCountRange = (runs: Run[], activeRuns: Set<string>) => 
 		if (run) {
 			const runResult = run.result;
 			if (runResult) {
-				Object.values(runResult).forEach((result) => {	
-					const values = Object.values(result)
+				Object.values(runResult).forEach((result) => {
+					const values = Object.values(result);
 					min = Math.min(min, ...values);
 					max = Math.max(max, ...values);
 				});
@@ -92,4 +92,4 @@ export const getCandidateCountRange = (runs: Run[], activeRuns: Set<string>) => 
 		}
 	});
 	return { min, max };
-}
+};

@@ -49,6 +49,7 @@
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.888.0",
 		"@aws-sdk/client-sts": "^3.888.0",
+		"@types/d3": "^7.4.3",
 		"@types/d3-array": "^3.2.2",
 		"@types/d3-scale": "^4.0.9",
 		"@types/node": "^24.5.0",
