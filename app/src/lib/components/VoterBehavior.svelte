@@ -7,7 +7,9 @@
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-3">
 		<button
 			type="button"
-			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'sPL' ? 'btn-primary' : 'btn-secondary'}"
+			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'sPL'
+				? 'btn-primary'
+				: 'btn-secondary'}"
 			onclick={() => (formState.ballotGenerator = 'sPL')}
 		>
 			<div class="text-left">
@@ -19,7 +21,9 @@
 		</button>
 		<button
 			type="button"
-			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'sBT' ? 'btn-primary' : 'btn-secondary'}"
+			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'sBT'
+				? 'btn-primary'
+				: 'btn-secondary'}"
 			onclick={() => (formState.ballotGenerator = 'sBT')}
 		>
 			<div class="text-left">
@@ -31,7 +35,9 @@
 		</button>
 		<button
 			type="button"
-			class="btn btn-soft h-auto justify-start text-left {formState.ballotGenerator === 'CS' ? 'btn-primary' : 'btn-secondary'}"
+			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'CS'
+				? 'btn-primary'
+				: 'btn-secondary'}"
 			onclick={() => (formState.ballotGenerator = 'CS')}
 		>
 			<div class="text-left">

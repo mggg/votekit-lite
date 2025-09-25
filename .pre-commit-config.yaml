@@ -1,0 +1,42 @@
+repos:
+  - repo: local
+    hooks:
+      - id: compose-start-or-check
+        name: start or check docker
+        entry: bash scripts/precommit/01-start-or-check.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]
+
+      - id: compose-pnpm-check
+        name: pnpm check
+        entry: bash scripts/precommit/03-check.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: compose-pnpm-format
+        name: pnpm format
+        entry: bash scripts/precommit/04-format.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+      - id: compose-pnpm-test
+        name: Fullstack tests
+        entry: bash scripts/precommit/02-test.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: compose-teardown-if-started
+        name: 4 down docker if not started previously
+        entry: bash scripts/precommit/05-teardown.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit, pre-push]

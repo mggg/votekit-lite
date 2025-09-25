@@ -21,28 +21,28 @@
 				</div>
 				<div class="flex flex-row flex-wrap gap-2 pl-6">
 					{#if blocCohesionArray.length <= 2}
-						<div class="flex flex-col w-full">
-							<div class="space-between flex flex-row w-full justify-between">
+						<div class="flex w-full flex-col">
+							<div class="space-between flex w-full flex-row justify-between">
 								{#each formState.slates as slate, slateIndex}
-								<label class="input input-sm my-2 max-w-36">
-									<span class="text-gray-400">{formState.slates[slateIndex].name}</span>
-									<input
-										type="number"
-										min="0"
-										max="100"
-										step="1"
-										class="text-sm"
-										value={Math.round(blocCohesionArray[slateIndex] * 100)}
-										oninput={(e) =>
-											formState.updateBlocCohesion(
-												e,
-												blocIndex,
-												slateIndex,
-												Number(e.currentTarget.value)/100
-											)}
-									/>
-									<span>%</span>
-								</label>
+									<label class="input input-sm my-2 max-w-36">
+										<span class="text-gray-400">{formState.slates[slateIndex].name}</span>
+										<input
+											type="number"
+											min="0"
+											max="100"
+											step="1"
+											class="text-sm"
+											value={Math.round(blocCohesionArray[slateIndex] * 100)}
+											oninput={(e) =>
+												formState.updateBlocCohesion(
+													e,
+													blocIndex,
+													slateIndex,
+													Number(e.currentTarget.value) / 100
+												)}
+										/>
+										<span>%</span>
+									</label>
 								{/each}
 							</div>
 							<label class="flex flex-grow flex-col items-start text-xs">
@@ -57,7 +57,7 @@
 									min="0"
 									max="1"
 									step="0.01"
-									class={`range range-xs w-full`}
+									class={`range w-full range-xs`}
 									value={blocCohesionArray[0]}
 									style={`--range-progress:${COLOR_MAP.SLATES[0]}; --range-bg:${COLOR_MAP.SLATES[1]};background-color:${COLOR_MAP.SLATES[1]};padding:0;`}
 									oninput={(e) =>
@@ -83,7 +83,7 @@
 												e,
 												blocIndex,
 												slateIndex,
-												Number(e.currentTarget.value)/100
+												Number(e.currentTarget.value) / 100
 											)}
 									/>
 									<span>%</span>
@@ -106,11 +106,11 @@
 									min="0"
 									max="100"
 									step="1"
-									class={`range range-xs w-full`}
+									class={`range w-full range-xs`}
 									value={Math.round(cohesion * 100)}
 									style={`
 										--range-progress:${COLOR_MAP.SLATES[slateIndex]}; 
-										--range-bg:${formState.blocCohesionSum[blocIndex]  === 1 ? COLOR_MAP.SLATES[slateIndex]+'11' : 'lightgray'};
+										--range-bg:${formState.blocCohesionSum[blocIndex] === 1 ? COLOR_MAP.SLATES[slateIndex] + '11' : 'lightgray'};
 										transition:all 0.3s ease;
 										padding:0;
 									`}
@@ -119,7 +119,7 @@
 											e,
 											blocIndex,
 											slateIndex,
-											Number(e.currentTarget.value)/100
+											Number(e.currentTarget.value) / 100
 										)}
 								/>
 							</label>

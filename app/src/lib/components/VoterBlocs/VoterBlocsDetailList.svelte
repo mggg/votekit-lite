@@ -48,7 +48,7 @@
 				</label>
 				{#if formState.showTurnoutSettings}
 					<label
-						class={`input input-sm col-span-2 ${formState.showTurnoutSettings ? 'col-span-2' : 'col-span-4'}`}
+						class={`input col-span-2 input-sm ${formState.showTurnoutSettings ? 'col-span-2' : 'col-span-4'}`}
 					>
 						<input
 							type="number"
@@ -65,7 +65,7 @@
 							max="1"
 							step="0.01"
 							bind:value={bloc.turnout}
-							class={`range range-xs col-span-2`}
+							class={`range col-span-2 range-xs`}
 						/>
 						<div class="text-xs text-slate-500">{(bloc.turnout * 100).toFixed(1)}%</div>
 					</div>
@@ -129,7 +129,7 @@
 							min="0"
 							max="1"
 							step="0.01"
-							class="range range-xs mt-1 w-full"
+							class="range mt-1 w-full range-xs"
 							value={formState.populationShare[i]}
 							style={`--range-progress:${COLOR_MAP.BLOCS[i]};`}
 							oninput={(e) =>
@@ -158,7 +158,7 @@
 							max="1"
 							step="0.01"
 							bind:value={bloc.turnout}
-							class={`range range-xs col-span-2`}
+							class={`range col-span-2 range-xs`}
 						/>
 						<div class="text-xs text-slate-500">{(bloc.turnout * 100).toFixed(1)}%</div>
 					</div>
