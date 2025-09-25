@@ -36,10 +36,16 @@ class FormState {
 	blocCounts: number[] = $derived(
 		this.blocs.map((bloc) => Math.round(bloc.population * bloc.turnout))
 	);
-	totalVoters: number = $derived(this.blocCounts.reduce((current, blocCount) => current + blocCount, 0));
+	totalVoters: number = $derived(
+		this.blocCounts.reduce((current, blocCount) => current + blocCount, 0)
+	);
 	unallocatedPopulation: number = $state(0);
-	totalPopulation: number = $derived(this.blocs.reduce((current, bloc) => current + bloc.population, this.unallocatedPopulation));
-	maxPercentages = $derived(this.blocs.map((bloc) => (bloc.population+this.unallocatedPopulation) / this.totalPopulation));
+	totalPopulation: number = $derived(
+		this.blocs.reduce((current, bloc) => current + bloc.population, this.unallocatedPopulation)
+	);
+	maxPercentages = $derived(
+		this.blocs.map((bloc) => (bloc.population + this.unallocatedPopulation) / this.totalPopulation)
+	);
 	populationShare: number[] = $derived(
 		this.blocs.map((bloc) => bloc.population / this.totalPopulation)
 	);
@@ -53,7 +59,9 @@ class FormState {
 		[1.0, 0],
 		[0, 1.0]
 	]);
-	blocCohesionSum: number[] = $derived(this.blocCohesion.map((cohesion) => cohesion.reduce((sum, cohesion) => sum + cohesion, 0)));
+	blocCohesionSum: number[] = $derived(
+		this.blocCohesion.map((cohesion) => cohesion.reduce((sum, cohesion) => sum + cohesion, 0))
+	);
 
 	// Source of truth for slates: Number of candidates and name
 	slates: Slate[] = $state([
@@ -64,7 +72,7 @@ class FormState {
 		{
 			numCandidates: 3,
 			name: 'B'
-		},
+		}
 	]);
 
 	showTurnoutSettings = $state<boolean>(false);
@@ -168,22 +176,31 @@ class FormState {
 				newIndex: index,
 				currentValues: this.populationShare
 			});
-			const newBlocs = this.blocs.map((bloc, i) => ({...bloc, population: this.totalPopulation * newShares[i]}));
+			const newBlocs = this.blocs.map((bloc, i) => ({
+				...bloc,
+				population: this.totalPopulation * newShares[i]
+			}));
 			this.blocs = newBlocs;
 		} else if (this.unallocatedPopulation === 0 && value > currentValue) {
 			(e.currentTarget as HTMLInputElement).value = currentValue.toString();
 			return;
 		} else {
-			const newPopulationValue = Math.min(this.blocs[index].population + this.unallocatedPopulation, this.totalPopulation * value);
-			(e.currentTarget as HTMLInputElement).value = (newPopulationValue / this.totalPopulation).toString();
+			const newPopulationValue = Math.min(
+				this.blocs[index].population + this.unallocatedPopulation,
+				this.totalPopulation * value
+			);
+			(e.currentTarget as HTMLInputElement).value = (
+				newPopulationValue / this.totalPopulation
+			).toString();
 			const newBlocs = this.blocs.map((bloc, i) => {
 				if (index === i) {
 					return { ...bloc, population: newPopulationValue };
 				} else {
-					return {...bloc};
+					return { ...bloc };
 				}
 			});
-			const newUnallocatedPopulation = this.totalPopulation - newBlocs.reduce((sum, bloc) => sum + bloc.population, 0);
+			const newUnallocatedPopulation =
+				this.totalPopulation - newBlocs.reduce((sum, bloc) => sum + bloc.population, 0);
 			this.unallocatedPopulation = Math.round(newUnallocatedPopulation);
 			this.blocs = newBlocs;
 		}
@@ -192,13 +209,20 @@ class FormState {
 	updateBlocCohesion(e: Event, blocIndex: number, slateIndex: number, value: number) {
 		const numSlates = this.slates.length;
 		if (numSlates === 2) {
-			this.blocCohesion[blocIndex] = this.blocCohesion[blocIndex].map((cohesion, i) => i === slateIndex ? value : 1 - value);
+			this.blocCohesion[blocIndex] = this.blocCohesion[blocIndex].map((cohesion, i) =>
+				i === slateIndex ? value : 1 - value
+			);
 		} else {
 			const currentCohesion = this.blocCohesion[blocIndex];
 			const currentCohesionSlateValue = currentCohesion[slateIndex];
-			const newCohesionValue = Math.min(value, 1 - this.blocCohesionSum[blocIndex] + currentCohesionSlateValue);
+			const newCohesionValue = Math.min(
+				value,
+				1 - this.blocCohesionSum[blocIndex] + currentCohesionSlateValue
+			);
 			(e.currentTarget as HTMLInputElement).value = Math.round(newCohesionValue * 100).toString();
-			const newCohesion = currentCohesion.map((cohesion, i) => i === slateIndex ? newCohesionValue : cohesion);
+			const newCohesion = currentCohesion.map((cohesion, i) =>
+				i === slateIndex ? newCohesionValue : cohesion
+			);
 			this.blocCohesion[blocIndex] = newCohesion;
 		}
 	}
@@ -206,30 +230,44 @@ class FormState {
 	async submitMock() {
 		const id = crypto.randomUUID();
 		const config: VotekitConfig = {
-				id,
-				name: this.name,
-				numVoters: this.totalVoters,
-				voterBlocs: this.blocs.reduce((acc, bloc, index) => ({
+			id,
+			name: this.name,
+			numVoters: this.totalVoters,
+			voterBlocs: this.blocs.reduce(
+				(acc, bloc, index) => ({
 					...acc,
 					[bloc.name]: {
 						proportion: this.voterShare[index],
 						preference: this.blocPreferences[index],
 						cohesion: this.blocCohesion[index]
 					}
-				}), {}),
-				slates: this.slates.reduce((acc, slate) => ({
+				}),
+				{}
+			),
+			slates: this.slates.reduce(
+				(acc, slate) => ({
 					...acc,
 					[slate.name]: {
 						numCandidates: slate.numCandidates
 					}
-				}), {}),
-				election:
-					this.system === 'blocPlurality'
-						? { system: 'blocPlurality', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput }
-						: { system: 'STV', numSeats: this.numSeats, maxBallotLength: this.maxRankingCandidatesInput },
-				ballotGenerator: this.ballotGenerator,
-				trials: this.trials,
-				createdAt: Date.now().toString()
+				}),
+				{}
+			),
+			election:
+				this.system === 'blocPlurality'
+					? {
+							system: 'blocPlurality',
+							numSeats: this.numSeats,
+							maxBallotLength: this.maxRankingCandidatesInput
+						}
+					: {
+							system: 'STV',
+							numSeats: this.numSeats,
+							maxBallotLength: this.maxRankingCandidatesInput
+						},
+			ballotGenerator: this.ballotGenerator,
+			trials: this.trials,
+			createdAt: Date.now().toString()
 		};
 		const r = await fetch('/api/invoke', {
 			method: 'POST',

@@ -50,7 +50,7 @@
 		>
 			Share of total population
 		</button>
-		<fieldset class="fieldset mt-2">
+		<fieldset class="mt-2 fieldset">
 			<label class="label">
 				<input type="checkbox" class="checkbox" bind:checked={formState.showTurnoutSettings} />
 				Show turnout settings
