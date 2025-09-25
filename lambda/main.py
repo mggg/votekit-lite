@@ -270,11 +270,11 @@ def _run_simulations(
         >>> config.set_dirichlet_alphas(
         ...     alphas={"bloc1": {"slate1": 1, "slate2": 2}, "bloc2": {"slate1": 1/2, "slate2": 1/2}}
         ... )
-        >>> election_dict = {"numSeats": 1, "system": "STV", "maxBallotLength": 3}
+        >>> election_dict = {"numSeats": 2, "system": "STV", "maxBallotLength": 3}
         >>> results = _run_simulations(2, "sPL", config, election_dict) # doctest: +ELLIPSIS
-        >>> len(results["slate1"]) == 2 and -1 not in results["slate1"] and all(result <=1 for result in results["slate1"])
+        >>> len(results["slate1"]) == 3 and -1 not in results["slate1"] and all(result <=2 for result in results["slate1"])
         True
-        >>> len(results["slate2"]) == 2 and -1 not in results["slate2"] and all(result <=1 for result in results["slate2"])
+        >>> len(results["slate2"]) == 3 and -1 not in results["slate2"] and all(result <=2 for result in results["slate2"])
         True
     """
 
@@ -304,7 +304,11 @@ def _run_simulations(
     ):
         raise ValueError("Some trials resulted in an error.")
 
-    return {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
+    for slate_name, result_counter in results.items():
+        for i in range(election_dict["numSeats"]+1):
+            if i not in result_counter.keys():
+                result_counter[i] = 0
+    return results
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
