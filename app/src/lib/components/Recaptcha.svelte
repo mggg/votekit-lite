@@ -11,6 +11,7 @@
 	if (browser) {
 		// reCAPTCHA callback (must be on window for Google's script)
 		(window as any).onRecaptchaVerify = (token: string) => {
+			console.log('onRecaptchaVerify', token);
 			onVerify(token);
 		};
 
@@ -44,8 +45,8 @@
 			// @ts-ignore
 			widgetId = grecaptcha.render('recaptcha-container', {
 				sitekey: siteKey,
-				callback: 'onRecaptchaVerify',
-				'expired-callback': 'onRecaptchaExpired'
+				callback: (token: string) => (window as any).onRecaptchaVerify(token),
+				'expired-callback': () => (window as any).onRecaptchaExpired()
 			});
 		}
 	}
