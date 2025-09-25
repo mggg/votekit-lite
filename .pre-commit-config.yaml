@@ -2,12 +2,12 @@ repos:
   - repo: local
     hooks:
       - id: compose-start-or-check
-        name: 1 start or check docker
+        name: start or check docker
         entry: bash scripts/precommit/01-start-or-check.sh
         language: system
         pass_filenames: false
         always_run: true
-        stages: [pre-commit, push]
+        stages: [pre-commit, pre-push]
 
       - id: compose-pnpm-check
         name: pnpm check
@@ -31,7 +31,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [push]
+        stages: [pre-push]
 
       - id: compose-teardown-if-started
         name: 4 down docker if not started previously
@@ -39,5 +39,4 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [pre-commit, push]
-
+        stages: [pre-commit, pre-push]
