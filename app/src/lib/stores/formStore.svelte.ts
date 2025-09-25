@@ -2,8 +2,9 @@ import { randomRunName } from '$lib';
 // Re-export types from storage for convenience
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
-import { balanceRemainingValue } from './utils';
+import { balanceRemainingValue, convertListToCount } from './utils';
 import { VotekitConfigSchema, type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
+import { resultsState } from './resultsStore.svelte';
 
 // Constants
 export const MAX_CANDIDATES = 12;
@@ -238,7 +239,11 @@ class FormState {
 				createdAt: Date.now().toString()
 		};
 		console.log("Invoking with config:", VotekitConfigSchema.parse(config));
-		const t0 = performance.now();
+		resultsState.upsertRun({
+			id,
+			name: this.name,
+			config
+		});
 		const r = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -246,10 +251,15 @@ class FormState {
 				recaptchaToken: this.recaptchaToken
 			})
 		});
-		const t1 = performance.now();
 		const result = await r.json();
-		console.log("Result:", result);
-		console.log("Time taken:", t1 - t0, "ms");
+		const convertedResult = convertListToCount(result, config.election.numSeats);
+		resultsState.upsertRun({
+			id,
+			name: this.name,
+			config,
+			result: convertedResult
+		});
+		
 	}
 }
 
