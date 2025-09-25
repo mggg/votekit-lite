@@ -14,7 +14,8 @@
 		].filter(Boolean)
 	);
 </script>
-<div class="card w-full max-w-none bg-base-100 p-4 shadow-sm">
+
+<div class="card bg-base-100 w-full max-w-none p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
@@ -42,11 +43,20 @@
 		onExpired={() => (formState.recaptchaToken = '')}
 	/>
 	<button
-		class="btn mt-2 btn-block btn-soft btn-primary"
+		class="btn btn-block btn-soft btn-primary mt-2"
 		onclick={() => formState.submitMock()}
-		disabled={!formState.recaptchaToken.length || formState.unallocatedPopulation > 0}
+		disabled={!formState.recaptchaToken.length ||
+			formState.unallocatedPopulation > 0 ||
+			formState.isLoading}
 	>
 		Run simulation (mock)
 	</button>
+	{#if formState.isLoading}
+		<div class="mt-2 flex flex-row items-center gap-2 text-xs text-slate-500">
+			<div class="loading loading-ring loading-xl text-success"></div>
+
+			<h3 class="text-success text-md">Running simulation...</h3>
+		</div>
+	{/if}
 	<p class="mt-2 text-xs text-slate-500">This saves a mock run and takes you to Results.</p>
 </div>

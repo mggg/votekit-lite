@@ -1,11 +1,11 @@
 import { randomRunName } from '$lib';
+import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
 import { balanceRemainingValue, convertListToCount } from './utils';
 import { VotekitConfigSchema, type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
 import { resultsState } from './resultsStore.svelte';
-
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -18,6 +18,7 @@ class FormState {
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
+	isLoading: boolean = $state(false);
 
 	// Source of truth for blocs: Population and turnout
 	blocs: VoterBloc[] = $state([
@@ -206,6 +207,7 @@ class FormState {
 
 	async submitMock() {
 		const id = crypto.randomUUID();
+		this.isLoading = true;
 		const config: VotekitConfig = {
 				id,
 				name: this.name,
@@ -244,22 +246,24 @@ class FormState {
 			name: this.name,
 			config
 		});
-		const r = await fetch('/api/invoke', {
+		const response = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
 				votekitConfig: config,
 				recaptchaToken: this.recaptchaToken
 			})
-		});
-		const result = await r.json();
-		const convertedResult = convertListToCount(result, config.election.numSeats);
+		}).then(res => res.json());
+		const convertedResult = convertListToCount(response.results, config.election.numSeats);
 		resultsState.upsertRun({
 			id,
 			name: this.name,
 			config,
+			createdAt: Date.now().toString(),
 			result: convertedResult
 		});
-		
+		resultsState.toggleActiveRun(id);
+		this.isLoading = false;
+		goto('/results');	
 	}
 }
 

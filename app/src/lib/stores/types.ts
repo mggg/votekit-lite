@@ -18,6 +18,7 @@ export type Frequency = number;
 export interface Run {
 	id: string;
 	name: string;
+	createdAt: string;
 	config: VotekitConfig;
 	result?: Record<SlateName, Record<OutcomeCandidateCount, Frequency>>;
 }

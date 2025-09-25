@@ -57,3 +57,39 @@ export const convertListToCount = (
 	});
 	return output;
 };
+
+export const getMaxRunCount = (runs: Run[], activeRuns: Set<string>) => {
+	let max = 0;
+	activeRuns.forEach((runId) => {
+		const run = runs.find((run) => run.id === runId);
+		if (run) {
+			const runResult = run.result;
+			if (runResult) {
+				Object.values(runResult).forEach((result) => {
+					const values = Object.values(result)
+					max = Math.max(max, ...values);
+				});
+			}
+		}
+	});
+	return max;
+}
+
+export const getCandidateCountRange = (runs: Run[], activeRuns: Set<string>) => {
+	let min = Infinity;
+	let max = 0;
+	activeRuns.forEach((runId) => {
+		const run = runs.find((run) => run.id === runId);
+		if (run) {
+			const runResult = run.result;
+			if (runResult) {
+				Object.values(runResult).forEach((result) => {	
+					const values = Object.values(result)
+					min = Math.min(min, ...values);
+					max = Math.max(max, ...values);
+				});
+			}
+		}
+	});
+	return { min, max };
+}
