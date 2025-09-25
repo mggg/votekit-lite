@@ -23,6 +23,7 @@ from votekit.pref_profile import (
     RankProfile,
     convert_rank_profile_to_score_profile_via_score_vector,
 )
+from collections import Counter
 
 
 from votekit.elections import STV, BlocPlurality
@@ -242,7 +243,7 @@ def _run_simulations(
     ballot_generator: str,
     config: BlocSlateConfig,
     election_dict: dict[str, Any],
-) -> dict[str, list[int]]:
+) -> dict[str, dict[int, int]]:
     """
     Run the simulations
 
@@ -254,7 +255,9 @@ def _run_simulations(
             event.
 
     Returns:
-        dict[str, list[int]]: Number of elected candidates by slate for each trial.
+        dict[str, Counter]: A dictionary mapping slate names to a Counter.
+            The Counter counts the number of times a number of seats won was observed 
+            in the trials, i.e. the data needed to make a histogram.
 
     Doctests:
         >>> config = BlocSlateConfig(
@@ -294,12 +297,14 @@ def _run_simulations(
 
         config.resample_preference_intervals_from_dirichlet_alphas()
 
+    results = {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
     if any(
-        any(trial_result == -1 for trial_result in result_list)
-        for result_list in results.values()
+        -1 in result_counter.keys()
+        for result_counter in results.values()
     ):
         raise ValueError("Some trials resulted in an error.")
-    return results
+
+    return {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
