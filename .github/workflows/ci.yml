@@ -19,8 +19,8 @@ jobs:
         run: |
           cp ./app/.env.example ./app/.env
           cp ./infra/.env.example ./infra/.env
-          sed -i 's/CAPTCHA_SECRET_KEY=.*/CAPTCHA_SECRET_KEY=${{ secrets.CAPTCHA_SECRET_KEY_TEST }}/' ./app/.env
-          sed -i 's/PUBLIC_CAPTCHA_KEY=.*/PUBLIC_CAPTCHA_KEY=${{ secrets.PUBLIC_CAPTCHA_KEY_TEST }}/' ./app/.env
+          sed -i 's/TURNSTILE_SECRET_KEY=.*/TURNSTILE_SECRET_KEY=${{ secrets.TURNSTILE_SECRET_KEY_TEST }}/' ./app/.env
+          sed -i 's/PUBLIC_TURNSTILE_KEY=.*/PUBLIC_TURNSTILE_KEY=${{ secrets.PUBLIC_TURNSTILE_KEY_TEST }}/' ./app/.env
 
       - name: Show Docker versions
         run: |
