@@ -289,18 +289,18 @@ class FormState {
 			createdAt: Date.now().toString()
 		};
 		console.log('Invoking with config:', VotekitConfigSchema.parse(config));
-		resultsState.upsertRun({
-			id,
-			name: this.name,
-			config
-		});
 		const response = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
 				votekitConfig: config,
 				turnstileToken: this.turnstileToken
 			})
-		}).then((res) => res.json());
+		}).then((res) => (res.ok ? res.json() : Promise.reject(res)));
+		if (!response.ok) {
+			this.isLoading = false;
+			console.error('Error invoking lambda:', response);
+			return;
+		}
 		const convertedResult = convertListToCount(response.results, config.election.numSeats);
 		resultsState.upsertRun({
 			id,
