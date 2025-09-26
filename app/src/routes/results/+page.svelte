@@ -39,7 +39,7 @@
 			{#if resultsState.activeRuns.size === 0}
 				<p class="text-sm text-slate-500">Select at least one run to view results.</p>
 			{:else}
-				<div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 					{#each resultsState.activeRuns as runId}
 						<ResultsChart {runId} />
 					{/each}
