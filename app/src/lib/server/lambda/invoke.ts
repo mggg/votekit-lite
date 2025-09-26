@@ -77,7 +77,9 @@ const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
 
 	// Parse response payload
 	const payload = response.Payload ? JSON.parse(Buffer.from(response.Payload).toString()) : null;
-
+	if (payload.body) {
+		return JSON.parse(payload.body);
+	}
 	return payload;
 };
 

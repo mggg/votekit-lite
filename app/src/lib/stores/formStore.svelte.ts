@@ -295,12 +295,13 @@ class FormState {
 				votekitConfig: config,
 				turnstileToken: this.turnstileToken
 			})
-		}).then((res) => (res.ok ? res.json() : Promise.reject(res)));
-		if (!response.ok) {
-			this.isLoading = false;
-			console.error('Error invoking lambda:', response);
-			return;
-		}
+		}).then((res) => (res.ok ? res.json() : null));
+		// if (!response.ok) {
+		// 	this.isLoading = false;
+		// 	console.error('Error invoking lambda:', response);
+		// 	return;
+		// }
+		console.log('Response:', response);
 		const convertedResult = convertListToCount(response.results, config.election.numSeats);
 		resultsState.upsertRun({
 			id,
