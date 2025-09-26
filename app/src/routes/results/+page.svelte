@@ -1,37 +1,46 @@
 <script lang="ts">
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
-	import ResultsChart from '$lib/components/ResultsChart.svelte';
+	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-	<aside class="card bg-base-100 p-4 shadow-sm lg:col-span-1">
-		<div class="mb-3 flex items-center justify-between">
+	<div class="rounded-box bg-base-100 p-2 lg:col-span-1">
+		<div class="list-row flex flex-row justify-between p-2">
 			<h2 class="text-sm font-semibold text-slate-800">My runs</h2>
 			<div class="flex gap-1">
-				<!-- <button class="btn btn-xs btn-soft" on:click={selectAll}>Select all</button>
-        <button class="btn btn-xs btn-soft" on:click={clearSelection}>Clear</button> -->
+				<button class="btn btn-soft btn-xs" onclick={() => resultsState.selectAll()}
+					>Select all</button
+				>
+				<button class="btn btn-soft btn-xs" onclick={() => resultsState.clearSelection()}
+					>Clear</button
+				>
 			</div>
 		</div>
-		<div class="space-y-1">
+		<ul class="list-xs list max-h-[50vh] overflow-y-auto" role="aside">
 			{#if resultsState.runs.length === 0}
-				<p class="text-sm text-slate-500">No runs yet. Create one on the Run page.</p>
+				<li class="list-row">
+					<p class="text-sm text-slate-500">No runs yet. Create one on the Run page.</p>
+				</li>
 			{:else}
 				{#each resultsState.runs as run}
-					<button
-						class="btn relative w-full justify-start btn-soft {resultsState.activeRuns.has(run.id)
-							? 'btn-primary'
-							: 'btn-secondary'}"
-						on:click={() => resultsState.toggleActiveRun(run.id)}
-					>
-						<div class="truncate">
-							<div class="pb-2 text-sm">{run.name}</div>
-							<div class="text-xs text-slate-500">{new Date(+run.createdAt).toLocaleString()}</div>
-						</div>
-					</button>
+					<li class="list-row">
+						<fieldset class="fieldset p-0">
+							<legend class="sr-only fieldset-legend">Toggle {run.name}</legend>
+							<label class="label">
+								<input
+									type="checkbox"
+									checked={resultsState.activeRuns.has(run.id)}
+									class="toggle text-lg font-bold"
+									onclick={() => resultsState.toggleActiveRun(run.id)}
+								/>
+								{run.name}
+							</label>
+						</fieldset>
+					</li>
 				{/each}
 			{/if}
-		</div>
-	</aside>
+		</ul>
+	</div>
 
 	<section class="space-y-6 lg:col-span-3">
 		<div class="card bg-base-100 p-5 shadow-sm">
@@ -41,7 +50,7 @@
 			{:else}
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 					{#each resultsState.activeRuns as runId}
-						<ResultsChart {runId} />
+						<ResultsCard {runId} />
 					{/each}
 				</div>
 			{/if}

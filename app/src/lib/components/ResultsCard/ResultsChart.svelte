@@ -10,19 +10,19 @@
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 200;
-	const margin = { top: 20, right: 90, bottom: 40, left: 30 };
+	const margin = { top: 20, right: 0, bottom: 40, left: 36 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
 	let height = $state(DEFAULT_HEIGHT);
-
 	const innerWidth = $derived(Math.max(0, width - margin.left - margin.right));
 	const innerHeight = $derived(Math.max(0, height - margin.top - margin.bottom));
 
 	function resize() {
 		const box = svg?.getBoundingClientRect();
+
 		({ width, height } = box
-			? { width: Math.max(DEFAULT_WIDTH, box.width), height: Math.max(DEFAULT_HEIGHT, box.height) }
+			? { width: box.width, height: box.height }
 			: { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
 	}
 	onMount(resize);
@@ -100,6 +100,14 @@
 	function isActive(g: string) {
 		return activeSlates.length === 0 || activeSlates.includes(g);
 	}
+
+	// Placeholder mouse event handlers for invisible bars
+	function handleBarMouseEnter(idx: number) {
+		console.log('Mouse enter on group index:', idx);
+	}
+	function handleBarMouseLeave(idx: number) {
+		console.log('Mouse leave on group index:', idx);
+	}
 </script>
 
 <svelte:window onresize={resize} />
@@ -114,9 +122,20 @@
 			{/each}
 		</g>
 
-		<!-- grouped bars -->
-		{#each byEntry as bucket}
+		<!-- grouped bars with invisible background bars for interaction -->
+		{#each byEntry as bucket, idx}
 			<g transform={`translate(${x0(bucket.entry) ?? 0},0)`}>
+				<!-- Invisible background bar for group interaction -->
+				<rect
+					x="0"
+					y="0"
+					width={x0.bandwidth()}
+					height={innerHeight}
+					fill="transparent"
+					style="pointer-events: all;"
+					on:mouseenter={() => handleBarMouseEnter(idx)}
+					on:mouseleave={() => handleBarMouseLeave(idx)}
+				/>
 				{#each bucket.values as d}
 					<rect
 						x={x1(d.group) ?? 0}
@@ -143,6 +162,17 @@
 					</text>
 				</g>
 			{/each}
+			<!-- X axis label -->
+			<text
+				x={margin.left}
+				y="30"
+				text-anchor="middle"
+				font-size="10"
+				fill="#333"
+				font-weight="normal"
+			>
+				Number of Seats Won
+			</text>
 		</g>
 
 		<!-- Y axis -->
@@ -156,14 +186,26 @@
 					</text>
 				</g>
 			{/each}
+			<!-- Y axis label -->
+			<text
+				x="-28"
+				y={innerHeight / 2}
+				text-anchor="middle"
+				font-size="10"
+				fill="#333"
+				font-weight="normal"
+				transform={`rotate(-90 -28,${innerHeight / 2})`}
+			>
+				Frequency of Result
+			</text>
 		</g>
 	</g>
 
 	<!-- Legend -->
-	<g transform={`translate(${margin.left},${height - 10})`}>
+	<g transform={`translate(${innerWidth - 90},${height})`}>
 		{#each groups as g, i}
 			<g
-				transform={`translate(${i * 110},0)`}
+				transform={`translate(${i * 30},0)`}
 				on:click={() => toggleGroup(g)}
 				style="cursor: pointer;"
 			>
@@ -176,7 +218,7 @@
 					opacity={isActive(g) ? 1 : 0.35}
 					rx="2"
 				/>
-				<text x="18" y="-8" dy="0.8em" font-size="12" fill="#222">{g}</text>
+				<text x="14" y="-4" font-size="12" fill="#222">{g}</text>
 			</g>
 		{/each}
 	</g>

@@ -11,10 +11,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const data = (await request.json()) as InvokeRequest;
 		const { turnstileToken, votekitConfig } = data;
-		console.log('!!!turnstileToken', turnstileToken);
 		// VALIDATE CAPTCHA
 		const captchaResult = await validateTurnstile(turnstileToken);
-		console.log('!!!captchaResult', captchaResult);
 		if (!captchaResult.success) {
 			return new Response(
 				JSON.stringify({

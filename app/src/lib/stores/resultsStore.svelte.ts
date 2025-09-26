@@ -59,6 +59,14 @@ class ResultsState {
 		newActiveRuns.has(runId) ? newActiveRuns.delete(runId) : newActiveRuns.add(runId);
 		this.activeRuns = newActiveRuns;
 	}
+
+	selectAll() {
+		this.activeRuns = new Set(this.runs.map((r) => r.id));
+	}
+
+	clearSelection() {
+		this.activeRuns = new Set();
+	}
 }
 
 export const resultsState = new ResultsState();
