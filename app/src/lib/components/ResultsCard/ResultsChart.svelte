@@ -30,6 +30,7 @@
 	// data
 	const raw = $derived(resultsState.runs.find((r) => r.id === runId)?.result ?? {});
 	const groups = $derived(Object.keys(raw)); // series keys
+	const maxNameLength = $derived(Math.max(...groups.map((g) => g.length)));
 	const entries = $derived(
 		Array.from(new Set(Object.values(raw).flatMap((d: any) => Object.keys(d ?? {}))))
 	);
@@ -91,6 +92,7 @@
 
 	// legend interaction
 	function toggleGroup(g: string) {
+		if (groups.length === 1) return;
 		if (activeSlates.includes(g)) {
 			activeSlates.splice(activeSlates.indexOf(g), 1);
 			activeSlates = [...activeSlates];
@@ -217,27 +219,38 @@
 		</g>
 	</g>
 
-	<!-- Legend -->
-	<g transform={`translate(${width - 30 * groups.length},20)`}>
+	<!-- Legend (vertical, truncated, translucent background) -->
+	<g transform={`translate(${width - (Math.min(5, maxNameLength) * 10 + 42)}, 20)`}>
+		<rect
+			x="-10"
+			y="-20"
+			width={Math.min(5, maxNameLength) * 10 + 42}
+			height={groups.length * 24 + 10}
+			fill="rgba(255, 255, 255, 0.7)"
+			opacity="0.7"
+			rx="6"
+		/>
 		{#each groups as g, i}
 			<g
-				transform={`translate(${i * 30},0)`}
+				transform={`translate(0,${i * 24})`}
 				onclick={() => toggleGroup(g)}
 				style="cursor: pointer;"
 				aria-hidden="true"
 			>
 				<rect
 					x="0"
-					y="-14"
-					width="12"
-					height="12"
+					y="-10"
+					width="16"
+					height="16"
 					fill={isActive(g) ? color(g) : 'transparent'}
 					stroke={color(g)}
 					stroke-width={isActive(g) ? 0 : 1}
 					opacity={1}
-					rx="2"
+					rx="3"
 				/>
-				<text x="14" y="-4" font-size="12" fill="#222">{g}</text>
+				<text x="22" y="2" font-size="12" fill="#222">
+					{g.length > 7 ? `${g.slice(0, 7)}…` : g}
+				</text>
 			</g>
 		{/each}
 	</g>
