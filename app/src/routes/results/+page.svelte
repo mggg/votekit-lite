@@ -16,7 +16,7 @@
 				>
 			</div>
 		</div>
-		<ul class="list-xs list max-h-[50vh] overflow-y-auto" role="aside">
+		<ul class="list-xs list max-h-[50vh] overflow-y-auto" role="list">
 			{#if resultsState.runs.length === 0}
 				<li class="list-row">
 					<p class="text-sm text-slate-500">No runs yet. Create one on the Run page.</p>

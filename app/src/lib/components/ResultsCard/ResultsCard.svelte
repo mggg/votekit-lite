@@ -3,6 +3,8 @@
 	import ResultsChart from './ResultsChart.svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultCardHeader from './ResultCardHeader.svelte';
+	import ResultsTable from './ResultsTable.svelte';
+	import ResultCardDetails from './ResultCardDetails.svelte';
 	let activeTab = $state('histogram');
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
 </script>
@@ -17,7 +19,7 @@
 				class="tab"
 				aria-label="Histogram"
 				checked={activeTab === 'histogram'}
-				on:change={() => (activeTab = 'histogram')}
+				onchange={() => (activeTab = 'histogram')}
 				style={`background: ${activeTab === 'histogram' ? 'white' : 'none'}`}
 			/>
 			<div class="tab-content border-base-300 bg-base-100 p-6">
@@ -31,10 +33,13 @@
 				class="tab"
 				aria-label="Table"
 				checked={activeTab === 'table'}
-				on:change={() => (activeTab = 'table')}
+				onchange={() => (activeTab = 'table')}
 				style={`background: ${activeTab === 'table' ? 'white' : 'none'}`}
 			/>
-			<div class="tab-content border-base-300 bg-base-100 p-6">table</div>
+			<div class="tab-content border-base-300 bg-base-100 p-6">
+				<ResultCardHeader {run} />
+				<ResultsTable {run} />
+			</div>
 
 			<input
 				type="radio"
@@ -42,18 +47,13 @@
 				class="tab"
 				aria-label="Full configuration"
 				checked={activeTab === 'full_configuration'}
-				on:change={() => (activeTab = 'full_configuration')}
+				onchange={() => (activeTab = 'full_configuration')}
 				style={`background: ${activeTab === 'full_configuration' ? 'white' : 'none'}`}
 			/>
 			<div class="tab-content border-base-300 bg-base-100 p-6">
-				<pre class="max-h-[200px] overflow-y-auto text-xs">{JSON.stringify(
-						run?.config,
-						null,
-						2
-					)}</pre>
+				<ResultCardDetails {run} />
 			</div>
 		</div>
-		<p>config</p>
 	</div>
 {:else}
 	<p>No run found</p>

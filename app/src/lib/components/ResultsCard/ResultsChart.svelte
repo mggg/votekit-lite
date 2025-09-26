@@ -133,8 +133,9 @@
 					height={innerHeight}
 					fill="transparent"
 					style="pointer-events: all;"
-					on:mouseenter={() => handleBarMouseEnter(idx)}
-					on:mouseleave={() => handleBarMouseLeave(idx)}
+					onmouseenter={() => handleBarMouseEnter(idx)}
+					onmouseleave={() => handleBarMouseLeave(idx)}
+					aria-hidden="true"
 				/>
 				{#each bucket.values as d}
 					<rect
@@ -202,12 +203,13 @@
 	</g>
 
 	<!-- Legend -->
-	<g transform={`translate(${innerWidth - 90},${height})`}>
+	<g transform={`translate(${innerWidth - 30 * groups.length},${height})`}>
 		{#each groups as g, i}
 			<g
 				transform={`translate(${i * 30},0)`}
-				on:click={() => toggleGroup(g)}
+				onclick={() => toggleGroup(g)}
 				style="cursor: pointer;"
+				aria-hidden="true"
 			>
 				<rect
 					x="0"
