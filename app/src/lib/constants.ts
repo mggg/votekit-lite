@@ -1,3 +1,5 @@
+import type { FormState } from '$lib/stores/formStore.svelte';
+
 export const COLOR_MAP = {
 	BLOCS: ['#FF4B4B', '#FF8A00', '#FFD400', '#FF2DA8', '#9A5BFF'],
 	SLATES: ['#2BB5FF', '#0f2a5c', '#00C2A8', '#37E3A1', '#148731'],
@@ -20,3 +22,29 @@ export const NAV_CONFIG = [
 		href: '/about'
 	}
 ];
+
+export const ELECTION_SYSTEM_MAP: Record<
+	FormState['system'],
+	{ name: string; description: string }
+> = {
+	STV: {
+		name: 'Single Transferable Vote (STV)',
+		description: 'Votes transfer as candidates are elected/eliminated.'
+	},
+	blocPlurality: {
+		name: 'Bloc Plurality',
+		description: 'Most votes wins.'
+	}
+};
+
+export const VOTER_PREFERENCE_MAP = {
+	strong: 'Yes',
+	all_bets_off: 'Unknown',
+	unif: 'No'
+};
+
+export const BALLOT_GENERATOR_MAP = {
+	sPL: 'Impulsive voter',
+	sBT: 'Deliberative voter',
+	CS: 'Cambridge voter'
+};

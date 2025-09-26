@@ -13,7 +13,7 @@ import { resultsState } from './resultsStore.svelte';
 // Constants
 export const MAX_CANDIDATES = 12;
 
-class FormState {
+export class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
 	system = $state<VotekitConfig['election']['system']>('STV');

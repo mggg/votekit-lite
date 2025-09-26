@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { BALLOT_GENERATOR_MAP, ELECTION_SYSTEM_MAP, VOTER_PREFERENCE_MAP } from '$lib/constants';
+	import type { FormState } from '$lib/stores/formStore.svelte';
 	import type { Run } from '$lib/stores/types';
 	import { percentFormatter } from '$lib/utils/format';
 	const { run } = $props<{ run: Run }>();
+	console.log(run);
 </script>
 
 {#if run}
@@ -15,10 +18,6 @@
 						<td>{run.name}</td>
 					</tr>
 					<tr>
-						<td class="font-semibold">ID</td>
-						<td>{run.id}</td>
-					</tr>
-					<tr>
 						<td class="font-semibold">Created</td>
 						<td>{new Date(+run.createdAt).toLocaleString()}</td>
 					</tr>
@@ -27,8 +26,11 @@
 						<td>{run.config.trials}</td>
 					</tr>
 					<tr>
-						<td class="font-semibold">Ballot Generator</td>
-						<td>{run.config.ballotGenerator}</td>
+						<td class="font-semibold">Voter Profile</td>
+						<td
+							>{BALLOT_GENERATOR_MAP[run.config.ballotGenerator as FormState['ballotGenerator']] ??
+								'Unknown'}</td
+						>
 					</tr>
 				</tbody>
 			</table>
@@ -40,7 +42,10 @@
 				<tbody>
 					<tr>
 						<td class="font-semibold">System</td>
-						<td>{run.config.election.system}</td>
+						<td
+							>{ELECTION_SYSTEM_MAP[run.config.election.system as FormState['system']]?.name ??
+								'Unknown'}</td
+						>
 					</tr>
 					<tr>
 						<td class="font-semibold">Seats</td>
@@ -82,7 +87,7 @@
 						<th>Name</th>
 						<th>Voters</th>
 						<th>Cohesion</th>
-						<th>Preferences</th>
+						<th>Strong Candidate</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -97,7 +102,11 @@
 							</td>
 							<td>
 								{#each Object.entries(bloc.preference) as Array<[string, string]> as [slate, pref]}
-									<p>{slate}: {pref.replaceAll('_', ' ')}</p>
+									<p>
+										{slate}: {VOTER_PREFERENCE_MAP[
+											pref as FormState['blocPreferences'][number][number]
+										] ?? 'Unknown'}
+									</p>
 								{/each}
 							</td>
 						</tr>

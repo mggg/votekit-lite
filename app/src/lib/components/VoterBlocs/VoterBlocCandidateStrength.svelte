@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formState } from '$lib/stores/formStore.svelte';
+	import { formState, type FormState } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
 	import PalettePip from '../PalettePip.svelte';
 </script>
@@ -30,6 +30,9 @@
 									<select
 										class="select mt-1 select-sm"
 										value={formState.blocPreferences[blocIndex][slateIndex]}
+										onchange={(e) =>
+											(formState.blocPreferences[blocIndex][slateIndex] = e.currentTarget
+												.value as FormState['blocPreferences'][number][number])}
 									>
 										<option value="strong">Yes</option>
 										<option value="all_bets_off">Unknown</option>
