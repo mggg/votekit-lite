@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
+	// import ResultRunControlDropdown from '$lib/components/ResultsCard/ResultRunControlDropdown.svelte';
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
@@ -36,6 +37,15 @@
 								{run.name}
 							</label>
 						</fieldset>
+						<!-- change popover-1 and --anchor-1 names. Use unique names for each dropdown -->
+						<!-- <button
+							class="btn"
+							popovertarget={`popover-${run.id}`}
+							style={`anchor-name:--anchor-${run.id}`}
+						>
+							Settings
+						</button>
+						<ResultRunControlDropdown {run} /> -->
 					</li>
 				{/each}
 			{/if}

@@ -67,6 +67,16 @@ class ResultsState {
 	clearSelection() {
 		this.activeRuns = new Set();
 	}
+
+	removeRun(runId: string) {
+		this.runs = this.runs.filter((r) => r.id !== runId);
+		this.writeRuns(this.runs);
+	}
+
+	renameRun(runId: string, name: string) {
+		this.runs = this.runs.map((r) => (r.id === runId ? { ...r, name } : r));
+		this.writeRuns(this.runs);
+	}
 }
 
 export const resultsState = new ResultsState();

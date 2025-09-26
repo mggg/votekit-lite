@@ -22,7 +22,7 @@
 				onchange={() => (activeTab = 'histogram')}
 				style={`background: ${activeTab === 'histogram' ? 'white' : 'none'}`}
 			/>
-			<div class="tab-content border-base-300 bg-base-100 p-6">
+			<div class="relative tab-content border-base-300 bg-base-100 p-6">
 				<ResultCardHeader {run} />
 				<ResultsChart {runId} />
 			</div>

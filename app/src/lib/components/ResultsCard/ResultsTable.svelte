@@ -15,7 +15,7 @@
 		run.result ? Object.keys(run.result[Object.keys(run.result)[0]]) : []
 	);
 
-	const topColor = COLOR_MAP.SLATES[0];
+	const topColor = COLOR_MAP.HEATMAP_BACKGROUND;
 	const y = $derived(
 		d3
 			.scaleLinear()

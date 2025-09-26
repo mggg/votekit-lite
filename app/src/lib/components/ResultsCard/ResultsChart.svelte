@@ -9,8 +9,8 @@
 
 	// sizing
 	const DEFAULT_WIDTH = 500;
-	const DEFAULT_HEIGHT = 200;
-	const margin = { top: 20, right: 0, bottom: 40, left: 36 }; // increase left margin for y label
+	const DEFAULT_HEIGHT = 240;
+	const margin = { top: 60, right: 0, bottom: 40, left: 44 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
@@ -33,6 +33,7 @@
 	const entries = $derived(
 		Array.from(new Set(Object.values(raw).flatMap((d: any) => Object.keys(d ?? {}))))
 	);
+	let hoveredGroupIndex = $state<number | null>(null);
 
 	// interactive series filter (legend toggles)
 	let activeSlates = $state<string[]>([]);
@@ -103,15 +104,28 @@
 
 	// Placeholder mouse event handlers for invisible bars
 	function handleBarMouseEnter(idx: number) {
-		console.log('Mouse enter on group index:', idx);
+		hoveredGroupIndex = idx;
 	}
-	function handleBarMouseLeave(idx: number) {
-		console.log('Mouse leave on group index:', idx);
+	function handleBarMouseLeave() {
+		hoveredGroupIndex = null;
 	}
 </script>
 
 <svelte:window onresize={resize} />
-
+{#if hoveredGroupIndex !== null}
+	<div
+		class="pointer-events:none; absolute top-[50%] rounded-md bg-base-100 p-2 shadow-md"
+		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
+	>
+		<p class="text-sm font-bold">{hoveredGroupIndex} seats won</p>
+		{#each byEntry[hoveredGroupIndex].values as g}
+			<p class="text-sm">
+				<b>{g.group}:</b>
+				{g.value}
+			</p>
+		{/each}
+	</div>
+{/if}
 <svg bind:this={svg} {height}>
 	<!-- chart group with margins -->
 	<g transform={`translate(${margin.left},${margin.top})`}>
@@ -126,17 +140,6 @@
 		{#each byEntry as bucket, idx}
 			<g transform={`translate(${x0(bucket.entry) ?? 0},0)`}>
 				<!-- Invisible background bar for group interaction -->
-				<rect
-					x="0"
-					y="0"
-					width={x0.bandwidth()}
-					height={innerHeight}
-					fill="transparent"
-					style="pointer-events: all;"
-					onmouseenter={() => handleBarMouseEnter(idx)}
-					onmouseleave={() => handleBarMouseLeave(idx)}
-					aria-hidden="true"
-				/>
 				{#each bucket.values as d}
 					<rect
 						x={x1(d.group) ?? 0}
@@ -145,10 +148,22 @@
 						height={Math.max(0, innerHeight - y(d.value))}
 						fill={color(d.group)}
 						opacity={isActive(d.group) ? 1 : 0.35}
+						class="pointer-events:none;"
 					>
 						<title>{d.group} • {bucket.entry}: {d.value}</title>
 					</rect>
 				{/each}
+				<rect
+					x="0"
+					y="0"
+					width={x0.bandwidth()}
+					height={innerHeight}
+					fill={hoveredGroupIndex === idx ? 'rgba(0, 0, 0, 0.05)' : 'transparent'}
+					style="pointer-events: all;"
+					onmouseenter={() => handleBarMouseEnter(idx)}
+					onmouseleave={() => handleBarMouseLeave()}
+					aria-hidden="true"
+				/>
 			</g>
 		{/each}
 
@@ -189,13 +204,13 @@
 			{/each}
 			<!-- Y axis label -->
 			<text
-				x="-28"
+				x="-44"
 				y={innerHeight / 2}
 				text-anchor="middle"
 				font-size="10"
 				fill="#333"
 				font-weight="normal"
-				transform={`rotate(-90 -28,${innerHeight / 2})`}
+				transform={`rotate(-90 -36,${innerHeight / 2})`}
 			>
 				Frequency of Result
 			</text>
@@ -203,7 +218,7 @@
 	</g>
 
 	<!-- Legend -->
-	<g transform={`translate(${innerWidth - 30 * groups.length},${height})`}>
+	<g transform={`translate(${width - 30 * groups.length},20)`}>
 		{#each groups as g, i}
 			<g
 				transform={`translate(${i * 30},0)`}
@@ -216,8 +231,10 @@
 					y="-14"
 					width="12"
 					height="12"
-					fill={color(g)}
-					opacity={isActive(g) ? 1 : 0.35}
+					fill={isActive(g) ? color(g) : 'transparent'}
+					stroke={color(g)}
+					stroke-width={isActive(g) ? 0 : 1}
+					opacity={1}
 					rx="2"
 				/>
 				<text x="14" y="-4" font-size="12" fill="#222">{g}</text>
@@ -230,6 +247,7 @@
 	svg {
 		display: block;
 		width: 100%;
+		margin-top: -40px;
 	}
 	text {
 		user-select: none;
