@@ -89,7 +89,7 @@ class FormState {
 	seatsMin: number = 2;
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
-	recaptchaToken: string = $state('');
+	turnstileToken: string = $state('');
 	initialize() {
 		this.name = randomRunName();
 	}
@@ -298,7 +298,7 @@ class FormState {
 			method: 'POST',
 			body: JSON.stringify({
 				votekitConfig: config,
-				recaptchaToken: this.recaptchaToken
+				turnstileToken: this.turnstileToken
 			})
 		}).then((res) => res.json());
 		const convertedResult = convertListToCount(response.results, config.election.numSeats);
