@@ -48,7 +48,7 @@
 			formState.unallocatedPopulation > 0 ||
 			formState.isLoading}
 	>
-		Run simulation (mock)
+		Run simulation
 	</button>
 	{#if formState.isLoading}
 		<div class="mt-2 flex flex-row items-center gap-2 text-xs text-slate-500">

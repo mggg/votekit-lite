@@ -4,3 +4,18 @@ export const COLOR_MAP = {
 };
 export const IS_DEV = import.meta.env.MODE === 'development';
 export const RUNS_KEY = 'votekit_runs_v1';
+
+export const NAV_CONFIG = [
+	{
+		label: 'Simulation settings',
+		href: '/run'
+	},
+	{
+		label: 'Results',
+		href: '/results'
+	},
+	{
+		label: 'About',
+		href: '/about'
+	}
+];
