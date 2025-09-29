@@ -1,4 +1,5 @@
-import type { OutcomeCandidateCount, SlateName, Run, Frequency } from './types';
+import type { VotekitConfig } from '$lib/types/votekitConfig';
+import type { SlateName, Run } from './types';
 
 interface BalanceRemainingValueProps {
 	maxValue: number;
@@ -63,4 +64,24 @@ export const getCandidateCountRange = (runs: Run[], activeRuns: Set<string>) => 
 		}
 	});
 	return { min, max };
+};
+
+export const calculateCombinedSupport = (config: VotekitConfig) => {
+	const numberOfSeats = config.election.numSeats;
+	const totalVoters = config.numVoters;
+	const combinedSupport: Record<SlateName, number> = {};
+
+	Object.entries(config.voterBlocs).forEach(([_, blocConfig]) => {
+		const blocVoters = blocConfig.proportion * totalVoters;
+		Object.entries(blocConfig.cohesion).forEach(([slateName, cohesion]) => {
+			combinedSupport[slateName] = (combinedSupport[slateName] || 0) + cohesion * blocVoters;
+		});
+	});
+
+	const expectedNumberOfSeats = Object.entries(combinedSupport).map(([slateName, support]) => ({
+		slate: slateName,
+		support: Math.round(support * 100) / 100,
+		seats: Math.round((support / totalVoters) * numberOfSeats * 100) / 100
+	}));
+	return expectedNumberOfSeats;
 };

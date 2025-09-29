@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
+	import ViewIcon from './ViewIcon.svelte';
+	import ViewOffIcon from './ViewOffIcon.svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
+	import { calculateCombinedSupport } from '$lib/stores/utils';
 	import { COLOR_MAP } from '$lib/constants';
 
 	// props (Svelte 5 runes)
@@ -28,7 +31,10 @@
 	onMount(resize);
 
 	// data
-	const raw = $derived(resultsState.runs.find((r) => r.id === runId)?.result ?? {});
+	const run = $derived(resultsState.runs.find((r) => r.id === runId));
+	const combinedSupport = $derived(run?.config ? calculateCombinedSupport(run.config) : []);
+	let combinedSupportVisible = $state(false);
+	const raw = $derived(run?.result ?? {});
 	const groups = $derived(Object.keys(raw)); // series keys
 	const maxNameLength = $derived(Math.max(...groups.map((g) => g.length)));
 	const entries = $derived(
@@ -105,7 +111,7 @@
 
 	// Placeholder mouse event handlers for invisible bars
 	function handleBarMouseEnter(idx: number) {
-		hoveredGroupIndex = idx;
+		!allHidden && (hoveredGroupIndex = idx);
 	}
 	function handleBarMouseLeave() {
 		hoveredGroupIndex = null;
@@ -118,7 +124,9 @@
 		class="pointer-events:none; absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
 		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
 	>
-		<p class="mb-2 text-xs font-bold">Elections with {hoveredGroupIndex} seats won</p>
+		<p class="mb-2 text-xs font-bold">
+			Elections with {hoveredGroupIndex} seats won ({run?.config.trials} trials)
+		</p>
 		{#each byEntry[hoveredGroupIndex].values as g}
 			<p class="text-xs">
 				<b>{g.group}:</b>
@@ -128,13 +136,13 @@
 	</div>
 {/if}
 {#if allHidden}
-	<div class="absolute top-0 left-0 flex size-full items-center justify-center">
+	<div class="pointer-events-none absolute top-0 left-0 flex size-full items-center justify-center">
 		<p class="w-1/2 text-center text-sm text-amber-600">
 			All slates hidden. Select a slate in the legend to show its results.
 		</p>
 	</div>
 {/if}
-<svg bind:this={svg} {height}>
+<svg bind:this={svg} {height} id="chart-svg">
 	<!-- chart group with margins -->
 	<g transform={`translate(${margin.left},${margin.top})`}>
 		<!-- Y gridlines -->
@@ -263,9 +271,56 @@
 		{/each}
 	</g>
 </svg>
+<div class={`collapse ${combinedSupportVisible ? 'collapse-open' : 'collapse-closed'}`}>
+	<input type="checkbox" bind:checked={combinedSupportVisible} />
+	<div class="collapse-title rounded-none px-0 py-1 text-xs font-semibold">
+		<div class="flex flex-row items-center">
+			<span class="ml-2">
+				{#if combinedSupportVisible}
+					<ViewOffIcon />
+				{:else}
+					<ViewIcon />
+				{/if}
+			</span>
+			Combined support
+		</div>
+	</div>
+	<div class="collapse-content p-0 text-sm">
+		<p class="pb-2 text-xs">
+			The number of available seats times combined voter cohesion across all voter blocs for a given
+			slate.
+		</p>
+		{#each combinedSupport as c}
+			<svg height="14px" {width}>
+				<text x={0} y="12" font-size="12" fill="#333" class="bg-white">
+					{c.slate} ({c.seats})
+				</text>
+				<g transform={`translate(${margin.left},0)`} height="14px">
+					<!-- dot for each -->
+					<line
+						x1={0}
+						x2={innerWidth}
+						y1={8}
+						y2={8}
+						stroke="#333"
+						stroke-width="1"
+						stroke-dashoffset="2"
+						stroke-dasharray="2"
+					/>
+					<circle
+						cx={`${run?.config?.election?.numSeats ? (c.seats / run.config.election.numSeats) * innerWidth : '--'}`}
+						cy={8}
+						r="4"
+						fill={color(c.slate)}
+					/>
+				</g>
+			</svg>
+		{/each}
+	</div>
+</div>
 
 <style>
-	svg {
+	#chart-svg {
 		display: block;
 		width: 100%;
 		margin-top: -40px;

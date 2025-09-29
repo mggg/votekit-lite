@@ -25,15 +25,17 @@ export const NAV_CONFIG = [
 
 export const ELECTION_SYSTEM_MAP: Record<
 	FormState['system'],
-	{ name: string; description: string }
+	{ name: string; description: string; shortName: string }
 > = {
 	STV: {
 		name: 'Single Transferable Vote (STV)',
-		description: 'Votes transfer as candidates are elected/eliminated.'
+		description: 'Votes transfer as candidates are elected/eliminated.',
+		shortName: 'STV'
 	},
 	blocPlurality: {
 		name: 'Bloc Plurality',
-		description: 'Most votes wins.'
+		description: 'Most votes wins.',
+		shortName: 'Plurality'
 	}
 };
 

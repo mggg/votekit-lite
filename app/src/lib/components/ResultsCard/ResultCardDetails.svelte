@@ -4,7 +4,6 @@
 	import type { Run } from '$lib/stores/types';
 	import { percentFormatter } from '$lib/utils/format';
 	const { run } = $props<{ run: Run }>();
-	console.log(run);
 </script>
 
 {#if run}
