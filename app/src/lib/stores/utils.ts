@@ -29,31 +29,6 @@ export const balanceRemainingValue = ({
 	return newShares;
 };
 
-export const convertListToCount = (
-	results: Record<SlateName, Array<OutcomeCandidateCount>>,
-	maxCandidates: number
-): Run['result'] => {
-	const output: Record<SlateName, Record<OutcomeCandidateCount, Frequency>> = {};
-	// Track the lowest value to determine the bottom of the x axis
-	// loop through results and get counts of each cnadidate frequency
-	Object.entries(results).forEach(([slateName, outcomeCandidateCounts]) => {
-		if (!output[slateName]) {
-			output[slateName] = {};
-		}
-		outcomeCandidateCounts.forEach((candidateCount) => {
-			output[slateName][candidateCount] = (output[slateName][candidateCount] || 0) + 1;
-		});
-	});
-	// Backfill missing values
-	const valueRange = new Array(maxCandidates).fill(0).map((_, i) => i);
-	Object.entries(output).forEach(([slateName]) => {
-		valueRange.forEach((value) => {
-			output[slateName][value] = output[slateName][value] || 0;
-		});
-	});
-	return output;
-};
-
 export const getMaxRunCount = (runs: Run[], activeRuns: Set<string>) => {
 	let max = 0;
 	activeRuns.forEach((runId) => {

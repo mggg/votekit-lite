@@ -3,7 +3,7 @@ import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
-import { balanceRemainingValue, convertListToCount } from './utils';
+import { balanceRemainingValue } from './utils';
 import {
 	VotekitConfigSchema,
 	type VotekitConfig,
@@ -296,19 +296,17 @@ export class FormState {
 				turnstileToken: this.turnstileToken
 			})
 		}).then((res) => (res.ok ? res.json() : null));
-		// if (!response.ok) {
-		// 	this.isLoading = false;
-		// 	console.error('Error invoking lambda:', response);
-		// 	return;
-		// }
-		console.log('Response:', response);
-		const convertedResult = convertListToCount(response.results, config.election.numSeats);
+		if (!response || !response.results) {
+			this.isLoading = false;
+			console.error('Error invoking lambda:', response);
+			return;
+		}
 		resultsState.upsertRun({
 			id,
 			name: this.name,
 			config,
 			createdAt: Date.now().toString(),
-			result: convertedResult
+			result: response.results
 		});
 		resultsState.toggleActiveRun(id);
 		this.isLoading = false;
