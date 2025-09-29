@@ -223,11 +223,13 @@
 	<g transform={`translate(${width - (Math.min(5, maxNameLength) * 10 + 42)}, 20)`}>
 		<rect
 			x="-10"
-			y="-20"
+			y="-18"
 			width={Math.min(5, maxNameLength) * 10 + 42}
 			height={groups.length * 24 + 10}
-			fill="rgba(255, 255, 255, 0.7)"
-			opacity="0.7"
+			fill="rgba(255, 255, 255, 0.9)"
+			stroke="rgba(0, 0, 0, 0.25)"
+			stroke-width="1"
+			opacity="1"
 			rx="6"
 		/>
 		{#each groups as g, i}
