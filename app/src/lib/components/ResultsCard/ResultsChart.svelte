@@ -37,17 +37,17 @@
 	let hoveredGroupIndex = $state<number | null>(null);
 
 	// interactive series filter (legend toggles)
-	let activeSlates = $state<string[]>([]);
+	let hiddenSlates = $state<Record<string, boolean>>({});
 	$effect(() => {
-		activeSlates = raw ? Object.keys(raw) : [];
+		hiddenSlates = raw ? Object.fromEntries(groups.map((g) => [g, false])) : {};
 		return () => {
-			activeSlates = [];
+			hiddenSlates = {};
 		};
 	});
 
-	const visibleGroups = $derived(
-		activeSlates.length ? groups.filter((g) => activeSlates.includes(g)) : groups
-	);
+	const visibleGroups = $derived(groups.filter((g) => !hiddenSlates[g]));
+
+	const allHidden = $derived(Object.values(hiddenSlates).every((h) => h));
 
 	// flatten for stats
 	type Row = { entry: string; group: string; value: number };
@@ -93,15 +93,14 @@
 	// legend interaction
 	function toggleGroup(g: string) {
 		if (groups.length === 1) return;
-		if (activeSlates.includes(g)) {
-			activeSlates.splice(activeSlates.indexOf(g), 1);
-			activeSlates = [...activeSlates];
-		} else {
-			activeSlates = [...activeSlates, g];
-		}
+		hiddenSlates = {
+			...hiddenSlates,
+			[g]: !hiddenSlates[g]
+		};
 	}
+
 	function isActive(g: string) {
-		return activeSlates.length === 0 || activeSlates.includes(g);
+		return !hiddenSlates[g];
 	}
 
 	// Placeholder mouse event handlers for invisible bars
@@ -119,13 +118,20 @@
 		class="pointer-events:none; absolute top-[50%] rounded-md bg-base-100 p-2 shadow-md"
 		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
 	>
-		<p class="text-sm font-bold">{hoveredGroupIndex} seats won</p>
+		<p class="text-xs font-bold">Elections with {hoveredGroupIndex} seats won</p>
 		{#each byEntry[hoveredGroupIndex].values as g}
-			<p class="text-sm">
+			<p class="text-xs">
 				<b>{g.group}:</b>
 				{g.value}
 			</p>
 		{/each}
+	</div>
+{/if}
+{#if allHidden}
+	<div class="absolute top-0 left-0 flex h-full w-96 items-center justify-center">
+		<p class="w-1/2 text-center text-sm text-amber-600">
+			All slates hidden. Select a slate in the legend to show its results.
+		</p>
 	</div>
 {/if}
 <svg bind:this={svg} {height}>
