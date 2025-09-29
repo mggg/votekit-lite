@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="card bg-base-100 p-5 text-sm text-slate-600 shadow-sm">
-			<p>Recent runs are stored locally in your browser for this mockup.</p>
+			<p>Recent runs are stored locally in your browser.</p>
 		</div>
 	</section>
 </div>

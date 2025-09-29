@@ -233,7 +233,7 @@ export class FormState {
 		}
 	}
 
-	async submitMock() {
+	async submitRun() {
 		const id = crypto.randomUUID();
 		this.isLoading = true;
 		const config: VotekitConfig = {

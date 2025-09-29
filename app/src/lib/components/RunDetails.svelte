@@ -43,7 +43,7 @@
 	/>
 	<button
 		class="btn mt-2 btn-block btn-soft btn-primary"
-		onclick={() => formState.submitMock()}
+		onclick={() => formState.submitRun()}
 		disabled={!formState.turnstileToken.length ||
 			formState.unallocatedPopulation > 0 ||
 			formState.isLoading}
@@ -57,5 +57,4 @@
 			<h3 class="text-md text-success">Running simulation...</h3>
 		</div>
 	{/if}
-	<p class="mt-2 text-xs text-slate-500">This saves a mock run and takes you to Results.</p>
 </div>

@@ -33,7 +33,7 @@
 	</main>
 	<footer class="footer bg-base-100 text-xs text-slate-500">
 		<div class="mx-auto w-full max-w-7xl px-4 py-6">
-			© {new Date().getFullYear()} Votekit. Mock UI.
+			© {new Date().getFullYear()} Data and Democracy Lab.
 		</div>
 	</footer>
 </div>
