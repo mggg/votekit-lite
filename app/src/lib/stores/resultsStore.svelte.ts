@@ -8,10 +8,13 @@ class ResultsState {
 	}
 
 	runs: Run[] = $state([]);
-	activeRuns: Set<string> = $state(new Set());
-	maxCount: number = $derived(getMaxRunCount(this.runs, this.activeRuns));
+
+	activeRunsList: string[] = $state([]);
+	readonly activeRunsSet: Set<string> = $derived(new Set());
+
+	maxCount: number = $derived(getMaxRunCount(this.runs, this.activeRunsSet));
 	candidateCountRange: { min: number; max: number } = $derived(
-		getCandidateCountRange(this.runs, this.activeRuns)
+		getCandidateCountRange(this.runs, this.activeRunsSet)
 	);
 
 	readRuns(): Run[] {
@@ -55,17 +58,17 @@ class ResultsState {
 	}
 
 	toggleActiveRun(runId: string) {
-		const newActiveRuns = new Set(this.activeRuns);
-		newActiveRuns.has(runId) ? newActiveRuns.delete(runId) : newActiveRuns.add(runId);
-		this.activeRuns = newActiveRuns;
+		this.activeRunsList = this.activeRunsList.includes(runId)
+			? this.activeRunsList.filter((r) => r !== runId)
+			: [...this.activeRunsList, runId];
 	}
 
 	selectAll() {
-		this.activeRuns = new Set(this.runs.map((r) => r.id));
+		this.activeRunsList = this.runs.map((r) => r.id);
 	}
 
 	clearSelection() {
-		this.activeRuns = new Set();
+		this.activeRunsList = [];
 	}
 
 	removeRun(runId: string) {

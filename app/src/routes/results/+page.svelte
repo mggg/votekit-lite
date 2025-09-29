@@ -30,7 +30,7 @@
 							<label class="label">
 								<input
 									type="checkbox"
-									checked={resultsState.activeRuns.has(run.id)}
+									checked={resultsState.activeRunsSet.has(run.id)}
 									class="toggle text-lg font-bold"
 									onclick={() => resultsState.toggleActiveRun(run.id)}
 								/>
@@ -55,11 +55,11 @@
 	<section class="space-y-6 lg:col-span-3">
 		<div class="card bg-base-100 p-5 shadow-sm">
 			<h2 class="mb-2 text-lg font-semibold text-slate-800">Report</h2>
-			{#if resultsState.activeRuns.size === 0}
+			{#if resultsState.activeRunsList.length === 0}
 				<p class="text-sm text-slate-500">Select at least one run to view results.</p>
 			{:else}
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-					{#each resultsState.activeRuns as runId}
+					{#each resultsState.activeRunsList as runId}
 						<ResultsCard {runId} />
 					{/each}
 				</div>

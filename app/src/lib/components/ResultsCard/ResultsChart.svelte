@@ -115,10 +115,10 @@
 <svelte:window onresize={resize} />
 {#if hoveredGroupIndex !== null}
 	<div
-		class="pointer-events:none; absolute top-[50%] rounded-md bg-base-100 p-2 shadow-md"
+		class="pointer-events:none; absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
 		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
 	>
-		<p class="text-xs font-bold">Elections with {hoveredGroupIndex} seats won</p>
+		<p class="mb-2 text-xs font-bold">Elections with {hoveredGroupIndex} seats won</p>
 		{#each byEntry[hoveredGroupIndex].values as g}
 			<p class="text-xs">
 				<b>{g.group}:</b>
@@ -128,7 +128,7 @@
 	</div>
 {/if}
 {#if allHidden}
-	<div class="absolute top-0 left-0 flex h-full w-96 items-center justify-center">
+	<div class="absolute top-0 left-0 flex size-full items-center justify-center">
 		<p class="w-1/2 text-center text-sm text-amber-600">
 			All slates hidden. Select a slate in the legend to show its results.
 		</p>
