@@ -24,6 +24,7 @@ from votekit.pref_profile import (
     convert_rank_profile_to_score_profile_via_score_vector,
 )
 from collections import Counter
+from s3_io import write_results, write_error
 
 
 from votekit.elections import STV, BlocPlurality
@@ -243,6 +244,7 @@ def _run_simulations(
     ballot_generator: str,
     config: BlocSlateConfig,
     election_dict: dict[str, Any],
+    context: Any = None,
 ) -> dict[str, dict[int, int]]:
     """
     Run the simulations
@@ -253,6 +255,7 @@ def _run_simulations(
         config (BlocSlateConfig): The Votekit BlocSlateConfig.
         election_dict (dict[str, Any]): The election dictionary, which is a subset of the JSON
             event.
+        context (Any): Lambda context for timeout checking.
 
     Returns:
         dict[str, Counter]: A dictionary mapping slate names to a Counter.
@@ -277,37 +280,74 @@ def _run_simulations(
         >>> len(results["slate2"]) == 3 and -1 not in results["slate2"] and all(result <=2 for result in results["slate2"])
         True
     """
+    import time
+    
+    def check_remaining_time():
+        if context and hasattr(context, 'get_remaining_time_in_millis'):
+            remaining_ms = context.get_remaining_time_in_millis()
+            remaining_seconds = remaining_ms / 1000
+            if remaining_seconds < 5:  # Less than 5 seconds remaining
+                raise TimeoutError(f"Simulation timeout approaching. {remaining_seconds:.2f} seconds remaining.")
 
     results = {slate_name: [-1] * num_trials for slate_name in config.slates}
+    completed_trials = 0
+    
+    # Optimize: Check timeout less frequently for large trial counts
+    # Check every 10 trials for <100 trials, every 50 trials for >=100 trials
+    check_interval = 10 if num_trials < 100 else min(50, max(10, num_trials // 20))
+    
     for i in range(num_trials):
-        profile = _generate_profile(
-            config=config,
-            ballot_generator=ballot_generator,
-            max_ranking_length=election_dict["maxBallotLength"],
-        )
+        try:
+            # Check timeout periodically, not every iteration
+            if i % check_interval == 0:
+                check_remaining_time()
+            
+            profile = _generate_profile(
+                config=config,
+                ballot_generator=ballot_generator,
+                max_ranking_length=election_dict["maxBallotLength"],
+            )
 
-        num_elected_by_slate = _run_election(
-            profile=profile,
-            election_dict=election_dict,
-            slate_to_candidates=config.slate_to_candidates,
-        )
+            num_elected_by_slate = _run_election(
+                profile=profile,
+                election_dict=election_dict,
+                slate_to_candidates=config.slate_to_candidates,
+            )
 
-        for slate_name, num_elected in num_elected_by_slate.items():
-            results[slate_name][i] = num_elected
+            for slate_name, num_elected in num_elected_by_slate.items():
+                results[slate_name][i] = num_elected
 
-        config.resample_preference_intervals_from_dirichlet_alphas()
+            config.resample_preference_intervals_from_dirichlet_alphas()
+            completed_trials += 1
+            
+        except TimeoutError:
+            # If we timeout during trials, return partial results
+            break
+        except Exception as e:
+            # Log the error but continue with remaining trials
+            print(f"Error in trial {i}: {str(e)}")
+            continue
 
+    # Convert to Counter format
     results = {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
-    if any(
-        -1 in result_counter.keys()
-        for result_counter in results.values()
-    ):
-        raise ValueError("Some trials resulted in an error.")
+    
+    # Check if we have any valid results
+    if completed_trials == 0:
+        raise ValueError("No trials completed successfully.")
 
+    # Fill in missing seat counts with 0
     for slate_name, result_counter in results.items():
         for i in range(election_dict["numSeats"]+1):
             if i not in result_counter.keys():
                 result_counter[i] = 0
+    
+    # Add metadata about completion
+    for slate_name in results:
+        results[slate_name]["_metadata"] = {
+            "completed_trials": completed_trials,
+            "total_trials": num_trials
+        }
+    
     return results
 
 
@@ -335,9 +375,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         >>> returned["statusCode"] == 400 and "Invalid config" in returned["body"]
         True
     """
+    import time
+    
+    start_time = time.time()
+    
+    # Check remaining time periodically (with 5 second buffer)
+    def check_remaining_time():
+        if context and hasattr(context, 'get_remaining_time_in_millis'):
+            remaining_ms = context.get_remaining_time_in_millis()
+            remaining_seconds = remaining_ms / 1000
+            if remaining_seconds < 5:  # Less than 5 seconds remaining
+                raise TimeoutError(f"Lambda timed out. Reduce simulation complexity or decrease number of trials.")
+    
     try:
         jsonschema.validate(event, validation_schema)
     except jsonschema.exceptions.ValidationError as e:
+        write_error(event["id"], str(e))
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
@@ -349,33 +402,68 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         config.is_valid(raise_errors=True)
     except Exception as e:
+        write_error(event["id"], str(e))
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"message": "Invalid config", "errors": str(e)}),
         }
 
-    results = _run_simulations(
-        num_trials=event["trials"],
-        ballot_generator=event["ballotGenerator"],
-        config=config,
-        election_dict=event["election"],
-    )
+    try:
+        # Check timeout before starting simulations
+        check_remaining_time()
+        
+        results = _run_simulations(
+            num_trials=event["trials"],
+            ballot_generator=event["ballotGenerator"],
+            config=config,
+            election_dict=event["election"],
+            context=context,
+        )
 
-    return {
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(
-            {
-                "message": "votekit lambda simulation results",
-                "results": results,
-                "env": {
-                    "AWS_REGION": os.getenv("AWS_REGION"),
-                    "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
-                },
-            }
-        ),
-    }
+        write_results(event["id"], results, event)
+        
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(
+                {
+                    "message": "votekit lambda simulation results",
+                    "results": results,
+                    "env": {
+                        "AWS_REGION": os.getenv("AWS_REGION"),
+                        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
+                    },
+                }
+            ),
+        }
+    
+    except TimeoutError as e:
+        # Handle timeout gracefully
+        error_msg = f"Simulation timed out after {time.time() - start_time:.2f} seconds: {str(e)}"
+        write_error(event["id"], error_msg)
+        return {
+            "statusCode": 408,  # Request Timeout
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({
+                "message": "Simulation timed out",
+                "error": error_msg,
+                "partial_results": None  # Could add partial results if available
+            }),
+        }
+    
+    except Exception as e:
+        # Handle any other unexpected errors
+        error_msg = f"Unexpected error during simulation: {str(e)}"
+        write_error(event["id"], error_msg)
+        return {
+            "statusCode": 500,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({
+                "message": "Internal server error",
+                "error": error_msg
+            }),
+        }
 
 
 if __name__ == "__main__":

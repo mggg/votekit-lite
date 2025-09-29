@@ -27,8 +27,12 @@ services:
     container_name: votekit-lambda-dev
     volumes:
       - ./lambda:/app
+      - ./app/static/results:/output
     ports:
       - "8000:8000"
+    environment:
+      - RESULTS_S3_BUCKET='votekit-results-dev'
+      - RESULTS_OUTPUT=local
 
   infra:
     build:

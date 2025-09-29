@@ -16,8 +16,7 @@ RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.
 FROM public.ecr.aws/lambda/python:3.13
 
 # Copy function code
-COPY main.py ${LAMBDA_TASK_ROOT}/
-COPY common_schema.py ${LAMBDA_TASK_ROOT}/
+COPY *.py ${LAMBDA_TASK_ROOT}/
 
 # Copy installed dependencies from build stage into Lambda task root
 COPY --from=build /tmp/python ${LAMBDA_TASK_ROOT}/
