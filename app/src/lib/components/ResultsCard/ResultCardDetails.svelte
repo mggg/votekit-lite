@@ -117,3 +117,13 @@
 {:else}
 	<p>No run found.</p>
 {/if}
+
+<style>
+	table,
+	tr,
+	td,
+	th {
+		padding: 2px 2px 2px 0px;
+		margin: 0;
+	}
+</style>

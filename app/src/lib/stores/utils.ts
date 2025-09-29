@@ -1,4 +1,5 @@
 import type { VotekitConfig } from '$lib/types/votekitConfig';
+import type { FormState } from './formStore.svelte';
 import type { SlateName, Run } from './types';
 
 interface BalanceRemainingValueProps {
@@ -85,3 +86,56 @@ export const calculateCombinedSupport = (config: VotekitConfig) => {
 	}));
 	return expectedNumberOfSeats;
 };
+
+export const formatConfig = (id: string, state: FormState): VotekitConfig => ({
+	id,
+	name: state.name,
+	numVoters: state.totalVoters,
+	voterBlocs: state.blocs.reduce(
+		(acc, bloc, index) => ({
+			...acc,
+			[bloc.name]: {
+				proportion: state.voterShare[index],
+				preference: state.blocPreferences[index].reduce(
+					(acc, preference, index) => ({
+						...acc,
+						[state.slates[index].name]: preference
+					}),
+					{}
+				),
+				cohesion: state.blocCohesion[index].reduce(
+					(acc, cohesion, index) => ({
+						...acc,
+						[state.slates[index].name]: cohesion || 1e-10
+					}),
+					{}
+				)
+			}
+		}),
+		{}
+	),
+	slates: state.slates.reduce(
+		(acc, slate) => ({
+			...acc,
+			[slate.name]: {
+				numCandidates: slate.numCandidates
+			}
+		}),
+		{}
+	),
+	election:
+		state.system === 'blocPlurality'
+			? {
+					system: 'blocPlurality',
+					numSeats: state.numSeats,
+					maxBallotLength: state.maxRankingCandidatesInput
+				}
+			: {
+					system: 'STV',
+					numSeats: state.numSeats,
+					maxBallotLength: state.maxRankingCandidatesInput
+				},
+	ballotGenerator: state.ballotGenerator,
+	trials: state.trials,
+	createdAt: Date.now().toString()
+});
