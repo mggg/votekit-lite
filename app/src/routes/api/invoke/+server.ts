@@ -1,23 +1,22 @@
 import type { RequestHandler } from './$types';
 import { VotekitConfigSchema, type VotekitConfig } from '../../../lib/types/votekitConfig';
 import { invoke } from '../../../lib/server/lambda/invoke';
-import { validateCaptcha } from '$lib/server/captcha/validate';
+import { validateTurnstile } from '$lib/server/captcha/validate';
 
 interface InvokeRequest {
-	captchaToken: string;
+	turnstileToken: string;
 	votekitConfig: VotekitConfig;
 }
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const data = (await request.json()) as InvokeRequest;
-		const { captchaToken, votekitConfig } = data;
-
+		const { turnstileToken, votekitConfig } = data;
 		// VALIDATE CAPTCHA
-		const captchaResult = await validateCaptcha(captchaToken);
+		const captchaResult = await validateTurnstile(turnstileToken);
 		if (!captchaResult.success) {
 			return new Response(
 				JSON.stringify({
-					error: captchaResult['error-codes']
+					error: 'Captcha error: ' + captchaResult['error-codes'].join(', ')
 				}),
 				{
 					status: 400,

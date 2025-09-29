@@ -1,14 +1,19 @@
 import { randomRunName } from '$lib';
+import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
 import type { Slate, VoterBloc } from './types';
 import type { VoterBlocMode } from './types';
-import { balanceRemainingValue } from './utils';
-import type { VotekitConfig, VoterPreference } from '$lib/types/votekitConfig';
-
+import { balanceRemainingValue, formatConfig } from './utils';
+import {
+	VotekitConfigSchema,
+	type VotekitConfig,
+	type VoterPreference
+} from '$lib/types/votekitConfig';
+import { resultsState } from './resultsStore.svelte';
 // Constants
 export const MAX_CANDIDATES = 12;
 
-class FormState {
+export class FormState {
 	name: string = $state('');
 	trials: number = $state(100);
 	system = $state<VotekitConfig['election']['system']>('STV');
@@ -17,6 +22,7 @@ class FormState {
 	maxRankingCandidatesInput: number = $state(6);
 	numVoterBlocs: number = $state(2);
 	voterBlocMode: VoterBlocMode = $state('count');
+	isLoading: boolean = $state(false);
 
 	// Source of truth for blocs: Population and turnout
 	blocs: VoterBloc[] = $state([
@@ -83,7 +89,7 @@ class FormState {
 	seatsMin: number = 2;
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
-	recaptchaToken: string = $state('');
+	turnstileToken: string = $state('');
 	initialize() {
 		this.name = randomRunName();
 	}
@@ -227,57 +233,33 @@ class FormState {
 		}
 	}
 
-	async submitMock() {
+	async submitRun() {
 		const id = crypto.randomUUID();
-		const config: VotekitConfig = {
-			id,
-			name: this.name,
-			numVoters: this.totalVoters,
-			voterBlocs: this.blocs.reduce(
-				(acc, bloc, index) => ({
-					...acc,
-					[bloc.name]: {
-						proportion: this.voterShare[index],
-						preference: this.blocPreferences[index],
-						cohesion: this.blocCohesion[index]
-					}
-				}),
-				{}
-			),
-			slates: this.slates.reduce(
-				(acc, slate) => ({
-					...acc,
-					[slate.name]: {
-						numCandidates: slate.numCandidates
-					}
-				}),
-				{}
-			),
-			election:
-				this.system === 'blocPlurality'
-					? {
-							system: 'blocPlurality',
-							numSeats: this.numSeats,
-							maxBallotLength: this.maxRankingCandidatesInput
-						}
-					: {
-							system: 'STV',
-							numSeats: this.numSeats,
-							maxBallotLength: this.maxRankingCandidatesInput
-						},
-			ballotGenerator: this.ballotGenerator,
-			trials: this.trials,
-			createdAt: Date.now().toString()
-		};
-		const r = await fetch('/api/invoke', {
+		this.isLoading = true;
+		const config: VotekitConfig = formatConfig(id, this);
+		console.log('Invoking with config:', VotekitConfigSchema.parse(config));
+		const response = await fetch('/api/invoke', {
 			method: 'POST',
 			body: JSON.stringify({
 				votekitConfig: config,
-				recaptchaToken: this.recaptchaToken
+				turnstileToken: this.turnstileToken
 			})
+		}).then((res) => (res.ok ? res.json() : null));
+		if (!response || !response.results) {
+			this.isLoading = false;
+			console.error('Error invoking lambda:', response);
+			return;
+		}
+		resultsState.upsertRun({
+			id,
+			name: this.name,
+			config,
+			createdAt: Date.now().toString(),
+			result: response.results
 		});
-		const result = await r.json();
-		console.log(result);
+		resultsState.toggleActiveRun(id);
+		this.isLoading = false;
+		goto('/results');
 	}
 }
 

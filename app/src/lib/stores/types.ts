@@ -1,3 +1,5 @@
+import type { VotekitConfig } from '$lib/types/votekitConfig';
+
 // Types
 export type VoterBlocMode = 'count' | 'share';
 export type Slate = {
@@ -9,3 +11,14 @@ export type VoterBloc = {
 	turnout: number;
 	name: string;
 };
+export type SlateName = string;
+export type OutcomeCandidateCount = number;
+export type Frequency = number;
+
+export interface Run {
+	id: string;
+	name: string;
+	config: VotekitConfig;
+	createdAt?: string;
+	result?: Record<SlateName, Record<OutcomeCandidateCount, Frequency>>;
+}

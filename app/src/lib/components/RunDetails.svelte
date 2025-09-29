@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formState } from '$lib/stores/formStore.svelte';
-	import { PUBLIC_CAPTCHA_KEY } from '$env/static/public';
-	import Recaptcha from './Recaptcha.svelte';
+	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
+	import { Turnstile } from 'svelte-turnstile';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
@@ -10,7 +10,7 @@
 			formState.blocCohesionSum.some((cohesionSum) => cohesionSum !== 1)
 				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
-			formState.recaptchaToken.length === 0 ? 'Please verify you are not a robot.' : null
+			formState.turnstileToken.length === 0 ? 'Please verify you are not a robot.' : null
 		].filter(Boolean)
 	);
 </script>
@@ -37,17 +37,24 @@
 			</ul>
 		</div>
 	{/if}
-	<Recaptcha
-		siteKey={PUBLIC_CAPTCHA_KEY}
-		onVerify={(token) => (formState.recaptchaToken = token)}
-		onExpired={() => (formState.recaptchaToken = '')}
+	<Turnstile
+		siteKey={PUBLIC_TURNSTILE_KEY}
+		on:callback={(e) => e.detail.token && (formState.turnstileToken = e.detail.token)}
 	/>
 	<button
 		class="btn mt-2 btn-block btn-soft btn-primary"
-		onclick={formState.submitMock}
-		disabled={!formState.recaptchaToken.length || formState.unallocatedPopulation > 0}
+		onclick={() => formState.submitRun()}
+		disabled={!formState.turnstileToken.length ||
+			formState.unallocatedPopulation > 0 ||
+			formState.isLoading}
 	>
-		Run simulation (mock)
+		Run simulation
 	</button>
-	<p class="mt-2 text-xs text-slate-500">This saves a mock run and takes you to Results.</p>
+	{#if formState.isLoading}
+		<div class="mt-2 flex flex-row items-center gap-2 text-xs text-slate-500">
+			<div class="loading loading-xl loading-ring text-success"></div>
+
+			<h3 class="text-md text-success">Running simulation...</h3>
+		</div>
+	{/if}
 </div>

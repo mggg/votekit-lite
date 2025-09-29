@@ -1,7 +1,6 @@
 // src/routes/api/todos/+server.test.ts
 import { describe, it, expect } from 'vitest';
 import * as sampleConfigs from '$lib/tests/configs/sampleConfigs';
-import { VotekitConfigSchema } from '$lib/types/votekitConfig';
 
 const runTestConfig = async (config: any) => {
 	const req = new Request('http://localhost:5173/api/invoke', {
@@ -9,7 +8,7 @@ const runTestConfig = async (config: any) => {
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({
 			votekitConfig: config,
-			captchaToken: '1234567890'
+			turnstileToken: '1234567890'
 		})
 	});
 	return await fetch(req);
