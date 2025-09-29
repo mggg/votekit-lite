@@ -7,21 +7,19 @@ import { IS_DEV } from '../../../lib/constants';
 const { LAMBDA_FUNCTION_NAME, INVOKER_ROLE_ARN, AWS_STS_ACCESS_KEY_ID, AWS_STS_SECRET_ACCESS_KEY } =
 	env;
 const invokeLambdaDev = async (votekitConfig: VotekitConfig) => {
-	const response = await fetch('http://votekit-lambda-dev:8000/invoke', {
+	fetch('http://votekit-lambda-dev:8000/invoke', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(votekitConfig)
 	});
-
-	if (!response.ok) {
-		throw new Error(
-			`Lambda dev server responded with status ${response.status}: ${await response.text()}`
-		);
-	}
-
-	return await response.json();
+	return {
+		statusCode: 200,
+		body: {
+			message: 'Lambda invocation started'
+		}
+	};
 };
 
 const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
@@ -71,7 +69,9 @@ const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
 	const response = await lambda.send(
 		new InvokeCommand({
 			FunctionName: LAMBDA_FUNCTION_NAME, // update with your Lambda’s name
-			Payload: Buffer.from(JSON.stringify(votekitConfig))
+			Payload: Buffer.from(JSON.stringify(votekitConfig)),
+			// make it async just to start the simulation
+			InvocationType: 'Event'
 		})
 	);
 

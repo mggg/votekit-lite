@@ -245,21 +245,22 @@ export class FormState {
 				turnstileToken: this.turnstileToken
 			})
 		}).then((res) => (res.ok ? res.json() : null));
-		if (!response || !response.results) {
-			this.isLoading = false;
-			console.error('Error invoking lambda:', response);
-			return;
-		}
-		resultsState.upsertRun({
-			id,
-			name: this.name,
-			config,
-			createdAt: Date.now().toString(),
-			result: response.results
-		});
-		resultsState.toggleActiveRun(id);
-		this.isLoading = false;
-		goto('/results');
+		resultsState.listenForResults(id);
+		// if (!response || !response.results) {
+		// 	this.isLoading = false;
+		// 	console.error('Error invoking lambda:', response);
+		// 	return;
+		// }
+		// resultsState.upsertRun({
+		// 	id,
+		// 	name: this.name,
+		// 	config,
+		// 	createdAt: Date.now().toString(),
+		// 	result: response.results
+		// });
+		// resultsState.toggleActiveRun(id);
+		// this.isLoading = false;
+		// goto('/results');
 	}
 }
 

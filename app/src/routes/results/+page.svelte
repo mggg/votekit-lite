@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
-	// import ResultRunControlDropdown from '$lib/components/ResultsCard/ResultRunControlDropdown.svelte';
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
