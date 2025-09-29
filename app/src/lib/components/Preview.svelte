@@ -5,7 +5,6 @@
 	const run = $derived({
 		name: formState.name,
 		id: '--',
-		createdAt: new Date().toString(),
 		config: formatConfig('--', formState)
 	});
 </script>

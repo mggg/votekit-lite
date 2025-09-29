@@ -16,10 +16,12 @@
 						<td class="font-semibold">Name</td>
 						<td>{run.name}</td>
 					</tr>
-					<tr>
-						<td class="font-semibold">Created</td>
-						<td>{new Date(+run.createdAt).toLocaleString()}</td>
-					</tr>
+					{#if run.createdAt}
+						<tr>
+							<td class="font-semibold">Created</td>
+							<td>{new Date(+run.createdAt).toLocaleString()}</td>
+						</tr>
+					{/if}
 					<tr>
 						<td class="font-semibold">Trials</td>
 						<td>{run.config.trials}</td>
