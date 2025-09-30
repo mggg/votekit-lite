@@ -58,7 +58,7 @@
 				<p class="text-sm text-slate-500">Select at least one run to view results.</p>
 			{:else}
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-					{#each resultsState.activeRunsList as runId}
+					{#each resultsState.activeRunsList as runId (runId)}
 						<ResultsCard {runId} />
 					{/each}
 				</div>

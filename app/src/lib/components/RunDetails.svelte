@@ -2,6 +2,7 @@
 	import { formState } from '$lib/stores/formStore.svelte';
 	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
 	import { Turnstile } from 'svelte-turnstile';
+	import { onMount } from 'svelte';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
@@ -50,11 +51,4 @@
 	>
 		Run simulation
 	</button>
-	{#if formState.isLoading}
-		<div class="mt-2 flex flex-row items-center gap-2 text-xs text-slate-500">
-			<div class="loading loading-xl loading-ring text-success"></div>
-
-			<h3 class="text-md text-success">Running simulation...</h3>
-		</div>
-	{/if}
 </div>

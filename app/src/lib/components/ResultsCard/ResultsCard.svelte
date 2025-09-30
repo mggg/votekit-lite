@@ -1,12 +1,25 @@
 <script lang="ts">
-	const { runId } = $props<{ runId: string }>();
 	import ResultsChart from './ResultsChart.svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultCardHeader from './ResultCardHeader.svelte';
 	import ResultsTable from './ResultsTable.svelte';
 	import ResultCardDetails from './ResultCardDetails.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	const { runId } = $props<{ runId: string }>();
 	let activeTab = $state('histogram');
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
+
+	// Whenever the run changes, check if the results are older than 5 minutes
+	$effect(() => {
+		if (run?.createdAt && !run?.error && !run?.result) {
+			resultsState.checkStaleRun(runId);
+		}
+	});
+
+	const updateActiveTab = (_id: string) => {
+		activeTab = 'histogram';
+	};
+	$effect(() => updateActiveTab(runId));
 </script>
 
 <!-- name of each tab group should be unique -->
@@ -24,7 +37,13 @@
 			/>
 			<div class="relative tab-content border-base-300 bg-base-100 p-6">
 				<ResultCardHeader {run} />
-				<ResultsChart {runId} />
+				{#if run.result}
+					<ResultsChart {runId} />
+				{:else if run.error}
+					<p class="text-sm text-amber-500">{run.error}</p>
+				{:else}
+					<Loading message="Waiting for results..." />
+				{/if}
 			</div>
 
 			<input
@@ -38,7 +57,13 @@
 			/>
 			<div class="tab-content border-base-300 bg-base-100 p-6">
 				<ResultCardHeader {run} />
-				<ResultsTable {run} />
+				{#if run.result}
+					<ResultsTable {run} />
+				{:else if run.error}
+					<p class="text-sm text-amber-500">{run.error}</p>
+				{:else}
+					<Loading message="Waiting for results..." />
+				{/if}
 			</div>
 
 			<input

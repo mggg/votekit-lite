@@ -3,6 +3,7 @@ import type { Run } from './types';
 import { getCandidateCountRange, getMaxRunCount } from './utils';
 import { getData } from '$lib/utils/getData';
 import { goto } from '$app/navigation';
+import type { VotekitConfig } from '$lib/types/votekitConfig';
 
 class ResultsState {
 	constructor() {
@@ -12,7 +13,7 @@ class ResultsState {
 	runs: Run[] = $state([]);
 
 	activeRunsList: string[] = $state([]);
-	readonly activeRunsSet: Set<string> = $derived(new Set());
+	readonly activeRunsSet: Set<string> = $derived(new Set(this.activeRunsList));
 
 	maxCount: number = $derived(getMaxRunCount(this.runs, this.activeRunsSet));
 	candidateCountRange: { min: number; max: number } = $derived(
@@ -44,23 +45,59 @@ class ResultsState {
 			this.resultsListeners.splice(this.resultsListeners.indexOf(listener), 1);
 		}
 	}
-
-	listenForResults(runId: string) {
-		const checkFn = async () => {
-			const response = await getData(runId);
-			if (response.ok && response.data.status === 'success') {
-				console.log('data', response.data);
-				resultsState.upsertRun({
+	async checkRunResults(runId: string) {
+		const response = await getData(runId);
+		if (response.ok && response.data.status === 'success') {
+			resultsState.upsertRun({
+				id: runId,
+				name: response.data.config.name,
+				config: response.data.config,
+				result: response.data.results,
+				createdAt: response.data.config.createdAt
+			});
+			resultsState.clearListener(runId);
+		} else if (response.ok && response.data.status === 'error') {
+			resultsState.upsertRun({
+				id: runId,
+				error: response.data.error
+			});
+			resultsState.clearListener(runId);
+		}
+		return response;
+	}
+	async checkStaleRun(runId: string) {
+		const run = this.runs.find((r) => r.id === runId);
+		const runHasListener = this.resultsListeners.some((l) => l.id === runId);
+		if (run && run.createdAt && !runHasListener) {
+			const runDate = new Date(+run.createdAt);
+			const dateNow = new Date();
+			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
+			const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+			if (diffMinutes < 10) {
+				const r = await this.checkRunResults(runId);
+				if (!r.ok) {
+					this.listenForResults(runId, run.config);
+				}
+			} else {
+				this.upsertRun({
 					id: runId,
-					name: response.data.config.name,
-					config: response.data.config,
-					result: response.data.results,
-					createdAt: response.data.config.createdAt
+					error: 'Results not found'
 				});
-				resultsState.clearListener(runId);
-				resultsState.toggleActiveRun(runId);
-				goto(`/results`);
 			}
+		}
+	}
+	listenForResults(runId: string, config: VotekitConfig) {
+		this.upsertRun({
+			id: runId,
+			name: config.name,
+			config: config,
+			createdAt: Date.now().toString()
+		});
+		resultsState.toggleActiveRun(runId);
+		goto(`/results`);
+
+		const checkFn = async () => {
+			await resultsState.checkRunResults(runId);
 		};
 		const listener = setInterval(checkFn, 5000);
 		this.resultsListeners.push({ startedAt: Date.now(), id: runId, listener });
@@ -121,7 +158,14 @@ class ResultsState {
 	}
 
 	removeRun(runId: string) {
+		// remove from runs
 		this.runs = this.runs.filter((r) => r.id !== runId);
+		// also remove from active selection if present
+		if (this.activeRunsList.includes(runId)) {
+			this.activeRunsList = this.activeRunsList.filter((r) => r !== runId);
+		}
+		// clear any pending listener for this run
+		this.clearListener(runId);
 		this.writeRuns(this.runs);
 	}
 
