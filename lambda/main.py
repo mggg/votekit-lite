@@ -341,13 +341,6 @@ def _run_simulations(
             if i not in result_counter.keys():
                 result_counter[i] = 0
     
-    # Add metadata about completion
-    for slate_name in results:
-        results[slate_name]["_metadata"] = {
-            "completed_trials": completed_trials,
-            "total_trials": num_trials
-        }
-    
     return results
 
 
