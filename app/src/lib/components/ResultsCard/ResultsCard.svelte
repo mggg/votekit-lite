@@ -9,17 +9,12 @@
 	let activeTab = $state('histogram');
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
 
-	// Whenever the run changes, check if the results are older than 5 minutes
 	$effect(() => {
+		// If data is incomplete, check the results
 		if (run?.createdAt && !run?.error && !run?.result) {
 			resultsState.checkStaleRun(runId);
 		}
 	});
-
-	const updateActiveTab = (_id: string) => {
-		activeTab = 'histogram';
-	};
-	$effect(() => updateActiveTab(runId));
 </script>
 
 <!-- name of each tab group should be unique -->
