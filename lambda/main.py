@@ -362,7 +362,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             config=config,
             election_dict=event["election"],
         )
-    except Exception as e:
+    except ValueError as e:
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
