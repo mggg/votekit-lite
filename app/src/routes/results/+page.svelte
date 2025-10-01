@@ -3,6 +3,7 @@
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
 
+	// Check if there is a result-share parameter in the URL.
 	onMount(() => {
 		const url = new URL(window.location.href);
 		const resultShare = url.searchParams.get('result-share');
@@ -12,6 +13,8 @@
 				if (ok) {
 					resultsState.toggleActiveRun(resultShare);
 				}
+				url.searchParams.delete('result-share');
+				window.history.replaceState({}, '', url.toString());
 			});
 		}
 	});
