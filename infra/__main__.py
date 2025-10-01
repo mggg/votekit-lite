@@ -71,7 +71,9 @@ fn = aws.lambda_.Function(
     architectures=["arm64"],
     environment={
         "variables": {
-            "NUMBA_CACHE_DIR": "/tmp/numba_cache"
+            "NUMBA_CACHE_DIR": "/tmp/numba_cache",
+            "MPLCONFIGDIR": "/tmp/mplconfig",
+            "RESULTS_S3_BUCKET": f"votekit-results-{stack_name}"
         }
     }
 )
@@ -131,11 +133,11 @@ aws.s3.BucketPublicAccessBlock(
 )
 
 # CORS for direct browser access if needed
-aws.s3.BucketCorsConfigurationV2(
+aws.s3.BucketCorsConfiguration(
     "votekit-results-cors",
     bucket=results_bucket.id,
     cors_rules=[
-        aws.s3.BucketCorsConfigurationV2CorsRuleArgs(
+        aws.s3.BucketCorsConfigurationCorsRuleArgs(
             allowed_headers=["*"],
             allowed_methods=["GET", "HEAD", "PUT", "POST"],
             allowed_origins=["*"],
@@ -167,9 +169,6 @@ distribution = aws.cloudfront.Distribution(
         aws.cloudfront.DistributionOriginArgs(
             origin_id="s3-results-origin",
             domain_name=results_bucket.bucket_regional_domain_name,
-            s3_origin_config=aws.cloudfront.DistributionOriginS3OriginConfigArgs(
-                origin_access_identity=None,
-            ),
             origin_access_control_id=oac.id,
         )
     ],
