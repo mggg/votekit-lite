@@ -73,7 +73,7 @@ class ResultsState {
 			const dateNow = new Date();
 			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
 			const diffMinutes = Math.floor(diffTime / (1000 * 60));
-			if (diffMinutes < 2) {
+			if (diffMinutes < 5) {
 				const r = await this.checkRunResults(runId);
 				if (!r.ok) {
 					this.listenForResults(runId, run.config);
