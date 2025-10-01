@@ -1,6 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
+
+	onMount(() => {
+		const url = new URL(window.location.href);
+		const resultShare = url.searchParams.get('result-share');
+		if (resultShare) {
+			resultsState.checkRunResults(resultShare).then((r) => {
+				const ok = r.data.status === 'success';
+				if (ok) {
+					resultsState.toggleActiveRun(resultShare);
+				}
+			});
+		}
+	});
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">

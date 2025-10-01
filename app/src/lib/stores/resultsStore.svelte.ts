@@ -69,30 +69,21 @@ class ResultsState {
 		const run = this.runs.find((r) => r.id === runId);
 		const runHasListener = this.resultsListeners.some((l) => l.id === runId);
 		if (run && run.createdAt && !runHasListener) {
+			const r = await this.checkRunResults(runId);
+			if (r.ok && r.data.status === 'success') {
+				return;
+			}
 			const runDate = new Date(+run.createdAt);
 			const dateNow = new Date();
 			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
 			const diffMinutes = Math.floor(diffTime / (1000 * 60));
 			if (diffMinutes < 5) {
-				const r = await this.checkRunResults(runId);
-				if (!r.ok) {
-					this.listenForResults(runId, run.config);
-				}
+				this.listenForResults(runId, run.config);
 			} else {
-				const r = await this.checkRunResults(runId);
-				if (!r.ok) {
-					this.upsertRun({
-						id: runId,
-						error: 'Results not found'
-					});
-				} else {
-					this.upsertRun({
-						id: runId,
-						result: r.data.results,
-						config: r.data.config,
-						createdAt: r.data.config.createdAt
-					});
-				}
+				this.upsertRun({
+					id: runId,
+					error: 'Results not found'
+				});
 			}
 		}
 	}
