@@ -355,12 +355,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             "body": json.dumps({"message": "Invalid config", "errors": str(e)}),
         }
 
-    results = _run_simulations(
-        num_trials=event["trials"],
-        ballot_generator=event["ballotGenerator"],
-        config=config,
-        election_dict=event["election"],
-    )
+    try:
+        results = _run_simulations(
+            num_trials=event["trials"],
+            ballot_generator=event["ballotGenerator"],
+            config=config,
+            election_dict=event["election"],
+        )
+    except Exception as e:
+        return {
+            "statusCode": 400,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(
+                {"message": "Some trials resulted in an error.", "errors": str(e)}
+            ),
+        }
 
     return {
         "statusCode": 200,
