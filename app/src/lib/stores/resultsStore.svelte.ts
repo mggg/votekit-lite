@@ -79,10 +79,20 @@ class ResultsState {
 					this.listenForResults(runId, run.config);
 				}
 			} else {
-				this.upsertRun({
-					id: runId,
-					error: 'Results not found'
-				});
+				const r = await this.checkRunResults(runId);
+				if (!r.ok) {
+					this.upsertRun({
+						id: runId,
+						error: 'Results not found'
+					});
+				} else {
+					this.upsertRun({
+						id: runId,
+						result: r.data.results,
+						config: r.data.config,
+						createdAt: r.data.config.createdAt
+					});
+				}
 			}
 		}
 	}
