@@ -405,7 +405,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         # Check timeout before starting simulations
         check_remaining_time()
-        
         results = _run_simulations(
             num_trials=event["trials"],
             ballot_generator=event["ballotGenerator"],
@@ -420,24 +419,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {"message": "Some trials resulted in an error.", "errors": str(e)}
             ),
         }
-
-        write_results(event["id"], results, event)
-        
-        return {
-            "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(
-                {
-                    "message": "votekit lambda simulation results",
-                    "results": results,
-                    "env": {
-                        "AWS_REGION": os.getenv("AWS_REGION"),
-                        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
-                    },
-                }
-            ),
-        }
-    
     except TimeoutError as e:
         # Handle timeout gracefully
         error_msg = f"Simulation timed out after {time.time() - start_time:.2f} seconds: {str(e)}"
@@ -451,7 +432,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 "partial_results": None  # Could add partial results if available
             }),
         }
-    
     except Exception as e:
         # Handle any other unexpected errors
         error_msg = f"Unexpected error during simulation: {str(e)}"
@@ -463,6 +443,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 "message": "Internal server error",
                 "error": error_msg
             }),
+        }
+    finally:
+        write_results(event["id"], results, event)
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(
+                {
+                    "message": "votekit lambda simulation results",
+                    "results": results,
+                    "env": {
+                        "AWS_REGION": os.getenv("AWS_REGION"),
+                        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
+                    },
+                }
+            ),
         }
 
 
