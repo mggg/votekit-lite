@@ -9,7 +9,6 @@
 
 	// props (Svelte 5 runes)
 	const { runId } = $props<{ runId: string }>();
-
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 240;
@@ -23,10 +22,10 @@
 
 	function resize() {
 		const box = svg?.getBoundingClientRect();
-
-		({ width, height } = box
-			? { width: box.width, height: box.height }
-			: { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+		({ width, height } =
+			box && box.width > 0 && box.height > 0
+				? { width: box.width, height: box.height }
+				: { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
 	}
 	onMount(resize);
 

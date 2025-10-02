@@ -1,7 +1,23 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
-	// import ResultRunControlDropdown from '$lib/components/ResultsCard/ResultRunControlDropdown.svelte';
+
+	// Check if there is a result-share parameter in the URL.
+	onMount(() => {
+		const url = new URL(window.location.href);
+		const resultShare = url.searchParams.get('result-share');
+		if (resultShare) {
+			resultsState.checkRunResults(resultShare).then((r) => {
+				const ok = r.data.status === 'success';
+				if (ok) {
+					resultsState.toggleActiveRun(resultShare);
+				}
+				url.searchParams.delete('result-share');
+				window.history.replaceState({}, '', url.toString());
+			});
+		}
+	});
 </script>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
@@ -59,7 +75,7 @@
 				<p class="text-sm text-slate-500">Select at least one run to view results.</p>
 			{:else}
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-					{#each resultsState.activeRunsList as runId}
+					{#each resultsState.activeRunsList as runId (runId)}
 						<ResultsCard {runId} />
 					{/each}
 				</div>

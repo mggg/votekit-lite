@@ -38,9 +38,13 @@ jobs:
         run: |
           docker compose exec -T app sh -lc "pnpm test"
 
-      - name: Run lambda validation (python main.py -v)
+      - name: Run lambda doctests (python main.py -v)
         run: |
-          docker compose exec -T lambda python main.py -v
+          docker compose exec -T lambda python main.py -v 
+
+      - name: Run io doctests (python s3_io.py)
+        run: |
+          docker compose exec -T lambda python s3_io.py -v
 
       - name: Show container logs on failure
         if: failure()

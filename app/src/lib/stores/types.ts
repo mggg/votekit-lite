@@ -19,6 +19,7 @@ export interface Run {
 	id: string;
 	name: string;
 	config: VotekitConfig;
+	error?: string;
 	createdAt?: string;
 	result?: Record<SlateName, Record<OutcomeCandidateCount, Frequency>>;
 }
