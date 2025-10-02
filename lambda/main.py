@@ -150,7 +150,7 @@ def _generate_profile(
     return profile
 
 
-def _truncate_profile(profile: RankProfile, new_max_ranking_length: int):
+def _truncate_profile(profile: RankProfile, new_max_ranking_length: int) -> RankProfile:
     """
     Truncate the profile to the new max ranking length.
 
@@ -189,7 +189,7 @@ def _run_election(
     profile: RankProfile,
     election_dict: dict[str, Any],
     slate_to_candidates: dict[str, list[str]],
-):
+) -> dict[str, int]:
     """
     Run the election.
 
@@ -259,7 +259,7 @@ def _run_simulations(
 
     Returns:
         dict[str, Counter]: A dictionary mapping slate names to a Counter.
-            The Counter counts the number of times a number of seats won was observed 
+            The Counter counts the number of times a number of seats won was observed
             in the trials, i.e. the data needed to make a histogram.
 
     Doctests:
@@ -328,16 +328,16 @@ def _run_simulations(
             print(f"Error in trial {i}: {str(e)}")
             continue
 
-    # Convert to Counter format
-    results = {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
-    
-    # Check if we have any valid results
-    if completed_trials == 0:
-        raise ValueError("No trials completed successfully.")
+    results = {
+        slate_name: Counter(result_list) for slate_name, result_list in results.items()
+    }
+
+    if any(-1 in result_counter.keys() for result_counter in results.values()):
+        raise ValueError("Some trials resulted in an error.")
 
     # Fill in missing seat counts with 0
     for slate_name, result_counter in results.items():
-        for i in range(election_dict["numSeats"]+1):
+        for i in range(election_dict["numSeats"] + 1):
             if i not in result_counter.keys():
                 result_counter[i] = 0
     
@@ -411,8 +411,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             ballot_generator=event["ballotGenerator"],
             config=config,
             election_dict=event["election"],
-            context=context,
         )
+    except ValueError as e:
+        return {
+            "statusCode": 400,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(
+                {"message": "Some trials resulted in an error.", "errors": str(e)}
+            ),
+        }
 
         write_results(event["id"], results, event)
         
@@ -461,4 +468,5 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
