@@ -2,7 +2,8 @@
 	import { formState } from '$lib/stores/formStore.svelte';
 	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
 	import { Turnstile } from 'svelte-turnstile';
-	import { onMount } from 'svelte';
+	import GearIcon from '$lib/components/ResultsCard/GearIcon.svelte';
+	import { loadConfigFromFile } from '$lib/utils/loadConfigFromFile';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
@@ -16,7 +17,7 @@
 	);
 </script>
 
-<div class="card w-full max-w-none bg-base-100 p-4 shadow-sm">
+<div class="card relative w-full max-w-none bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
@@ -51,4 +52,32 @@
 	>
 		Run simulation
 	</button>
+	<div class="absolute top-0 right-0">
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+		<div class="dropdown dropdown-top" tabindex="0">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="btn opacity-20 btn-ghost btn-md" tabindex="0">
+				<GearIcon />
+			</div>
+			<ul class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm">
+				<li>
+					<button onclick={() => document.getElementById('fileUpload')?.click()}
+						>Load configuration JSON file</button
+					>
+					<input
+						type="file"
+						accept="application/json"
+						id="fileUpload"
+						class="hidden"
+						onchange={(e: any) => {
+							e.preventDefault();
+							if (e.target?.files?.[0]) {
+								loadConfigFromFile(e.target.files?.[0]);
+							}
+						}}
+					/>
+				</li>
+			</ul>
+		</div>
+	</div>
 </div>

@@ -246,6 +246,32 @@ export class FormState {
 		this.turnstileToken = '';
 		resultsState.listenForResults(id, config);
 	}
+
+	loadSimulationSettings(config: VotekitConfig) {
+		this.name = config.name + ' (Edited)';
+		this.trials = config.trials;
+		this.system = config.election.system;
+		this.ballotGenerator = config.ballotGenerator;
+		this.numSeats = config.election.numSeats;
+		this.maxRankingCandidatesInput = config.election.maxBallotLength;
+		this.numVoterBlocs = Object.keys(config.voterBlocs).length;
+		this.blocs = Object.entries(config.voterBlocs).map(([name, bloc]) => ({
+			name,
+			population: bloc.proportion * this.totalPopulation,
+			turnout: 1.0
+		}));
+		this.slates = Object.entries(config.slates).map(([name, slate]) => ({
+			name,
+			numCandidates: slate.numCandidates
+		}));
+		this.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>
+			this.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')
+		);
+		this.blocCohesion = Object.entries(config.voterBlocs).map(([name, bloc]) =>
+			this.slates.map((slate) => bloc.cohesion[slate.name] ?? 0)
+		);
+		goto(`/run`);
+	}
 }
 
 export const formState = new FormState();

@@ -180,29 +180,7 @@ class ResultsState {
 		const run = this.runs.find((r) => r.id === runId);
 		const config = run?.config;
 		if (config) {
-			formState.name = config.name + ' (Edited)';
-			formState.trials = config.trials;
-			formState.system = config.election.system;
-			formState.ballotGenerator = config.ballotGenerator;
-			formState.numSeats = config.election.numSeats;
-			formState.maxRankingCandidatesInput = config.election.maxBallotLength;
-			formState.numVoterBlocs = Object.keys(config.voterBlocs).length;
-			formState.blocs = Object.entries(config.voterBlocs).map(([name, bloc]) => ({
-				name,
-				population: bloc.proportion * formState.totalPopulation,
-				turnout: 1.0
-			}));
-			formState.slates = Object.entries(config.slates).map(([name, slate]) => ({
-				name,
-				numCandidates: slate.numCandidates
-			}));
-			formState.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>
-				formState.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')
-			);
-			formState.blocCohesion = Object.entries(config.voterBlocs).map(([name, bloc]) =>
-				formState.slates.map((slate) => bloc.cohesion[slate.name] ?? 0)
-			);
-			goto(`/run`);
+			formState.loadSimulationSettings(config);
 		}
 	}
 }
