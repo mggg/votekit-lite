@@ -1,51 +1,40 @@
 <script lang="ts">
 	import { formState } from '$lib/stores/formStore.svelte';
+	import OptionCard from '$lib/components/OptionCard.svelte';
+	import type { VotekitConfig } from '$lib/types/votekitConfig';
+	const VOTER_BEHAVIOR_OPTIONS: {
+		value: VotekitConfig['ballotGenerator'];
+		name: string;
+		description: string;
+	}[] = [
+		{
+			value: 'sPL',
+			name: 'Impulsive voter',
+			description: 'Makes quick picks based on slate preference, with little deliberation.'
+		},
+		{
+			value: 'sBT',
+			name: 'Deliberative voter',
+			description: 'Adjusts the list if needed to better align with overall slate preference.'
+		},
+		{
+			value: 'CS',
+			name: 'Cambridge voter',
+			description: 'Follows patterns drawn from historical Cambridge city council ballots.'
+		}
+	];
 </script>
 
 <div class="card bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter behavior</h2>
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-3">
-		<button
-			type="button"
-			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'sPL'
-				? 'btn-primary'
-				: 'btn-secondary'}"
-			onclick={() => (formState.ballotGenerator = 'sPL')}
-		>
-			<div class="text-left">
-				<div class="font-medium">Impulsive voter</div>
-				<div class="mt-1 text-xs text-slate-600">
-					Makes quick picks based on slate preference, with little deliberation.
-				</div>
-			</div>
-		</button>
-		<button
-			type="button"
-			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'sBT'
-				? 'btn-primary'
-				: 'btn-secondary'}"
-			onclick={() => (formState.ballotGenerator = 'sBT')}
-		>
-			<div class="text-left">
-				<div class="font-medium">Deliberative voter</div>
-				<div class="mt-1 text-xs text-slate-600">
-					Adjusts the list if needed to better align with overall slate preference.
-				</div>
-			</div>
-		</button>
-		<button
-			type="button"
-			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'CS'
-				? 'btn-primary'
-				: 'btn-secondary'}"
-			onclick={() => (formState.ballotGenerator = 'CS')}
-		>
-			<div class="text-left">
-				<div class="font-medium">Cambridge voter</div>
-				<div class="mt-1 text-xs text-slate-600">
-					Follows patterns drawn from historical Cambridge city council ballots.
-				</div>
-			</div>
-		</button>
+		{#each VOTER_BEHAVIOR_OPTIONS as option}
+			<OptionCard
+				title={option.name}
+				description={option.description}
+				selected={formState.ballotGenerator === option.value}
+				onSelect={() => (formState.ballotGenerator = option.value)}
+			/>
+		{/each}
 	</div>
 </div>
