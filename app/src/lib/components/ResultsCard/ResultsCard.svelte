@@ -99,7 +99,7 @@
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
 			tabindex="0"
-			class={`dropdown-open dropdown absolute top-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-100'}`}
+			class={`dropdown absolute top-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
 		>
 			<div role="button" class="btn p-0 btn-ghost btn-md">
 				<GearIcon />
