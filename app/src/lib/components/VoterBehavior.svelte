@@ -29,7 +29,9 @@
 	<div class="flex flex-row gap-2">
 		<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter behavior</h2>
 		<div class="dropdown dropdown-top">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<div tabindex="0" role="button" class="btn btn-xs">?</div>
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ul
 				tabindex="0"
 				class="dropdown-content disabled menu z-1 w-72 rounded-box bg-gray-100 p-2 shadow-xl"

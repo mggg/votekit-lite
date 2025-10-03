@@ -141,7 +141,7 @@
 		</p>
 	</div>
 {/if}
-<svg bind:this={svg} {height} id="chart-svg">
+<svg bind:this={svg} {height} id={`chart-svg-${runId}`}>
 	<!-- chart group with margins -->
 	<g transform={`translate(${margin.left},${margin.top})`}>
 		<!-- Y gridlines -->
