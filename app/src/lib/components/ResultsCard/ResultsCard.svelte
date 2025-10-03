@@ -105,7 +105,7 @@
 				<GearIcon />
 			</div>
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-			<ul tabindex="0" class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm">
+			<ul tabindex="0" class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-xl">
 				<li>
 					<button
 						class="btn btn-ghost"
