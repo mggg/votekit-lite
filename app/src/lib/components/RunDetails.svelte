@@ -79,6 +79,8 @@
 							e.preventDefault();
 							if (e.target?.files?.[0]) {
 								loadConfigFromFile(e.target.files?.[0]);
+								// clear the file input
+								e.target.value = '';
 							}
 						}}
 					/>
