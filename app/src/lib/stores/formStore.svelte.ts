@@ -103,7 +103,7 @@ export class FormState {
 		const blocNames = this.blocs.map((bloc) => bloc.name).sort();
 		if (JSON.stringify(slateNames) !== JSON.stringify(blocNames)) {
 			errors.push(
-				'For Cambridge voters, the two voter blocs must have the same names as the two slates of candidates.'
+				'For Cambridge voters, the voter blocs must have the same names as the slates of candidates.'
 			);
 		}
 
