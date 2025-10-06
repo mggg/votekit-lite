@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { formState } from '$lib/stores/formStore.svelte';
 	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
+	import { formState } from '$lib/stores/formStore.svelte';
 	import { Turnstile } from 'svelte-turnstile';
-	import { onMount } from 'svelte';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
@@ -11,7 +10,10 @@
 			formState.blocCohesionSum.some((cohesionSum) => cohesionSum !== 1)
 				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
-			formState.turnstileToken.length === 0 ? 'Please verify you are not a robot.' : null
+			formState.turnstileToken.length === 0 ? 'Please verify you are not a robot.' : null,
+			...(Array.isArray(formState.cambridgeValidationErrors)
+				? formState.cambridgeValidationErrors
+				: [])
 		].filter(Boolean)
 	);
 </script>
@@ -47,7 +49,8 @@
 		onclick={() => formState.submitRun()}
 		disabled={!formState.turnstileToken.length ||
 			formState.unallocatedPopulation > 0 ||
-			formState.isLoading}
+			formState.isLoading ||
+			formState.cambridgeValidationErrors.length > 0}
 	>
 		Run simulation
 	</button>
