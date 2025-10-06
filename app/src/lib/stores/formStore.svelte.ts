@@ -4,6 +4,7 @@ import { type VotekitConfig, type VoterPreference } from '$lib/types/votekitConf
 import { resultsState } from './resultsStore.svelte';
 import type { Slate, VoterBloc, VoterBlocMode } from './types';
 import { balanceRemainingValue, formatConfig } from './utils';
+import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -88,43 +89,9 @@ export class FormState {
 	// Cambridge voter validation
 	isCambridgeValid: boolean = $derived(this.slates.length === 2 && this.blocs.length === 2);
 
-	cambridgeValidationErrors = $derived(() => {
-		if (this.ballotGenerator !== 'CS') return [];
-
-		const errors: string[] = [];
-
-		// Check if there are exactly 2 slates and 2 blocs
-		if (this.slates.length !== 2 || this.blocs.length !== 2) {
-			errors.push('Cambridge voter requires exactly 2 slates and 2 voter blocs.');
-		}
-
-		// Check if bloc names match slate names
-		const slateNames = this.slates.map((slate) => slate.name).sort();
-		const blocNames = this.blocs.map((bloc) => bloc.name).sort();
-		if (JSON.stringify(slateNames) !== JSON.stringify(blocNames)) {
-			errors.push(
-				'For Cambridge voters, the voter blocs must have the same names as the slates of candidates.'
-			);
-		}
-
-		// Check cohesion requirements
-		if (this.slates.length === 2 && this.blocs.length === 2) {
-			for (let i = 0; i < 2; i++) {
-				const blocName = this.blocs[i].name;
-				const slateIndex = this.slates.findIndex((slate) => slate.name === blocName);
-				if (slateIndex !== -1) {
-					const cohesion = this.blocCohesion[i][slateIndex];
-					if (cohesion < 0.5) {
-						errors.push(
-							`Voter bloc "${blocName}" must have cohesion >= 50% for slate "${blocName}".`
-						);
-					}
-				}
-			}
-		}
-
-		return errors;
-	});
+	cambridgeValidationErrors = $derived(
+		validateCsBehavior(this.ballotGenerator, this.slates, this.blocs, this.blocCohesion)
+	);
 
 	initialize() {
 		this.name = randomRunName();
