@@ -265,7 +265,7 @@ export class FormState {
 			this.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')
 		);
 		this.blocCohesion = Object.entries(config.voterBlocs).map(([name, bloc]) =>
-			this.slates.map((slate) => bloc.cohesion[slate.name] ?? 0)
+			this.slates.map((slate) => Math.round((bloc.cohesion[slate.name] ?? 0) * 100) / 100)
 		);
 		goto(`/run`);
 	}
