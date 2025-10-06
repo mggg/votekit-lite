@@ -11,8 +11,8 @@
 				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
 			formState.turnstileToken.length === 0 ? 'Please verify you are not a robot.' : null,
-			...(Array.isArray(formState.cambridgeValidationErrors)
-				? formState.cambridgeValidationErrors
+			...(Array.isArray(formState.cambridgeValidationErrors())
+				? formState.cambridgeValidationErrors()
 				: [])
 		].filter(Boolean)
 	);
