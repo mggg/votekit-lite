@@ -62,4 +62,9 @@
 			</div>
 		</button>
 	</div>
+	{#if !formState.isCambridgeValid}
+		<p class="label text-xs text-amber-600">
+			To use Cambridge voters, there must be exactly two blocs and two slates.
+		</p>
+	{/if}
 </div>
