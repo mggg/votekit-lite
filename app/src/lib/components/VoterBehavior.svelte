@@ -34,20 +34,41 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ul
 				tabindex="0"
-				class="dropdown-content disabled menu z-1 w-72 rounded-box bg-gray-100 p-2 shadow-xl"
+				class="dropdown-content disabled z-1 w-72 rounded-box bg-gray-100 p-4 text-sm shadow-xl"
 			>
-				<li class="disabled pointer-events-none max-w-none">
-					<p>Impulsive voter (Slate Plackett-Luce): More detailed explanation here.</p>
-				</li>
-				<li class="disabled pointer-events-none max-w-none">
-					<p>Deliberative voter (Slate Plackett-Luce): More detailed explanation here.</p>
-				</li>
-				<li class="disabled pointer-events-none max-w-none">
+				<li class="max-w-none py-2">
 					<p>
-						Cambridge voter (Cambridge Sampler): More detailed explanation here. This behavior can
-						produce short ballots. Note: This behavior profile must have two slates and two blocs,
-						which must be aligned to the same groups. The second bloc will correspond to voting
-						behaviors for People of Color in Cambridge, MA.
+						The impulsive voter setting uses the <a
+							class="inline underline"
+							href="https://votekit-dev-docs.readthedocs.io/en/latest/social_choice_docs/scr/#slate-plackett-luce"
+							target="_blank"
+							rel="noopener noreferrer">Slate Plackett-Luce</a
+						> model.
+					</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>
+						The deliberative voter setting uses the <a
+							class="inline underline"
+							href="https://votekit-dev-docs.readthedocs.io/en/latest/social_choice_docs/scr/#slate-bradley-terry"
+							target="_blank"
+							rel="noopener noreferrer">Slate Bradley-Terry</a
+						> model.
+					</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>
+						The Cambridge voter uses real voter behavior data from the <a
+							class="inline underline"
+							target="_blank"
+							rel="noopener noreferrer"
+							href="https://votekit-dev-docs.readthedocs.io/en/latest/social_choice_docs/scr/#cambridge-sampler"
+						>
+							Cambridge-Sampler.
+						</a>
+						This behavior can produce short ballots. Note: This behavior profile must have two slates
+						and two blocs, which must be aligned to the same groups. The second bloc will correspond
+						to voting behaviors for People of Color in Cambridge, MA.
 					</p>
 				</li>
 			</ul>
