@@ -9,6 +9,7 @@
 			formState.unallocatedPopulation > 0
 				? 'Your voter bloc population shares do not add up to 100%.'
 				: null,
+			formState.name.length === 0 ? 'Please provide a name for your simulation run.' : null,
 			formState.blocCohesionSum.some((cohesionSum) => cohesionSum !== 1)
 				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
@@ -21,7 +22,11 @@
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
-		<input class="w-full grow text-sm" bind:value={formState.name} />
+		<input
+			class="w-full grow text-sm"
+			bind:value={formState.name}
+			placeholder="Name your simulation run"
+		/>
 	</label>
 	<label class="input input-sm my-2 w-full">
 		<span class="text-gray-400">Number of trials</span>
@@ -48,6 +53,7 @@
 		onclick={() => formState.submitRun()}
 		disabled={!formState.turnstileToken.length ||
 			formState.unallocatedPopulation > 0 ||
+			formState.name.length === 0 ||
 			formState.isLoading}
 	>
 		Run simulation

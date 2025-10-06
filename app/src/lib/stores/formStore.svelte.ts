@@ -1,4 +1,3 @@
-import { randomRunName } from '$lib';
 import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
 import type { Slate, VoterBloc } from './types';
@@ -90,9 +89,7 @@ export class FormState {
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	turnstileToken: string = $state('');
-	initialize() {
-		this.name = randomRunName();
-	}
+	initialize() {}
 
 	updateNumSlates(value: number) {
 		if (this.totalCandidates == MAX_CANDIDATES && value >= this.slates.length) {
