@@ -35,12 +35,26 @@
 		</button>
 		<button
 			type="button"
-			class="btn h-auto justify-start text-left btn-soft {formState.ballotGenerator === 'CS'
+			class="btn relative h-auto justify-start text-left btn-soft {formState.ballotGenerator ===
+			'CS'
 				? 'btn-primary'
-				: 'btn-secondary'}"
-			onclick={() => (formState.ballotGenerator = 'CS')}
+				: 'btn-secondary'} {!formState.isCambridgeValid ? 'cursor-not-allowed opacity-50' : ''}"
+			onclick={() => formState.isCambridgeValid && (formState.ballotGenerator = 'CS')}
+			disabled={!formState.isCambridgeValid}
 		>
-			<div class="text-left">
+			{#if !formState.isCambridgeValid}
+				<div class="absolute inset-0 flex items-center justify-center rounded-lg bg-red-500/20">
+					<svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="3"
+							d="M6 18L18 6M6 6l12 12"
+						></path>
+					</svg>
+				</div>
+			{/if}
+			<div class="text-left {!formState.isCambridgeValid ? 'opacity-30' : ''}">
 				<div class="font-medium">Cambridge voter</div>
 				<div class="mt-1 text-xs text-slate-600">
 					Follows patterns drawn from historical Cambridge city council ballots.
