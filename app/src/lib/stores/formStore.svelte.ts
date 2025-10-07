@@ -245,7 +245,7 @@ export class FormState {
 	}
 
 	loadSimulationSettings(config: VotekitConfig) {
-		this.totalPopulation = config.numVoters;
+		this.unallocatedPopulation = 0;
 		this.name = config.name + ' (Edited)';
 		this.trials = config.trials;
 		this.system = config.election.system;
