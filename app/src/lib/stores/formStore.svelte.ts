@@ -245,6 +245,7 @@ export class FormState {
 	}
 
 	loadSimulationSettings(config: VotekitConfig) {
+		this.totalPopulation = config.numVoters;
 		this.name = config.name + ' (Edited)';
 		this.trials = config.trials;
 		this.system = config.election.system;
@@ -254,7 +255,7 @@ export class FormState {
 		this.numVoterBlocs = Object.keys(config.voterBlocs).length;
 		this.blocs = Object.entries(config.voterBlocs).map(([name, bloc]) => ({
 			name,
-			population: bloc.proportion * this.totalPopulation,
+			population: bloc.proportion * config.numVoters,
 			turnout: 1.0
 		}));
 		this.slates = Object.entries(config.slates).map(([name, slate]) => ({
