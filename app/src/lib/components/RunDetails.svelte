@@ -2,11 +2,14 @@
 	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
 	import { formState } from '$lib/stores/formStore.svelte';
 	import { Turnstile } from 'svelte-turnstile';
+	import GearIcon from '$lib/components/ResultsCard/GearIcon.svelte';
+	import { loadConfigFromFile } from '$lib/utils/loadConfigFromFile';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
 				? 'Your voter bloc population shares do not add up to 100%.'
 				: null,
+			formState.name.length === 0 ? 'Please provide a name for your simulation run.' : null,
 			formState.blocCohesionSum.some((cohesionSum) => cohesionSum !== 1)
 				? 'Your voter bloc cohesion settings do not add up to 100% for all blocs.'
 				: null,
@@ -16,11 +19,15 @@
 	);
 </script>
 
-<div class="card w-full max-w-none bg-base-100 p-4 shadow-sm">
+<div class="card relative w-full max-w-none bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
-		<input class="w-full grow text-sm" bind:value={formState.name} />
+		<input
+			class="w-full grow text-sm"
+			bind:value={formState.name}
+			placeholder="Name your simulation run"
+		/>
 	</label>
 	<label class="input input-sm my-2 w-full">
 		<span class="text-gray-400">Number of trials</span>
@@ -48,8 +55,39 @@
 		disabled={!formState.turnstileToken.length ||
 			formState.unallocatedPopulation > 0 ||
 			formState.isLoading ||
-			formState.cambridgeValidationErrors.length > 0}
+			formState.cambridgeValidationErrors.length > 0 ||
+			formState.name.length === 0}
 	>
 		Run simulation
 	</button>
+	<div class="absolute top-0 right-0">
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+		<div class="dropdown dropdown-top" tabindex="0">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="btn opacity-20 btn-ghost btn-md" tabindex="0">
+				<GearIcon />
+			</div>
+			<ul class="dropdown-content menu z-1 w-52 rounded-box bg-base-100 p-2 shadow-sm">
+				<li>
+					<button onclick={() => document.getElementById('fileUpload')?.click()}
+						>Load configuration JSON file</button
+					>
+					<input
+						type="file"
+						accept="application/json"
+						id="fileUpload"
+						class="hidden"
+						onchange={(e: any) => {
+							e.preventDefault();
+							if (e.target?.files?.[0]) {
+								loadConfigFromFile(e.target.files?.[0]);
+								// clear the file input
+								e.target.value = '';
+							}
+						}}
+					/>
+				</li>
+			</ul>
+		</div>
+	</div>
 </div>

@@ -4,6 +4,7 @@ import { getCandidateCountRange, getMaxRunCount } from './utils';
 import { getData } from '$lib/utils/getData';
 import { goto } from '$app/navigation';
 import type { VotekitConfig } from '$lib/types/votekitConfig';
+import { formState } from './formStore.svelte';
 
 class ResultsState {
 	constructor() {
@@ -173,6 +174,14 @@ class ResultsState {
 	renameRun(runId: string, name: string) {
 		this.runs = this.runs.map((r) => (r.id === runId ? { ...r, name } : r));
 		this.writeRuns(this.runs);
+	}
+
+	loadSimulationSettings(runId: string) {
+		const run = this.runs.find((r) => r.id === runId);
+		const config = run?.config;
+		if (config) {
+			formState.loadSimulationSettings(config);
+		}
 	}
 }
 
