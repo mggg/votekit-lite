@@ -99,6 +99,7 @@
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<div
 			tabindex="0"
+			id="dropdown-results-{runId}"
 			class={`dropdown absolute top-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
 		>
 			<div role="button" class="btn p-0 btn-ghost btn-md">
@@ -120,9 +121,15 @@
 					<li>
 						<button
 							class="btn btn-ghost"
-							onclick={() => {
+							onclick={(e) => {
+								e.preventDefault();
 								shareUrl(run.id);
 								showCopiedUrl = true;
+								// prevent focus from leaving the dropdown
+								const dropdown = document.getElementById(`dropdown-results-${runId}`);
+								if (dropdown) {
+									dropdown.focus();
+								}
 							}}>Share simulation results</button
 						>
 					</li>
