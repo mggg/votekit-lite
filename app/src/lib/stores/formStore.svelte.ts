@@ -1,14 +1,10 @@
 import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
-import type { Slate, VoterBloc } from './types';
-import type { VoterBlocMode } from './types';
-import { balanceRemainingValue, formatConfig } from './utils';
-import {
-	VotekitConfigSchema,
-	type VotekitConfig,
-	type VoterPreference
-} from '$lib/types/votekitConfig';
+import { type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
 import { resultsState } from './resultsStore.svelte';
+import type { Slate, VoterBloc, VoterBlocMode } from './types';
+import { balanceRemainingValue, formatConfig } from './utils';
+import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -89,6 +85,14 @@ export class FormState {
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	turnstileToken: string = $state('');
+
+	// Cambridge voter validation
+	isCambridgeValid: boolean = $derived(this.slates.length === 2 && this.blocs.length === 2);
+
+	cambridgeValidationErrors = $derived(
+		validateCsBehavior(this.ballotGenerator, this.slates, this.blocs, this.blocCohesion)
+	);
+
 	initialize() {}
 
 	updateNumSlates(value: number) {
