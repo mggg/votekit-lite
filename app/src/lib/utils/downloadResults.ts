@@ -5,9 +5,10 @@ export const downloadResults = (results: Run) => {
 		return;
 	}
 	const data = results.result;
-	let csvText = `Seats Won,`;
+	let csvText = `"Seats Won",`;
 	const slates = Object.keys(data);
-	slates.forEach((slateName) => {
+	slates.forEach((_slateName) => {
+		const slateName = _slateName.includes(' ') ? `"${_slateName}"` : _slateName;
 		csvText += ` ${slateName},`;
 	});
 	csvText = csvText.slice(0, -1);
