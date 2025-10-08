@@ -14,7 +14,7 @@
 			<div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-2">
 				<a href="/run" class="flex items-center gap-2 font-semibold tracking-tight text-slate-800">
 					<img src={favicon} alt="Votekit" class="size-6" />
-					<span>Votekit Simulator</span>
+					<span>VoteKit Lite</span>
 				</a>
 				<div class="flex items-center gap-1.5 text-sm">
 					{#each NAV_CONFIG as config}
