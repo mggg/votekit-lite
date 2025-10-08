@@ -81,6 +81,7 @@
 				description={option.description}
 				selected={formState.ballotGenerator === option.value}
 				onSelect={() => (formState.ballotGenerator = option.value)}
+				showOverlay={option.value === 'CS' && !formState.isCambridgeValid}
 			/>
 		{/each}
 	</div>
