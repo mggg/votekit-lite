@@ -14,6 +14,7 @@
 			: 'btn-soft btn-secondary'}"
 		aria-pressed={selected}
 		onclick={() => onSelect && onSelect()}
+		disabled={showOverlay}
 	>
 		<div class="text-md text-left">{title}</div>
 		{#if description}
