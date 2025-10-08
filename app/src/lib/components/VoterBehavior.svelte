@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formState } from '$lib/stores/formStore.svelte';
 	import OptionCard from '$lib/components/OptionCard.svelte';
+	import { formState } from '$lib/stores/formStore.svelte';
 	import type { VotekitConfig } from '$lib/types/votekitConfig';
 	const VOTER_BEHAVIOR_OPTIONS: {
 		value: VotekitConfig['ballotGenerator'];
@@ -81,6 +81,7 @@
 				description={option.description}
 				selected={formState.ballotGenerator === option.value}
 				onSelect={() => (formState.ballotGenerator = option.value)}
+				showOverlay={option.value === 'CS' && !formState.isCambridgeValid}
 			/>
 		{/each}
 	</div>
