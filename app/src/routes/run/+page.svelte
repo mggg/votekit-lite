@@ -21,8 +21,10 @@
 		<VoterBehavior />
 	</div>
 
-	<div class="space-y-3">
-		<RunDetails />
-		<Preview />
+	<div>
+		<div class="sticky top-20 space-y-3 overflow-y-auto" style="max-height: calc(100vh - 96px);">
+			<RunDetails />
+			<Preview />
+		</div>
 	</div>
 </div>

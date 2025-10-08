@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/draft-logo.png';
 	import { page } from '$app/stores';
 	import { NAV_CONFIG } from '$lib/constants';
 </script>
