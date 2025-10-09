@@ -37,7 +37,7 @@
 						<div class="flex w-full flex-row items-center gap-2 pl-2">
 							{#each Array(formState.slates.length) as _, slateIndex}
 								<label
-									class="block rounded-md p-2 px-4 text-xs"
+									class="block rounded-md p-2 px-4 text-center text-xs"
 									style={`border: 2px solid ${COLOR_MAP.SLATES[slateIndex]}; background-color: ${COLOR_MAP.SLATES[slateIndex]}01`}
 								>
 									<span>{formState.slates[slateIndex].name} candidates</span>

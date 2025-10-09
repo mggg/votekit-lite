@@ -20,7 +20,7 @@
 					{#each NAV_CONFIG as config}
 						<a
 							href={config.href}
-							class={`btn btn-ghost btn-sm ${$page.url.pathname === config.href ? 'bg-blue-300 btn-soft' : ''}`}
+							class={`btn btn-ghost btn-sm ${$page.url.pathname === config.href ? 'border-primary text-primary' : ''}`}
 							>{config.label}</a
 						>
 					{/each}
