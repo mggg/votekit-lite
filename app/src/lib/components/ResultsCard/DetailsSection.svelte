@@ -12,14 +12,15 @@
 	}>();
 </script>
 
-<div class="collapse-arrow collapse rounded-none border-b-1 border-b-base-300 p-0">
-	<input
-		type="radio"
-		name="run-details-accordion"
-		checked={open}
-		onchange={() => onOpenChange(open)}
-	/>
-	<div class="collapse-title font-semibold">{title}</div>
+<div
+	class="collapse-arrow collapse rounded-none border-b-1 border-b-base-300 p-0 {open
+		? 'collapse-open'
+		: 'collapse-close'}"
+>
+	<button
+		class="collapse-title cursor-pointer text-left font-semibold"
+		onclick={() => onOpenChange(title)}>{title}</button
+	>
 	<div class="collapse-content text-sm">
 		{@render children()}
 	</div>
