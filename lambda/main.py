@@ -279,27 +279,29 @@ def _run_simulations(
         True
     """
     import time
-    
+
     def check_remaining_time():
-        if context and hasattr(context, 'get_remaining_time_in_millis'):
+        if context and hasattr(context, "get_remaining_time_in_millis"):
             remaining_ms = context.get_remaining_time_in_millis()
             remaining_seconds = remaining_ms / 1000
             if remaining_seconds < 5:  # Less than 5 seconds remaining
-                raise TimeoutError(f"Simulation timeout approaching. {remaining_seconds:.2f} seconds remaining.")
+                raise TimeoutError(
+                    f"Simulation timeout approaching. {remaining_seconds:.2f} seconds remaining."
+                )
 
     results = {slate_name: [-1] * num_trials for slate_name in config.slates}
     completed_trials = 0
-    
+
     # Optimize: Check timeout less frequently for large trial counts
     # Check every 10 trials for <100 trials, every 50 trials for >=100 trials
     check_interval = 10 if num_trials < 100 else min(50, max(10, num_trials // 20))
-    
+
     for i in range(num_trials):
         try:
             # Check timeout periodically, not every iteration
             if i % check_interval == 0:
                 check_remaining_time()
-            
+
             profile = _generate_profile(
                 config=config,
                 ballot_generator=ballot_generator,
@@ -317,7 +319,7 @@ def _run_simulations(
 
             config.resample_preference_intervals_from_dirichlet_alphas()
             completed_trials += 1
-            
+
         except TimeoutError:
             # If we timeout during trials, return partial results
             break
@@ -338,7 +340,7 @@ def _run_simulations(
         for i in range(election_dict["numSeats"] + 1):
             if i not in result_counter.keys():
                 result_counter[i] = 0
-    
+
     return results
 
 
@@ -367,17 +369,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         True
     """
     import time
-    
+
     start_time = time.time()
-    
+
     # Check remaining time periodically (with 5 second buffer)
     def check_remaining_time():
-        if context and hasattr(context, 'get_remaining_time_in_millis'):
+        if context and hasattr(context, "get_remaining_time_in_millis"):
             remaining_ms = context.get_remaining_time_in_millis()
             remaining_seconds = remaining_ms / 1000
             if remaining_seconds < 5:  # Less than 5 seconds remaining
-                raise TimeoutError(f"Lambda timed out. Reduce simulation complexity or decrease number of trials.")
-    
+                raise TimeoutError(
+                    f"Lambda timed out. Reduce simulation complexity or decrease number of trials."
+                )
+
     try:
         jsonschema.validate(event, validation_schema)
     except jsonschema.exceptions.ValidationError as e:
@@ -424,11 +428,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             "statusCode": 408,  # Request Timeout
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({
-                "message": "Simulation timed out",
-                "error": error_msg,
-                "partial_results": None  # Could add partial results if available
-            }),
+            "body": json.dumps(
+                {
+                    "message": "Simulation timed out",
+                    "error": error_msg,
+                    "partial_results": None,  # Could add partial results if available
+                }
+            ),
         }
     except Exception as e:
         # Handle any other unexpected errors
@@ -437,10 +443,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             "statusCode": 500,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({
-                "message": "Internal server error",
-                "error": error_msg
-            }),
+            "body": json.dumps(
+                {"message": "Internal server error", "error": error_msg}
+            ),
         }
     finally:
         write_results(event["id"], results, event)
