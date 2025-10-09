@@ -9,7 +9,7 @@
 <div class="relative">
 	<button
 		type="button"
-		class="btn flex h-full flex-col items-start gap-0 px-4 py-2 {selected
+		class="btn flex size-full flex-col items-start gap-0 px-4 py-2 {selected
 			? 'btn-outline btn-primary hover:text-white'
 			: 'btn-soft btn-secondary'}"
 		aria-pressed={selected}

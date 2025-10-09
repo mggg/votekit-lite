@@ -6,7 +6,10 @@
 
 <!-- Cohesion sliders as a list -->
 <div class="mt-4">
-	<h3 class="mb-2 text-sm font-medium text-slate-700">Cohesion</h3>
+	<h3 class="mb-2 text-sm font-medium text-slate-700">Voter cohesion</h3>
+	<p class="mb-2 text-xs text-slate-500">
+		How often do voters from each bloc vote for candidates from each slate?
+	</p>
 	<ul class="list px-0">
 		{#each formState.blocCohesion as blocCohesionArray, blocIndex}
 			<li class="list-row list-row-sm flex flex-col gap-2 py-3">

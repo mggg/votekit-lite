@@ -9,6 +9,6 @@
 	});
 </script>
 
-<div class="card sticky top-20 bg-base-100 p-4 text-sm text-slate-600 shadow-sm">
-	<ResultCardDetails {run} />
+<div class="card bg-base-100 p-4 text-sm text-slate-600 shadow-sm">
+	<ResultCardDetails {run} compact={true} />
 </div>
