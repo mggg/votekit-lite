@@ -27,7 +27,7 @@ from collections import Counter
 from s3_io import write_results, write_error
 
 
-from votekit.elections import STV, BlocPlurality
+from votekit.elections import FastSTV, Borda
 
 STRONG_ALPHA = 1 / 2
 UNIF_ALPHA = 2
@@ -221,12 +221,10 @@ def _run_election(
     m = election_dict["numSeats"]
     system = election_dict["system"]
     if system == "blocPlurality":
-        profile = convert_rank_profile_to_score_profile_via_score_vector(
-            profile, score_vector=[1] * m
-        )  # each candidate in the top m of the ranking gets an approval score of 1
-        election = BlocPlurality(profile=profile, m=m, tiebreak="random")
+        # equivalent to blocPlurality
+        election = Borda(profile=profile, m=m, tiebreak="random", score_vector=[1] * m)
     elif system == "STV":
-        election = STV(profile=profile, m=m)
+        election = FastSTV(profile=profile, m=m)
     else:
         raise ValueError(f"Invalid election system: {election_dict['system']}.")
 
