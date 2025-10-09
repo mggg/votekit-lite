@@ -8,22 +8,26 @@
 	import VoterBlocsTable from './VoterBlocsTable.svelte';
 
 	const { run, compact = false } = $props<{ run: Run; compact?: boolean }>();
+	let sectionOpen = $state('General');
+	const onOpenChange = (title: string) => {
+		sectionOpen = title;
+	};
 </script>
 
 {#if run}
 	<!-- Section definitions as fragments for reuse -->
 	{#if compact}
 		<div class="flex flex-col gap-2">
-			<DetailsSection title="General" open={true}>
+			<DetailsSection title="General" open={sectionOpen === 'General'} {onOpenChange}>
 				<GeneralTable {run} />
 			</DetailsSection>
-			<DetailsSection title="Election">
+			<DetailsSection title="Election" open={sectionOpen === 'Election'} {onOpenChange}>
 				<ElectionTable {run} />
 			</DetailsSection>
-			<DetailsSection title="Slates">
+			<DetailsSection title="Slates" open={sectionOpen === 'Slates'} {onOpenChange}>
 				<SlatesTable {run} />
 			</DetailsSection>
-			<DetailsSection title="Voter Blocs">
+			<DetailsSection title="Voter Blocs" open={sectionOpen === 'Voter Blocs'} {onOpenChange}>
 				<VoterBlocsTable {run} />
 			</DetailsSection>
 		</div>
