@@ -13,10 +13,13 @@
 				type="range"
 				min="1"
 				max="5"
-				class="range"
+				class="range {formState.ballotGenerator === 'CS' ? 'cursor-not-allowed opacity-50' : ''}"
 				step="1"
 				value={formState.blocs.length}
-				oninput={(e) => formState.updateNumVoterBlocs(Number(e.currentTarget.value))}
+				oninput={(e) =>
+					formState.ballotGenerator !== 'CS' &&
+					formState.updateNumVoterBlocs(Number(e.currentTarget.value))}
+				disabled={formState.ballotGenerator === 'CS'}
 			/>
 			<div class="mt-2 flex justify-between px-2.5 text-xs">
 				<span>1</span>
@@ -27,6 +30,9 @@
 			</div>
 		</div>
 		<p class="label">At most 5.</p>
+		{#if formState.ballotGenerator === 'CS'}
+			<p class="label text-amber-600">To use Cambridge voters, there must be exactly two blocs.</p>
+		{/if}
 	</fieldset>
 
 	<!-- Mode toggle -->

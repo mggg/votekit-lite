@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
+	import { formState, MAX_CANDIDATES } from '$lib/stores/formStore.svelte';
 	import PalettePip from './PalettePip.svelte';
 	const candidatesRange = new Array(MAX_CANDIDATES).fill(0).map((_, index) => index + 1);
 </script>
@@ -15,10 +15,11 @@
 					type="range"
 					min="2"
 					max="5"
-					class="range"
+					class="range {formState.ballotGenerator === 'CS' ? 'cursor-not-allowed opacity-50' : ''}"
 					step="1"
 					value={formState.slates.length}
 					oninput={(e) => {
+						if (formState.ballotGenerator === 'CS') return;
 						const value = Number(e.currentTarget.value);
 						if (MAX_CANDIDATES === formState.totalCandidates && value > formState.slates.length) {
 							e.currentTarget.value = formState.slates.length.toString();
@@ -26,6 +27,7 @@
 							formState.updateNumSlates(value);
 						}
 					}}
+					disabled={formState.ballotGenerator === 'CS'}
 				/>
 				<div class="mt-2 flex justify-between px-2.5 text-xs">
 					<span>2</span>
@@ -35,7 +37,11 @@
 				</div>
 			</div>
 			<p class="label max-w-full flex-col items-start text-left whitespace-pre-wrap">
-				{#if MAX_CANDIDATES === formState.totalCandidates && formState.slates.length < 5}
+				{#if formState.ballotGenerator === 'CS'}
+					<span class="text-amber-600"
+						>To use Cambridge voters, there must be exactly two slates.</span
+					>
+				{:else if MAX_CANDIDATES === formState.totalCandidates && formState.slates.length < 5}
 					<span class="text-amber-600"
 						>To add more slates, reduce the number of candidates per slate.</span
 					>

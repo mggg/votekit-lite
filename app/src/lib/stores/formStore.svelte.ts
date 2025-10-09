@@ -1,15 +1,10 @@
-import { randomRunName } from '$lib';
 import { goto } from '$app/navigation';
 // Re-export types from storage for convenience
-import type { Slate, VoterBloc } from './types';
-import type { VoterBlocMode } from './types';
-import { balanceRemainingValue, formatConfig } from './utils';
-import {
-	VotekitConfigSchema,
-	type VotekitConfig,
-	type VoterPreference
-} from '$lib/types/votekitConfig';
+import { type VotekitConfig, type VoterPreference } from '$lib/types/votekitConfig';
 import { resultsState } from './resultsStore.svelte';
+import type { Slate, VoterBloc, VoterBlocMode } from './types';
+import { balanceRemainingValue, formatConfig } from './utils';
+import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -90,9 +85,15 @@ export class FormState {
 	seatsMax: number = $derived(Math.max(this.seatsMin, this.totalCandidates));
 
 	turnstileToken: string = $state('');
-	initialize() {
-		this.name = randomRunName();
-	}
+
+	// Cambridge voter validation
+	isCambridgeValid: boolean = $derived(this.slates.length === 2 && this.blocs.length === 2);
+
+	cambridgeValidationErrors = $derived(
+		validateCsBehavior(this.ballotGenerator, this.slates, this.blocs, this.blocCohesion)
+	);
+
+	initialize() {}
 
 	updateNumSlates(value: number) {
 		if (this.totalCandidates == MAX_CANDIDATES && value >= this.slates.length) {
@@ -245,6 +246,33 @@ export class FormState {
 		}).then((res) => (res.ok ? res.json() : null));
 		this.turnstileToken = '';
 		resultsState.listenForResults(id, config);
+	}
+
+	loadSimulationSettings(config: VotekitConfig) {
+		this.unallocatedPopulation = 0;
+		this.name = config.name + ' (Edited)';
+		this.trials = config.trials;
+		this.system = config.election.system;
+		this.ballotGenerator = config.ballotGenerator;
+		this.numSeats = config.election.numSeats;
+		this.maxRankingCandidatesInput = config.election.maxBallotLength;
+		this.numVoterBlocs = Object.keys(config.voterBlocs).length;
+		this.blocs = Object.entries(config.voterBlocs).map(([name, bloc]) => ({
+			name,
+			population: bloc.proportion * config.numVoters,
+			turnout: 1.0
+		}));
+		this.slates = Object.entries(config.slates).map(([name, slate]) => ({
+			name,
+			numCandidates: slate.numCandidates
+		}));
+		this.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>
+			this.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')
+		);
+		this.blocCohesion = Object.entries(config.voterBlocs).map(([name, bloc]) =>
+			this.slates.map((slate) => Math.round((bloc.cohesion[slate.name] ?? 0) * 100) / 100)
+		);
+		goto(`/run`);
 	}
 }
 
