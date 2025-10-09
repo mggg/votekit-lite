@@ -21,7 +21,6 @@ from votekit.ballot_generator import (
 )
 from votekit.pref_profile import (
     RankProfile,
-    convert_rank_profile_to_score_profile_via_score_vector,
 )
 from collections import Counter
 from s3_io import write_results, write_error
