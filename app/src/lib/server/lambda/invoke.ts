@@ -64,23 +64,28 @@ const invokeLambdaProd = async (votekitConfig: VotekitConfig) => {
 		region: 'us-east-2',
 		credentials: tempCreds
 	});
-
+	const buffer = Buffer.from(JSON.stringify(votekitConfig));
 	// Invoke the Lambda
 	const response = await lambda.send(
 		new InvokeCommand({
 			FunctionName: LAMBDA_FUNCTION_NAME, // update with your Lambda’s name
-			Payload: Buffer.from(JSON.stringify(votekitConfig)),
+			Payload: buffer,
 			// make it async just to start the simulation
 			InvocationType: 'Event'
 		})
 	);
-
-	// Parse response payload
-	const payload = response.Payload ? JSON.parse(Buffer.from(response.Payload).toString()) : null;
-	if (payload.body) {
-		return JSON.parse(payload.body);
+	if (response.$metadata.httpStatusCode !== 202) {
+		throw new Error(
+			'Lambda invocation failed with status code: ' + response.$metadata.httpStatusCode
+		);
 	}
-	return payload;
+	return {
+		statusCode: response.$metadata.httpStatusCode,
+		message:
+			response.$metadata.httpStatusCode === 202
+				? 'Lambda invocation started'
+				: 'Lambda invocation failed'
+	};
 };
 
 const invoke = IS_DEV ? invokeLambdaDev : invokeLambdaProd;
