@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<div class="sticky top-20 space-y-3 overflow-y-auto" style="max-height: calc(100vh - 96px);">
+		<div class="sticky top-20 flex flex-col space-y-3" style="max-height: calc(100vh - 96px);">
 			<RunDetails />
 			<Preview />
 		</div>
