@@ -33,7 +33,7 @@ export const ELECTION_SYSTEM_MAP: Record<
 		shortName: 'STV'
 	},
 	blocPlurality: {
-		name: 'Bloc Plurality',
+		name: 'Block Plurality',
 		description: 'Most votes wins.',
 		shortName: 'Plurality'
 	}
