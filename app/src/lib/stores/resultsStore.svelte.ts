@@ -125,9 +125,29 @@ class ResultsState {
 		if (prev) {
 			runs.splice(runs.indexOf(prev), 1, {
 				...prev,
-				...runInfo
+				...runInfo,
+				name: prev.name
 			});
 		} else if (runInfo.id && runInfo.name && runInfo.config && runInfo.createdAt) {
+			const nameCollision = runs
+				.filter((r) => {
+					const nameWithoutNumber = r.name.replace(/\(\d+\)$/, '');
+					return nameWithoutNumber.trim() === runInfo.name?.trim();
+				})
+				.map((r) => {
+					// find text that is a number between parentheses at the end of the string
+					const match = r.name.match(/\(\d+\)$/);
+					if (match) {
+						return match[0];
+					}
+					return null;
+				})
+				.filter((n) => n !== null);
+			const nameCollisionNumber =
+				nameCollision.length > 0
+					? Math.max(...nameCollision.map((n) => parseInt(n.slice(1, -1)))) + 1
+					: 1;
+			runInfo.name = runInfo.name + ` (${nameCollisionNumber})`;
 			runs.unshift({
 				id: runInfo.id,
 				name: runInfo.name,
