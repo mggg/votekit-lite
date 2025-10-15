@@ -140,14 +140,14 @@ export const formatConfig = (id: string, state: FormState): VotekitConfig => ({
 	createdAt: Date.now().toString(),
 	meta: {
 		slateColors: state.slates.reduce(
-			(acc, slate, index) => ({
+			(acc, slate) => ({
 				...acc,
 				[slate.name]: slate.color
 			}),
 			{}
 		),
 		blocColors: state.blocs.reduce(
-			(acc, bloc, index) => ({
+			(acc, bloc) => ({
 				...acc,
 				[bloc.name]: bloc.color
 			}),

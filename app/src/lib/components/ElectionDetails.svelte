@@ -103,7 +103,7 @@
 		{#each formState.slates as slate, slateIndex}
 			<li class="list-row my-0 grid grid-cols-2 gap-2 px-0 py-1 pr-4">
 				<div class="col-span-1 flex items-center gap-2">
-					<PalettePip color={slate.color} />
+					<PalettePip color={slate.color} onChange={(color: string) => (slate.color = color)} />
 					<label class="input input-sm">
 						<span class="sr-only text-gray-400">Slate name</span>
 						<input

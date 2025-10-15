@@ -29,7 +29,7 @@
 			<li class="p-0">
 				<div class={`${formState.slates.length > 3 ? 'flex-col' : 'flex-row'} flex`}>
 					<div class="col-span-4 flex flex-row items-center gap-2">
-						<PalettePip color={bloc.color} />
+						<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
 						<span class="col-span-2">Do {bloc.name} voters have a strong preference towards...</span
 						>
 					</div>

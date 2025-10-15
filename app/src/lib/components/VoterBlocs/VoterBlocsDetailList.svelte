@@ -23,7 +23,7 @@
 				<div
 					class={`flex flex-row items-center gap-2  ${formState.showTurnoutSettings ? 'col-span-4' : 'col-span-6'}`}
 				>
-					<PalettePip color={bloc.color} />
+					<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
 					<label class={`input input-sm w-full`}>
 						<input
 							type="text"
@@ -104,7 +104,7 @@
 				<div
 					class={`flex flex-row items-center gap-2  ${formState.showTurnoutSettings ? 'col-span-3' : 'col-span-6'}`}
 				>
-					<PalettePip color={COLOR_MAP.BLOCS[i]} />
+					<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
 					<label class={`input input-sm w-full`}>
 						<input
 							type="text"
