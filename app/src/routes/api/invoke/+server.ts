@@ -29,11 +29,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// PARSE REQUEST
 		const parsedVotekitConfig = VotekitConfigSchema.parse(votekitConfig);
-
 		// INVOKE LAMBDA
 		const response = await invoke(parsedVotekitConfig);
 		return new Response(JSON.stringify(response), {
-			status: 200,
+			status: response.statusCode,
 			headers: {
 				'Content-Type': 'application/json'
 			}
