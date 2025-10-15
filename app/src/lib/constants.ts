@@ -50,3 +50,26 @@ export const BALLOT_GENERATOR_MAP = {
 	sBT: 'Deliberative voter',
 	CS: 'Cambridge voter'
 };
+
+export const DEFAULT_SLATE_BLOCS = [
+	{
+		name: 'Greens',
+		color: '#4daf4a'
+	},
+	{
+		name: 'Purples',
+		color: '#984ea3'
+	},
+	{
+		name: 'Oranges',
+		color: '#ff7f00'
+	},
+	{
+		name: 'Pinks',
+		color: '#f781bf'
+	},
+	{
+		name: 'Greys',
+		color: '#999999'
+	}
+];

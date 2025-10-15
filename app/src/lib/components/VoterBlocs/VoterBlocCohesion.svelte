@@ -14,7 +14,7 @@
 		{#each formState.blocCohesion as blocCohesionArray, blocIndex}
 			<li class="list-row list-row-sm flex flex-col gap-2 py-3">
 				<div class="flex flex-row items-center gap-2">
-					<PalettePip color={COLOR_MAP.BLOCS[blocIndex]} />
+					<PalettePip color={formState.blocs[blocIndex].color} />
 					<span class="font-medium">{formState.blocs[blocIndex].name} voters</span>
 					<span class="ml-2 text-xs text-slate-500">
 						{#if formState.slates.length > 2}
@@ -27,7 +27,7 @@
 						<div class="flex w-full flex-col">
 							<div class="space-between flex w-full flex-row justify-between">
 								{#each formState.slates as slate, slateIndex}
-									<label class="input input-sm my-2 max-w-36">
+									<label class="input input-sm my-2 max-w-fit">
 										<span class="text-gray-400">{formState.slates[slateIndex].name}</span>
 										<input
 											type="number"
@@ -62,7 +62,7 @@
 									step="0.01"
 									class={`range w-full range-xs`}
 									value={blocCohesionArray[0]}
-									style={`--range-progress:${COLOR_MAP.SLATES[0]}; --range-bg:${COLOR_MAP.SLATES[1]};background-color:${COLOR_MAP.SLATES[1]};padding:0;`}
+									style={`--range-progress:${formState.slates[0].color}; --range-bg:${formState.slates[1].color};background-color:${formState.slates[1].color};padding:0;`}
 									oninput={(e) =>
 										formState.updateBlocCohesion(e, blocIndex, 0, Number(e.currentTarget.value))}
 								/>
@@ -112,8 +112,8 @@
 									class={`range w-full range-xs`}
 									value={Math.round(cohesion * 100)}
 									style={`
-										--range-progress:${COLOR_MAP.SLATES[slateIndex]}; 
-										--range-bg:${formState.blocCohesionSum[blocIndex] === 1 ? COLOR_MAP.SLATES[slateIndex] + '11' : 'lightgray'};
+										--range-progress:${formState.slates[slateIndex].color}; 
+										--range-bg:${formState.blocCohesionSum[blocIndex] === 1 ? formState.slates[slateIndex].color + '11' : 'lightgray'};
 										transition:all 0.3s ease;
 										padding:0;
 									`}

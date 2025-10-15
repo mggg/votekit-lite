@@ -137,5 +137,21 @@ export const formatConfig = (id: string, state: FormState): VotekitConfig => ({
 				},
 	ballotGenerator: state.ballotGenerator,
 	trials: state.trials,
-	createdAt: Date.now().toString()
+	createdAt: Date.now().toString(),
+	meta: {
+		slateColors: state.slates.reduce(
+			(acc, slate, index) => ({
+				...acc,
+				[slate.name]: slate.color
+			}),
+			{}
+		),
+		blocColors: state.blocs.reduce(
+			(acc, bloc, index) => ({
+				...acc,
+				[bloc.name]: bloc.color
+			}),
+			{}
+		)
+	}
 });

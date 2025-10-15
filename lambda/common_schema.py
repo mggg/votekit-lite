@@ -130,6 +130,34 @@ validation_schema = {
     },
     "createdAt": {
       "type": "string"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "slateColors": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "blocColors": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "slateColors",
+        "blocColors"
+      ],
+      "additionalProperties": False
     }
   },
   "required": [
@@ -141,7 +169,8 @@ validation_schema = {
     "election",
     "ballotGenerator",
     "trials",
-    "createdAt"
+    "createdAt",
+    "meta"
   ],
   "additionalProperties": False
 }

@@ -29,7 +29,7 @@
 			<li class="p-0">
 				<div class={`${formState.slates.length > 3 ? 'flex-col' : 'flex-row'} flex`}>
 					<div class="col-span-4 flex flex-row items-center gap-2">
-						<PalettePip color={COLOR_MAP.BLOCS[blocIndex]} />
+						<PalettePip color={bloc.color} />
 						<span class="col-span-2">Do {bloc.name} voters have a strong preference towards...</span
 						>
 					</div>
@@ -38,7 +38,7 @@
 							{#each Array(formState.slates.length) as _, slateIndex}
 								<label
 									class="block rounded-md p-2 px-4 text-center text-xs"
-									style={`border: 2px solid ${COLOR_MAP.SLATES[slateIndex]}; background-color: ${COLOR_MAP.SLATES[slateIndex]}01`}
+									style={`border: 2px solid ${formState.slates[slateIndex].color}; background-color: ${formState.slates[slateIndex].color}01`}
 								>
 									<span>{formState.slates[slateIndex].name} candidates</span>
 									<div class="join inline-flex w-full justify-center">
