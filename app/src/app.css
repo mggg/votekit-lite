@@ -17,3 +17,28 @@
 .proportion-selector input[type='range'] {
 	display: none !important;
 }
+/* make a pulse animation of the box shadow going in and out */
+@keyframes tourPulse {
+	0% {
+		box-shadow: 0 0 0 2px var(--color-primary);
+	}
+	100% {
+		box-shadow: 0 0 0 10px var(--color-primary);
+	}
+}
+.touring * {
+	opacity: 0.9 !important;
+}
+
+.touring .tour-focused {
+	opacity: 1 !important;
+}
+.touring .tour-focused * {
+	opacity: 1 !important;
+}
+
+.tour-focused {
+	opacity: 1 !important;
+	animation: tourPulse 3s infinite;
+	/* pulsate */
+}

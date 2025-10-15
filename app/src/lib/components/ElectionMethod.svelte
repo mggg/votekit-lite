@@ -5,7 +5,7 @@
 	import { ELECTION_SYSTEM_MAP } from '$lib/constants';
 </script>
 
-<div class="card bg-base-100 p-4 shadow-sm">
+<div class="card bg-base-100 p-4 shadow-sm" id="election-method">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Election method</h2>
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 		{#each Object.entries(ELECTION_SYSTEM_MAP) as [system, systemData]}
