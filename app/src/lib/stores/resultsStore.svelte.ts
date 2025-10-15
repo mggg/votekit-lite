@@ -146,8 +146,8 @@ class ResultsState {
 			const nameCollisionNumber =
 				nameCollision.length > 0
 					? Math.max(...nameCollision.map((n) => parseInt(n.slice(1, -1)))) + 1
-					: 1;
-			runInfo.name = runInfo.name + ` (${nameCollisionNumber})`;
+					: null;
+			runInfo.name = runInfo.name + `${nameCollisionNumber ? ` (${nameCollisionNumber})` : ''}`;
 			runs.unshift({
 				id: runInfo.id,
 				name: runInfo.name,
