@@ -22,7 +22,7 @@
 						{/if}
 					</span>
 				</div>
-				<div class="flex flex-row flex-wrap gap-2 pl-6">
+				<div class="flex flex-row gap-2 pl-6">
 					{#if blocCohesionArray.length <= 2}
 						<div class="flex w-full flex-col">
 							<div class="space-between flex w-full flex-row justify-between">
@@ -69,7 +69,6 @@
 							</label>
 						</div>
 					{:else}
-						<div class="relative w-full"></div>
 						{#each blocCohesionArray as cohesion, slateIndex}
 							<label class="relative flex flex-grow flex-col items-start text-xs">
 								<label class="input input-sm my-2 w-full">
@@ -79,7 +78,7 @@
 										min="0"
 										max="100"
 										step="1"
-										class="grow text-sm"
+										class="min-w-18 grow text-sm"
 										value={Math.round(cohesion * 100)}
 										oninput={(e) =>
 											formState.updateBlocCohesion(
