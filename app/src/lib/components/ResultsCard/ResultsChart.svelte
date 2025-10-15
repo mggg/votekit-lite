@@ -5,14 +5,14 @@
 	import ViewOffIcon from './ViewOffIcon.svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import { calculateCombinedSupport } from '$lib/stores/utils';
-	import { COLOR_MAP } from '$lib/constants';
+	import { DEFAULT_SLATE_BLOCS } from '$lib/constants';
 
 	// props (Svelte 5 runes)
 	const { runId } = $props<{ runId: string }>();
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 240;
-	const margin = { top: 60, right: 0, bottom: 40, left: 44 }; // increase left margin for y label
+	const margin = { top: 60, right: 0, bottom: 40, left: 64 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
@@ -31,6 +31,11 @@
 
 	// data
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
+	const colors = $derived(
+		run?.config?.meta?.slateColors
+			? Object.values(run.config.meta.slateColors)
+			: DEFAULT_SLATE_BLOCS.map((s) => s.color)
+	);
 	const combinedSupport = $derived(run?.config ? calculateCombinedSupport(run.config) : []);
 	let combinedSupportVisible = $state(false);
 	const raw = $derived(run?.result ?? {});
@@ -76,7 +81,7 @@
 	);
 	const yMax = $derived(d3.max(flatData, (d) => d.value) ?? 0);
 	const y = $derived(d3.scaleLinear().domain([0, yMax]).nice().range([innerHeight, 0]));
-	const color = $derived(d3.scaleOrdinal<string, string>().domain(groups).range(COLOR_MAP.SLATES));
+	const color = $derived(d3.scaleOrdinal<string, string>().domain(groups).range(colors));
 
 	// axis ticks/format
 	const yTicks = $derived(y.ticks(Math.min(6, Math.max(2, Math.floor(innerHeight / 40)))));
@@ -225,7 +230,7 @@
 				font-size="10"
 				fill="#333"
 				font-weight="normal"
-				transform={`rotate(-90 -36,${innerHeight / 2})`}
+				transform={`rotate(-90 -54,${innerHeight / 2})`}
 			>
 				Frequency of Result
 			</text>
