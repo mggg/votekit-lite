@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formState } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
+	import { formState } from '$lib/stores/formStore.svelte';
 	import PalettePip from '../PalettePip.svelte';
 
 	const GRID_STYLE_MAP = {
@@ -11,7 +11,7 @@
 </script>
 
 <!-- Cohesion sliders as a list -->
-<div class="mt-4">
+<div class="mt-4" id="voter-blocs-cohesion">
 	<h3 class="mb-2 text-sm font-medium text-slate-700">Voter cohesion</h3>
 	<p class="mb-2 text-xs text-slate-500">
 		How often do voters from each bloc vote for candidates from each slate?

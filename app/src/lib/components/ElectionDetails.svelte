@@ -5,7 +5,7 @@
 	const candidatesRange = new Array(MAX_CANDIDATES).fill(0).map((_, index) => index + 1);
 </script>
 
-<div class="card bg-base-100 p-4 shadow-sm">
+<div class="card bg-base-100 p-4 shadow-sm" id="election-details">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Election details</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
 		<fieldset class="col-span-2 fieldset">

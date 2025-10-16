@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { PUBLIC_TURNSTILE_KEY } from '$env/static/public';
-	import { formState } from '$lib/stores/formStore.svelte';
-	import { Turnstile } from 'svelte-turnstile';
 	import GearIcon from '$lib/components/ResultsCard/GearIcon.svelte';
+	import { formState } from '$lib/stores/formStore.svelte';
 	import { loadConfigFromFile } from '$lib/utils/loadConfigFromFile';
+	import { Turnstile } from 'svelte-turnstile';
 	const errorList = $derived(
 		[
 			formState.unallocatedPopulation > 0
@@ -19,7 +19,7 @@
 	);
 </script>
 
-<div class="card relative w-full max-w-none bg-base-100 p-4 shadow-sm">
+<div class="card relative w-full max-w-none bg-base-100 p-4 shadow-sm" id="run-details">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
@@ -57,6 +57,7 @@
 			formState.isLoading ||
 			formState.cambridgeValidationErrors.length > 0 ||
 			formState.name.length === 0}
+		id="run-simulation-button"
 	>
 		Run simulation
 	</button>
