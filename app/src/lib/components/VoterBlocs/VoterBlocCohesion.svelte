@@ -2,6 +2,12 @@
 	import { formState } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
 	import PalettePip from '../PalettePip.svelte';
+
+	const GRID_STYLE_MAP = {
+		3: 'grid-cols-3',
+		4: 'grid-cols-4',
+		5: 'grid-cols-5'
+	};
 </script>
 
 <!-- Cohesion sliders as a list -->
@@ -14,10 +20,7 @@
 		{#each formState.blocCohesion as blocCohesionArray, blocIndex}
 			<li class="list-row list-row-sm flex flex-col gap-2 py-3">
 				<div class="flex flex-row items-center gap-2">
-					<PalettePip
-						color={formState.blocs[blocIndex].color}
-						onChange={(color: string) => (formState.blocs[blocIndex].color = color)}
-					/>
+					<PalettePip color={formState.blocs[blocIndex].color} editable={false} />
 					<span class="font-medium">{formState.blocs[blocIndex].name} voters</span>
 					<span class="ml-2 text-xs text-slate-500">
 						{#if formState.slates.length > 2}
@@ -25,8 +28,8 @@
 						{/if}
 					</span>
 				</div>
-				<div class="flex flex-row gap-2 pl-6">
-					{#if blocCohesionArray.length <= 2}
+				{#if blocCohesionArray.length <= 2}
+					<div class="flex flex-row gap-2 pl-6">
 						<div class="flex w-full flex-col">
 							<div class="space-between flex w-full flex-row justify-between">
 								{#each formState.slates as slate, slateIndex}
@@ -71,11 +74,16 @@
 								/>
 							</label>
 						</div>
-					{:else}
+					</div>
+				{:else}
+					<!-- grid of slates -->
+					<div
+						class={`grid ${GRID_STYLE_MAP[formState.slates.length as keyof typeof GRID_STYLE_MAP]} gap-2`}
+					>
 						{#each blocCohesionArray as cohesion, slateIndex}
-							<label class="relative flex flex-grow flex-col items-start text-xs">
+							<label class="relative flex flex-grow flex-col items-start justify-end text-xs">
+								<span class="text-gray-400">{formState.slates[slateIndex].name}</span>
 								<label class="input input-sm my-2 w-full">
-									<span class="text-gray-400">{formState.slates[slateIndex].name}</span>
 									<input
 										type="number"
 										min="0"
@@ -129,8 +137,8 @@
 								/>
 							</label>
 						{/each}
-					{/if}
-				</div>
+					</div>
+				{/if}
 				<div
 					class={`mt-2 pl-6 text-xs ${formState.blocCohesionSum[blocIndex] < 1 ? 'text-amber-500' : 'text-slate-500'}`}
 				>

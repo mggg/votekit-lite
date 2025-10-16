@@ -34,10 +34,13 @@
 						>
 					</div>
 					<div class="list-row list-row-sm pt-2 pb-4">
-						<div class="flex w-full flex-row items-center gap-2 pl-2">
+						<div
+							class="grid w-full items-center gap-2 pl-2"
+							style={`grid-template-columns: repeat(${formState.slates.length}, 1fr);`}
+						>
 							{#each Array(formState.slates.length) as _, slateIndex}
 								<label
-									class="block rounded-md p-2 px-4 text-center text-xs"
+									class="block flex h-full flex-col justify-center rounded-md p-2 px-4 text-center text-xs"
 									style={`border: 2px solid ${formState.slates[slateIndex].color}; background-color: ${formState.slates[slateIndex].color}01`}
 								>
 									<span>{formState.slates[slateIndex].name} candidates</span>
