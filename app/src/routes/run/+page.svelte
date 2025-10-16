@@ -25,7 +25,9 @@
 
 	<div>
 		<div
-			class="sticky top-20 space-y-3 overflow-y-auto {tourState.isTouring ? 'touring' : ''}"
+			class="sticky top-24 space-y-3 {tourState.isTouring
+				? 'touring overflow-visible'
+				: 'overflow-y-auto'}"
 			style="max-height: calc(100vh - 96px);"
 		>
 			<RunDetails />

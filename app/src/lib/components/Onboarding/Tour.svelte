@@ -2,7 +2,7 @@
 	import { tourState } from '$lib/stores/tourStore.svelte';
 	let top = $state(0);
 	let left = $state(0);
-
+	let maxWidth = $state(300);
 	const removeTourFocused = () => {
 		// remove tour-focused class from all elements
 		const elements = document.querySelectorAll('.tour-focused');
@@ -19,19 +19,35 @@
 		const element = document.getElementById(entry.id);
 		// apply "tour-focused" class to element
 		element?.classList.add('tour-focused');
-		// get the element position and
-		const elementTop = element?.getBoundingClientRect().top ?? 0;
-		const elementLeft = element?.getBoundingClientRect().left ?? 0;
-		const elementHeight = element?.getBoundingClientRect().height ?? 0;
-		top = elementTop + elementHeight + 20;
+		const scrollY = entry.sticky ? 0 : window.scrollY || window.pageYOffset;
+		const scrollX = entry.sticky ? 0 : window.scrollX || window.pageXOffset;
+		const rect = element?.getBoundingClientRect() ?? { top: 0, left: 0, height: 0, width: 0 };
+		const elementTop = rect.top + scrollY;
+		const elementLeft = rect.left + scrollX;
+		const elementHeight = rect.height;
+		const elementWidth = rect.width;
+
+		if (entry.position === 'top') {
+			top = elementTop - 20; // place above element, adjust 20px upward
+		} else {
+			// default to bottom
+			top = elementTop + elementHeight + 20;
+		}
+
+		// TODO: handle left/right positions
 		left = elementLeft;
+		maxWidth = elementWidth;
 	});
 </script>
 
 {#if tourState.isTouring}
 	<div
-		style={`top: ${top}px; left: ${left}px; z-index: 1000;`}
-		class="absolute rounded-md border-2 border-primary bg-white p-4 shadow-xl"
+		style={`top: ${top}px; left: ${left}px; z-index: 1000; max-width: ${maxWidth}px;
+		${tourState.steps[tourState.currentStep]?.position === 'top' ? 'transform: translateY(-100%);' : ''}
+		`}
+		class="{tourState.steps[tourState.currentStep]?.sticky
+			? 'fixed'
+			: 'absolute'} rounded-md border-2 border-primary bg-white p-4 shadow-xl"
 	>
 		<div class="flex w-full flex-row justify-between gap-2">
 			<h1 class="text-lg font-bold">{tourState.steps[tourState.currentStep].title}</h1>

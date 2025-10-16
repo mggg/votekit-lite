@@ -2,6 +2,8 @@ interface Step {
 	title: string;
 	description: string;
 	id: string;
+	position?: 'top' | 'bottom' | 'left' | 'right';
+	sticky?: boolean;
 }
 
 const TOUR_STEPS: Array<Step> = [
@@ -35,22 +37,26 @@ const TOUR_STEPS: Array<Step> = [
 	{
 		title: 'Voter Behavior',
 		description: 'Decide how the blocs behave when ranking.',
-		id: 'voter-behavior'
+		id: 'voter-behavior',
+		position: 'top'
 	},
 	{
 		title: 'Run Details',
 		description: 'Enter a name for the run and the number of elections to simulate.',
-		id: 'run-details'
+		id: 'run-details',
+		sticky: true
 	},
 	{
 		title: 'Preview',
 		description: 'See a preview of the parameters you have entered.',
-		id: 'preview'
+		id: 'preview',
+		sticky: true
 	},
 	{
 		title: 'Run Simulation',
 		description: 'Click to run the simulation.',
-		id: 'run-simulation-button'
+		id: 'run-simulation-button',
+		sticky: true
 	}
 ];
 
