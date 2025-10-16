@@ -25,7 +25,7 @@
 	];
 </script>
 
-<div class="card bg-base-100 p-4 shadow-sm">
+<div class="card bg-base-100 p-4 shadow-sm" id="voter-behavior">
 	<div class="flex flex-row gap-2">
 		<h2 class="mb-2 text-lg font-semibold text-slate-800">Voter behavior</h2>
 		<div class="dropdown dropdown-top">

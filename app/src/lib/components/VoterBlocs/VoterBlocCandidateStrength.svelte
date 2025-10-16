@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formState, type FormState } from '$lib/stores/formStore.svelte';
 	import { COLOR_MAP } from '$lib/constants';
+	import { formState, type FormState } from '$lib/stores/formStore.svelte';
 	import PalettePip from '../PalettePip.svelte';
 
 	const PREFERENCE_OPTIONS = [
@@ -19,7 +19,7 @@
 </script>
 
 <!-- Candidate strength breakdown -->
-<div class="mt-4">
+<div class="mt-4" id="voter-blocs-candidate-strength">
 	<h3 class="mb-2 text-sm font-medium text-slate-700">Candidate strength</h3>
 	<p class="mb-2 text-xs text-slate-500">
 		Do voters from each bloc favor a strong candidate from each slate?
