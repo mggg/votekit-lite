@@ -20,11 +20,6 @@ const TOUR_STEPS: Array<Step> = [
 	{
 		title: 'Voter Blocs',
 		description: 'Enter information about different groups of voters, called blocs.',
-		id: 'voter-blocs'
-	},
-	{
-		title: 'Basic Settings',
-		description: 'Enter the number and size of the blocs.',
 		id: 'voter-blocs-basic-settings'
 	},
 	{
@@ -63,6 +58,7 @@ class TourState {
 	steps: Array<Step> = TOUR_STEPS;
 	currentStep: number = $state(0);
 	isTouring: boolean = $state(false);
+	lastStep: boolean = $derived(this.currentStep === this.steps.length - 1);
 	stepUp() {
 		this.currentStep = this.currentStep + 1;
 	}

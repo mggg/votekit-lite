@@ -45,8 +45,10 @@
 		>
 		<button
 			class="btn btn-outline"
-			onclick={() => tourState.stepUp()}
-			disabled={tourState.currentStep === tourState.steps.length - 1}>Next</button
+			onclick={!tourState.lastStep ? () => tourState.stepUp() : () => (tourState.isTouring = false)}
+			disabled={!tourState.isTouring}
 		>
+			{tourState.lastStep ? 'End' : 'Next'}
+		</button>
 	</div>
 {/if}
