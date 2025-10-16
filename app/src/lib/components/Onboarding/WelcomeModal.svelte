@@ -4,11 +4,13 @@
 		typeof localStorage !== 'undefined' && localStorage.getItem('dontShowWelcomeModal') === 'true';
 	let modalOpen = $state(!previouslyDismissed);
 	let dontShowAgain = $state(previouslyDismissed);
+
 	const toggleDontShowAgain = () => {
 		const curr = localStorage.getItem('dontShowWelcomeModal') === 'true';
 		localStorage.setItem('dontShowWelcomeModal', !curr ? 'true' : 'false');
 		dontShowAgain = !curr;
 	};
+
 	const handleReopen = () => {
 		modalOpen = true;
 	};
@@ -22,7 +24,6 @@
 			<button
 				class="btn btn-soft btn-primary"
 				onclick={() => {
-					console.log('tour started');
 					tourState.isTouring = true;
 					modalOpen = false;
 				}}>Tour VoteKit Lite</button
@@ -43,13 +44,11 @@
 </dialog>
 
 {#if !modalOpen && !tourState.isTouring}
-	<div class="fab">
-		<button
-			tabIndex={0}
-			class="text-bold btn btn-circle text-white shadow-md btn-lg btn-primary"
-			onclick={handleReopen}
-		>
-			?
-		</button>
-	</div>
+	<button
+		tabIndex={0}
+		class="text-bold btn fixed right-4 bottom-4 btn-circle text-white shadow-md btn-lg btn-primary"
+		onclick={() => handleReopen()}
+	>
+		?
+	</button>
 {/if}
