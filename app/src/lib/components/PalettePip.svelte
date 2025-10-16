@@ -14,7 +14,7 @@
 
 {#if editable}
 	<div
-		class="tooltip tooltip-right m-0 p-0 {!editable &&
+		class="tooltip tooltip-right m-0 aspect-square flex-none p-0 {!editable &&
 			'pointer-events-none'} aspect-square {size} relative overflow-hidden rounded-full"
 		data-tip={'Edit color'}
 	>

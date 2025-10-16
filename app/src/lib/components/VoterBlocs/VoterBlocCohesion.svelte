@@ -20,7 +20,10 @@
 		{#each formState.blocCohesion as blocCohesionArray, blocIndex}
 			<li class="list-row list-row-sm flex flex-col gap-2 py-3">
 				<div class="flex flex-row items-center gap-2">
-					<PalettePip color={formState.blocs[blocIndex].color} editable={false} />
+					<PalettePip
+						color={formState.blocs[blocIndex].color}
+						onChange={(color: string) => (formState.blocs[blocIndex].color = color)}
+					/>
 					<span class="font-medium">{formState.blocs[blocIndex].name} voters</span>
 					<span class="ml-2 text-xs text-slate-500">
 						{#if formState.slates.length > 2}
