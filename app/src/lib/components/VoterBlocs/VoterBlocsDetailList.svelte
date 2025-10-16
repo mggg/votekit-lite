@@ -23,7 +23,7 @@
 				<div
 					class={`flex flex-row items-center gap-2  ${formState.showTurnoutSettings ? 'col-span-4' : 'col-span-6'}`}
 				>
-					<PalettePip color={COLOR_MAP.BLOCS[i]} />
+					<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
 					<label class={`input input-sm w-full`}>
 						<input
 							type="text"
@@ -104,7 +104,7 @@
 				<div
 					class={`flex flex-row items-center gap-2  ${formState.showTurnoutSettings ? 'col-span-3' : 'col-span-6'}`}
 				>
-					<PalettePip color={COLOR_MAP.BLOCS[i]} />
+					<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
 					<label class={`input input-sm w-full`}>
 						<input
 							type="text"
@@ -121,7 +121,7 @@
 						{#if formState.blocs.length > 2}
 							<span
 								class="pointer-events-none absolute left-0 rounded-full"
-								style={`height: 16px; top:5px; border:2px dotted ${COLOR_MAP.BLOCS[i]}88; border-white:2px; width:${formState.maxPercentages[i] * 100}%;`}
+								style={`height: 16px; top:5px; border:2px dotted ${bloc.color}88; border-white:2px; width:${formState.maxPercentages[i] * 100}%;`}
 							></span>
 						{/if}
 						<input
@@ -131,7 +131,7 @@
 							step="0.01"
 							class="range mt-1 w-full range-xs"
 							value={formState.populationShare[i]}
-							style={`--range-progress:${COLOR_MAP.BLOCS[i]};`}
+							style={`--range-progress:${bloc.color};`}
 							oninput={(e) =>
 								formState.updateBlocElectorateShare(e, i, Number(e.currentTarget.value))}
 						/>

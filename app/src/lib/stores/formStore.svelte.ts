@@ -5,6 +5,7 @@ import { resultsState } from './resultsStore.svelte';
 import type { Slate, VoterBloc, VoterBlocMode } from './types';
 import { balanceRemainingValue, formatConfig } from './utils';
 import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
+import { DEFAULT_SLATE_BLOCS } from '$lib/constants';
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -24,12 +25,12 @@ export class FormState {
 		{
 			population: 50,
 			turnout: 1.0,
-			name: 'A'
+			...DEFAULT_SLATE_BLOCS[0]
 		},
 		{
 			population: 50,
 			turnout: 1.0,
-			name: 'B'
+			...DEFAULT_SLATE_BLOCS[1]
 		}
 	]);
 	// Derived from population and turnout
@@ -68,11 +69,11 @@ export class FormState {
 	slates: Slate[] = $state([
 		{
 			numCandidates: 3,
-			name: 'A'
+			...DEFAULT_SLATE_BLOCS[0]
 		},
 		{
 			numCandidates: 3,
-			name: 'B'
+			...DEFAULT_SLATE_BLOCS[1]
 		}
 	]);
 
@@ -116,7 +117,7 @@ export class FormState {
 			for (let i = this.slates.length; i < value; i++) {
 				newSlates.push({
 					numCandidates: numCandidatesPerSlate,
-					name: String.fromCharCode(65 + i)
+					...DEFAULT_SLATE_BLOCS[i]
 				});
 			}
 			const newBlocCohesion = this.blocCohesion.map((bloc) => {
@@ -149,7 +150,7 @@ export class FormState {
 			const newBlocCohesion = [...this.blocCohesion];
 			const newBlocPreferences = [...this.blocPreferences];
 			for (let i = this.blocs.length; i < value; i++) {
-				newBlocs.push({ population: 50, turnout: 1.0, name: String.fromCharCode(65 + i) });
+				newBlocs.push({ population: 50, turnout: 1.0, ...DEFAULT_SLATE_BLOCS[i] });
 				newBlocCohesion.push(new Array(this.slates.length).fill(1 / this.slates.length));
 				newBlocPreferences.push(new Array(this.slates.length).fill('all_bets_off'));
 			}
@@ -257,14 +258,16 @@ export class FormState {
 		this.numSeats = config.election.numSeats;
 		this.maxRankingCandidatesInput = config.election.maxBallotLength;
 		this.numVoterBlocs = Object.keys(config.voterBlocs).length;
-		this.blocs = Object.entries(config.voterBlocs).map(([name, bloc]) => ({
+		this.blocs = Object.entries(config.voterBlocs).map(([name, bloc], i) => ({
 			name,
 			population: bloc.proportion * config.numVoters,
-			turnout: 1.0
+			turnout: 1.0,
+			color: config.meta?.blocColors?.[name] ?? DEFAULT_SLATE_BLOCS[i].color
 		}));
-		this.slates = Object.entries(config.slates).map(([name, slate]) => ({
+		this.slates = Object.entries(config.slates).map(([name, slate], i) => ({
 			name,
-			numCandidates: slate.numCandidates
+			numCandidates: slate.numCandidates,
+			color: config.meta?.slateColors?.[name] ?? DEFAULT_SLATE_BLOCS[i].color
 		}));
 		this.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>
 			this.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')

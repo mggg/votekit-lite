@@ -39,6 +39,7 @@ class ResultsState {
 		});
 		this.resultsListeners = newListeners;
 	}
+
 	clearListener(id: string) {
 		const listener = this.resultsListeners.find((l) => l.id === id);
 		if (listener) {
@@ -46,6 +47,7 @@ class ResultsState {
 			this.resultsListeners.splice(this.resultsListeners.indexOf(listener), 1);
 		}
 	}
+
 	async checkRunResults(runId: string) {
 		const response = await getData(runId);
 		if (response.ok && response.data.status === 'success') {
@@ -66,6 +68,7 @@ class ResultsState {
 		}
 		return response;
 	}
+
 	async checkStaleRun(runId: string) {
 		const run = this.runs.find((r) => r.id === runId);
 		const runHasListener = this.resultsListeners.some((l) => l.id === runId);
@@ -88,6 +91,7 @@ class ResultsState {
 			}
 		}
 	}
+
 	listenForResults(runId: string, config: VotekitConfig) {
 		this.upsertRun({
 			id: runId,
@@ -125,9 +129,23 @@ class ResultsState {
 		if (prev) {
 			runs.splice(runs.indexOf(prev), 1, {
 				...prev,
-				...runInfo
+				...runInfo,
+				name: prev.name
 			});
 		} else if (runInfo.id && runInfo.name && runInfo.config && runInfo.createdAt) {
+			const nameCollision = runs
+				.filter((r) => {
+					const nameWithoutNumber = r.name.replace(/\(\d+\)$/, '');
+					return nameWithoutNumber.trim() === runInfo.name?.trim();
+				})
+				.map((r) => {
+					return r.name;
+				})
+				.filter((r) => r !== null);
+			console.log('!!nameCollision', nameCollision);
+			const nameCollisionNumber = nameCollision.length > 0 ? nameCollision.length + 1 : null;
+			console.log('!!nameCollisionNumber', nameCollision, nameCollisionNumber);
+			runInfo.name = runInfo.name + `${nameCollisionNumber ? ` (${nameCollisionNumber})` : ''}`;
 			runs.unshift({
 				id: runInfo.id,
 				name: runInfo.name,

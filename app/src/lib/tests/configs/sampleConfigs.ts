@@ -43,7 +43,17 @@ export const twoBlocTwoSlate: VotekitConfig = {
 	},
 	ballotGenerator: 'sPL',
 	trials: 1,
-	createdAt: '1700000000000'
+	createdAt: '1700000000000',
+	meta: {
+		slateColors: {
+			slate1: '#000000',
+			slate2: '#000000'
+		},
+		blocColors: {
+			bloc1: '#000000',
+			bloc2: '#000000'
+		}
+	}
 };
 
 export const twoBlocThreeSlate: VotekitConfig = {
@@ -96,7 +106,18 @@ export const twoBlocThreeSlate: VotekitConfig = {
 	},
 	ballotGenerator: 'sBT',
 	trials: 1,
-	createdAt: '1700000000000'
+	createdAt: '1700000000000',
+	meta: {
+		slateColors: {
+			slate1: '#000000',
+			slate2: '#000000',
+			slate3: '#000000'
+		},
+		blocColors: {
+			bloc1: '#000000',
+			bloc2: '#000000'
+		}
+	}
 };
 
 // export const twoBlocTwoSlateCS: VotekitConfig = {
@@ -208,5 +229,17 @@ export const threeBlocFourSlate: VotekitConfig = {
 	},
 	ballotGenerator: 'sBT',
 	trials: 1,
-	createdAt: '1700000000000'
+	createdAt: '1700000000000',
+	meta: {
+		slateColors: {
+			slate1: '#000000',
+			slate2: '#000000',
+			slate3: '#000000'
+		},
+		blocColors: {
+			bloc1: '#000000',
+			bloc2: '#000000',
+			bloc3: '#000000'
+		}
+	}
 };

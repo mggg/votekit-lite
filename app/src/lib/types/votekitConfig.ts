@@ -38,7 +38,11 @@ export const VotekitConfigSchema = z.object({
 	election: ElectionSchema,
 	ballotGenerator: z.union([z.literal('sBT'), z.literal('sPL'), z.literal('CS')]),
 	trials: z.coerce.number(),
-	createdAt: z.string()
+	createdAt: z.string(),
+	meta: z.object({
+		slateColors: z.record(z.string(), z.string()),
+		blocColors: z.record(z.string(), z.string())
+	})
 });
 
 // Example type
