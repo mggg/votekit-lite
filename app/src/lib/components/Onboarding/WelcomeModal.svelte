@@ -13,6 +13,8 @@
 
 	const handleReopen = () => {
 		modalOpen = true;
+		dontShowAgain = false;
+		localStorage.setItem('dontShowWelcomeModal', 'false');
 	};
 </script>
 
