@@ -50,7 +50,8 @@ const TOUR_STEPS: Array<Step> = [
 		title: 'Preview',
 		description: 'See a preview of the parameters you have entered.',
 		id: 'preview',
-		sticky: true
+		sticky: true,
+		position: 'top'
 	},
 	{
 		title: 'Run Simulation',

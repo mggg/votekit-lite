@@ -21,8 +21,6 @@
 		const element = document.getElementById(entry.id);
 		// apply "tour-focused" class to element
 		element?.classList.add('tour-focused');
-		const windowHeight = window.innerHeight;
-		const windowWidth = window.innerWidth;
 		const scrollY = entry.sticky ? 0 : window.scrollY || window.pageYOffset;
 		const scrollX = entry.sticky ? 0 : window.scrollX || window.pageXOffset;
 		const rect = element?.getBoundingClientRect() ?? { top: 0, left: 0, height: 0, width: 0 };
@@ -43,7 +41,7 @@
 		} else if (entry.position === 'top') {
 			window.scrollTo({ top: elementTop + scrollY + elementHeight - 100, behavior: 'smooth' });
 		} else {
-			window.scrollTo({ top: elementTop + scrollY - 100, behavior: 'smooth' });
+			window.scrollTo({ top: rect.top + scrollY - 100, behavior: 'smooth' });
 		}
 
 		// TODO: handle left/right positions
