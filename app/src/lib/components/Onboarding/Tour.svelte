@@ -61,7 +61,12 @@
 	>
 		<div class="flex w-full flex-row justify-between gap-2">
 			<h1 class="text-lg font-bold">{tourState.steps[tourState.currentStep].title}</h1>
-			<button onclick={() => (tourState.isTouring = false)}>&times;</button>
+			<button
+				onclick={() => {
+					tourState.isTouring = false;
+					tourState.currentStep = 0;
+				}}>&times;</button
+			>
 		</div>
 		<p>{tourState.steps[tourState.currentStep].description}</p>
 		<button
@@ -71,7 +76,12 @@
 		>
 		<button
 			class="btn btn-outline {tourState.lastStep ? 'btn-primary' : 'btn-outline'}"
-			onclick={!tourState.lastStep ? () => tourState.stepUp() : () => (tourState.isTouring = false)}
+			onclick={!tourState.lastStep
+				? () => tourState.stepUp()
+				: () => {
+						tourState.isTouring = false;
+						tourState.currentStep = 0;
+					}}
 			disabled={!tourState.isTouring}
 		>
 			{tourState.lastStep ? 'End' : 'Next'}
