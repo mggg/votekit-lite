@@ -9,6 +9,6 @@
 	});
 </script>
 
-<div class="card overflow-y-auto bg-base-100 p-4 text-sm text-slate-600 shadow-sm">
+<div class="card overflow-y-auto bg-base-100 p-4 text-sm text-slate-600 shadow-sm" id="preview">
 	<ResultCardDetails {run} />
 </div>
