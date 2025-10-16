@@ -3,6 +3,7 @@
 	let top = $state(0);
 	let left = $state(0);
 	let maxWidth = $state(300);
+
 	const removeTourFocused = () => {
 		// remove tour-focused class from all elements
 		const elements = document.querySelectorAll('.tour-focused');
@@ -10,6 +11,7 @@
 			element.classList.remove('tour-focused');
 		});
 	};
+
 	$effect(() => {
 		removeTourFocused();
 		if (!tourState.isTouring) {

@@ -5,7 +5,12 @@
 	let modalOpen = $state(!previouslyDismissed);
 	let dontShowAgain = $state(previouslyDismissed);
 	const toggleDontShowAgain = () => {
-		localStorage.setItem('dontShowWelcomeModal', 'true');
+		const curr = localStorage.getItem('dontShowWelcomeModal') === 'true';
+		localStorage.setItem('dontShowWelcomeModal', !curr ? 'true' : 'false');
+		dontShowAgain = !curr;
+	};
+	const handleReopen = () => {
+		modalOpen = true;
 	};
 </script>
 
@@ -36,3 +41,15 @@
 		</label>
 	</div>
 </dialog>
+
+{#if !modalOpen && !tourState.isTouring}
+	<div class="fab">
+		<button
+			tabIndex={0}
+			class="text-bold btn btn-circle text-white shadow-md btn-lg btn-primary"
+			onclick={handleReopen}
+		>
+			?
+		</button>
+	</div>
+{/if}
