@@ -7,6 +7,7 @@
 
 <div class="card bg-base-100 p-4 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Group attributes</h2>
+	<h3 class="text-md my-2 font-medium">Group size</h3>
 	<p class="mb-4 text-sm text-slate-500">
 		Set the size of each group and optionally their turnout rate.
 	</p>
@@ -84,10 +85,9 @@
 		{/each}
 	</ul>
 
-	<h2 class="mb-2 text-lg font-semibold text-slate-800">Candidate pools</h2>
+	<h2 class="text-md my-2 font-medium">Candidate pools</h2>
 	<p class="mb-4 text-sm text-slate-500">
-		Slates are groups of candidates that tend to be preferred by the same voters. Set the number of
-		candidates for each slate.
+		Set the number of candidates for each group, up to a maximum of {MAX_CANDIDATES}.
 	</p>
 
 	<ul class="list bg-base-100 p-0">

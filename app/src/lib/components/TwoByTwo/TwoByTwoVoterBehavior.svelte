@@ -100,7 +100,7 @@
 		{/each}
 	</div>
 	<div class="mt-4">
-		<h3 class="mb-2 text-sm font-medium text-slate-700">Voter cohesion</h3>
+		<h3 class="text-md mb-2 font-medium">Voter cohesion</h3>
 		<p class="mb-2 text-xs text-slate-500">
 			How cohesive is each bloc — i.e., how heavy is the preference for their own candidates over
 			the other group?
@@ -167,7 +167,7 @@
 		</ul>
 	</div>
 
-	<h3 class="mb-2 text-sm font-medium text-slate-700">Candidate strength</h3>
+	<h3 class="text-md my-2 font-medium">Candidate strength</h3>
 	<p class="mb-2 text-xs text-slate-500">
 		When voters from each bloc consider candidates from each slate, do they tend to view one strong
 		candidate or are they indifferent between the options?
