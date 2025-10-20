@@ -71,6 +71,7 @@ class ResultsState {
 
 	async checkStaleRun(runId: string) {
 		const run = this.runs.find((r) => r.id === runId);
+		console.log('!!run', run, run?.createdAt, run?.createdAt ? new Date(+run.createdAt) : null);
 		const runHasListener = this.resultsListeners.some((l) => l.id === runId);
 		if (run && run.createdAt && !runHasListener) {
 			const r = await this.checkRunResults(runId);
@@ -81,7 +82,8 @@ class ResultsState {
 			const dateNow = new Date();
 			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
 			const diffMinutes = Math.floor(diffTime / (1000 * 60));
-			if (diffMinutes < 5) {
+			console.log('!!diffMinutes', diffMinutes, run.createdAt);
+			if (diffMinutes < 2) {
 				this.listenForResults(runId, run.config);
 			} else {
 				this.upsertRun({
@@ -96,8 +98,7 @@ class ResultsState {
 		this.upsertRun({
 			id: runId,
 			name: config.name,
-			config: config,
-			createdAt: Date.now().toString()
+			config: config
 		});
 		resultsState.toggleActiveRun(runId);
 		goto(`/results`);
@@ -142,9 +143,7 @@ class ResultsState {
 					return r.name;
 				})
 				.filter((r) => r !== null);
-			console.log('!!nameCollision', nameCollision);
 			const nameCollisionNumber = nameCollision.length > 0 ? nameCollision.length + 1 : null;
-			console.log('!!nameCollisionNumber', nameCollision, nameCollisionNumber);
 			runInfo.name = runInfo.name + `${nameCollisionNumber ? ` (${nameCollisionNumber})` : ''}`;
 			runs.unshift({
 				id: runInfo.id,

@@ -15,6 +15,7 @@
 	const { runId } = $props<{ runId: string }>();
 	let activeTab = $state('histogram');
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
+	const timeoutDate = $derived(run?.createdAt ? new Date(+run.createdAt + 2 * 60 * 1000) : null);
 	let showCopiedUrl = $state(false);
 	let hovered = $state(false);
 
@@ -50,7 +51,7 @@
 				style={`background: ${activeTab === 'histogram' ? 'white' : 'none'}`}
 			/>
 			<div
-				class="relative tab-content min-h-[360px] border-base-300 bg-base-100 p-6"
+				class="relative tab-content border-base-300 bg-base-100 p-6"
 				id={`histogram-container-${runId}`}
 			>
 				<ResultCardHeader {run} />
@@ -60,6 +61,11 @@
 					<p class="text-sm text-amber-500">{run.error}</p>
 				{:else}
 					<Loading message="Waiting for results..." />
+					{#if timeoutDate}
+						<p class="py-2 text-sm text-gray-500">
+							This run will complete or time out by {timeoutDate?.toLocaleString()}
+						</p>
+					{/if}
 				{/if}
 			</div>
 
