@@ -50,7 +50,7 @@
 				style={`background: ${activeTab === 'histogram' ? 'white' : 'none'}`}
 			/>
 			<div
-				class="relative tab-content border-base-300 bg-base-100 p-6"
+				class="relative tab-content min-h-[360px] border-base-300 bg-base-100 p-6"
 				id={`histogram-container-${runId}`}
 			>
 				<ResultCardHeader {run} />

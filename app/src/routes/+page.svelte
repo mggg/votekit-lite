@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		goto('/2x2');
+		goto('/run');
 	});
 </script>
 
