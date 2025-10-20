@@ -82,7 +82,6 @@ class ResultsState {
 			const dateNow = new Date();
 			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
 			const diffMinutes = Math.floor(diffTime / (1000 * 60));
-			console.log('!!diffMinutes', diffMinutes, run.createdAt);
 			if (diffMinutes < 2) {
 				this.listenForResults(runId, run.config);
 			} else {
@@ -98,7 +97,8 @@ class ResultsState {
 		this.upsertRun({
 			id: runId,
 			name: config.name,
-			config: config
+			config: config,
+			createdAt: config.createdAt
 		});
 		resultsState.toggleActiveRun(runId);
 		goto(`/results`);
@@ -148,7 +148,7 @@ class ResultsState {
 			runs.unshift({
 				id: runInfo.id,
 				name: runInfo.name,
-				createdAt: runInfo.createdAt,
+				createdAt: runInfo.createdAt ?? Date.now().toString(),
 				config: runInfo.config,
 				...runInfo
 			});

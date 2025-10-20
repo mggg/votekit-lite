@@ -62,7 +62,7 @@
 				{:else}
 					<Loading message="Waiting for results..." />
 					{#if timeoutDate}
-						<p class="py-2 text-sm text-gray-500">
+						<p class="py-2 text-xs text-gray-500">
 							This run will complete or time out by {timeoutDate?.toLocaleString()}
 						</p>
 					{/if}
