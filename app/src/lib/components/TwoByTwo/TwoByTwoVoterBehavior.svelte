@@ -107,7 +107,7 @@
 		</p>
 		<ul class="list px-0">
 			{#each formState.blocCohesion.slice(0, 2) as blocCohesionArray, blocIndex}
-				<li class="list-row list-row-sm flex flex-col gap-2 py-3">
+				<li class="list-row list-row-sm flex flex-col gap-2 px-0 py-3">
 					<div class="flex flex-row items-center gap-2">
 						<PalettePip
 							color={formState.blocs[blocIndex].color}
