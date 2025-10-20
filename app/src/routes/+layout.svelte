@@ -23,7 +23,7 @@
 	<header class="sticky top-0 z-10 shadow-sm">
 		<div class="navbar bg-base-100/90 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
 			<div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-2">
-				<a href="/run" class="flex items-center gap-2 font-semibold tracking-tight text-slate-800">
+				<a href="/2x2" class="flex items-center gap-2 font-semibold tracking-tight text-slate-800">
 					<img src={favicon} alt="Votekit" class="size-10" />
 					<h1 class="text-2xl font-bold text-primary">VoteKit Lite</h1>
 				</a>
