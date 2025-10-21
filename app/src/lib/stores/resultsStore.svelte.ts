@@ -71,7 +71,6 @@ class ResultsState {
 
 	async checkStaleRun(runId: string) {
 		const run = this.runs.find((r) => r.id === runId);
-		console.log('!!run', run, run?.createdAt, run?.createdAt ? new Date(+run.createdAt) : null);
 		const runHasListener = this.resultsListeners.some((l) => l.id === runId);
 		if (run && run.createdAt && !runHasListener) {
 			const r = await this.checkRunResults(runId);
