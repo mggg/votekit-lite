@@ -338,7 +338,7 @@ def _start_timeout_watchdog(event: Dict[str, Any], context: Any, buffer_seconds:
     delay = max(0.01, remaining - buffer_seconds)
 
     def _write_timeout_log():
-        write_error(event["id"], f"Simulation timed out after {time.time() - start_time:.2f} seconds.")
+        write_error(event["id"], f"The simulation timed out, try reducing the number of trials or the complexity of your election.")
 
     t = threading.Timer(delay, _write_timeout_log)
     t.daemon = True  # don't block shutdown
