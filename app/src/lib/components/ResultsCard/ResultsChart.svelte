@@ -10,7 +10,7 @@
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 240;
-	const margin = { top: 80, right: 0, bottom: 40, left: 64 }; // increase left margin for y label
+	const margin = { top: 20, right: 0, bottom: 40, left: 64 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
@@ -97,9 +97,41 @@
 	function selectGroup(idx: number) {
 		selectedGroupIndex = idx;
 	}
+
+	function selectGroupByName(e: Event) {
+		const name = (e.target as HTMLSelectElement).value;
+		const idx = groups.findIndex((g) => g === name);
+		console.log('selectGroupByName', name, idx);
+		if (idx !== -1) selectGroup(idx);
+	}
 </script>
 
 <svelte:window onresize={resize} />
+
+<!-- Group select in the top left above the chart -->
+<div>
+	<fieldset>
+		<label
+			for="group-select"
+			class="label pt-4 text-xs font-semibold"
+			style="padding-left:2px;padding-bottom:1px;"
+			id="group-select-label"
+		>
+			Group:
+		</label>
+		<select
+			id="group-select"
+			class="select select-sm"
+			value={selectedGroup}
+			onchange={(e) => selectGroupByName(e)}
+			aria-labelledby="group-select-label"
+		>
+			{#each groups as g, i}
+				<option value={g}>{g}</option>
+			{/each}
+		</select>
+	</fieldset>
+</div>
 
 {#if hoveredGroupIndex !== null}
 	<div
@@ -163,20 +195,9 @@
 					y2={innerHeight}
 					stroke="#333"
 					stroke-width="2"
-					stroke-dasharray="6 4"
+					stroke-dasharray="4 2"
 					opacity="0.85"
 				/>
-				<text
-					x={ratioWidth + 8}
-					y={innerHeight / 2 + 4}
-					text-anchor="middle"
-					font-size="10"
-					fill="#333"
-					font-weight="normal"
-					transform={`rotate(-90,${ratioWidth + 8},${innerHeight / 2})`}
-				>
-					Combined support ({selectedCombinedSupport.seats})
-				</text>
 			</g>
 		{/if}
 
@@ -231,50 +252,32 @@
 	</g>
 
 	<!-- Group switcher (vertical, truncated, translucent background) -->
-	<g transform={`translate(${width - (Math.min(5, maxNameLength) * 10 + 42)}, 20)`}>
+	<g transform="translate({innerWidth - 90}, 15)">
 		<rect
-			x="-10"
-			y="-18"
-			width={Math.min(5, maxNameLength) * 10 + 42}
-			height={groups.length * 28 + 10}
+			x="0"
+			y="0"
+			width={150}
+			height={25}
 			fill="rgba(255, 255, 255, 0.9)"
 			stroke="rgba(0, 0, 0, 0.25)"
 			stroke-width="1"
 			opacity="1"
 			rx="6"
 		/>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		{#each groups as g, i}
-			<g
-				transform={`translate(0,${i * 28})`}
-				onclick={() => selectGroup(i)}
-				style="cursor: pointer;"
-				aria-label={`Show ${g} results`}
-				role="button"
-				tabindex="0"
-			>
-				<rect
-					x="0"
-					y="-10"
-					width="16"
-					height="16"
-					fill={color(g)}
-					stroke={i === selectedGroupIndex ? '#222' : 'transparent'}
-					stroke-width={i === selectedGroupIndex ? 2 : 0}
-					opacity={i === selectedGroupIndex ? 1 : 0.3}
-					rx="3"
-				/>
-				<text
-					x="22"
-					y="2"
-					font-size="12"
-					fill="#222"
-					font-weight={i === selectedGroupIndex ? 'bold' : 'normal'}
-				>
-					{g.length > 7 ? `${g.slice(0, 7)}…` : g}
-				</text>
-			</g>
-		{/each}
+		<!-- indicated dashed line is combined support	 -->
+		<line
+			x1="10"
+			x2="10"
+			y1="5"
+			y2="20"
+			stroke="#333"
+			stroke-width="2"
+			stroke-dasharray="4 2"
+			opacity="0.85"
+		/>
+		<text x={20} y={15} text-anchor="left" font-size="10" fill="#333" font-weight="normal">
+			Combined support ({selectedCombinedSupport?.seats})
+		</text>
 	</g>
 </svg>
 
