@@ -111,7 +111,10 @@
 					<div class="flex flex-row items-center gap-2">
 						<PalettePip
 							color={formState.blocs[blocIndex].color}
-							onChange={(color: string) => (formState.blocs[blocIndex].color = color)}
+							onChange={(color: string) => {
+								formState.blocs[blocIndex].color = color;
+								formState.slates[blocIndex].color = color;
+							}}
 						/>
 						<span class="font-medium"
 							>{formState.blocs[blocIndex].name || `Group ${blocIndex + 1}`} voters</span
@@ -177,7 +180,13 @@
 			<li class="p-0">
 				<div class="flex flex-row">
 					<div class="col-span-4 flex flex-row items-center gap-2">
-						<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
+						<PalettePip
+							color={bloc.color}
+							onChange={(color: string) => {
+								bloc.color = color;
+								formState.slates[blocIndex].color = color;
+							}}
+						/>
 						<span class="col-span-2"
 							>In the view of {bloc.name || `Group ${blocIndex + 1}`} voters, is there a clear strongest
 							candidate among...</span

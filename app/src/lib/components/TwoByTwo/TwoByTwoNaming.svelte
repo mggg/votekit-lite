@@ -19,7 +19,13 @@
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 		{#each formState.blocs.slice(0, 2) as bloc, index}
 			<div class="flex items-center gap-2">
-				<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
+				<PalettePip
+					color={bloc.color}
+					onChange={(color: string) => {
+						bloc.color = color;
+						formState.slates[index].color = color;
+					}}
+				/>
 				<label class="input input-sm w-full">
 					<span class="text-gray-400">Group {index + 1}</span>
 					<input

@@ -41,7 +41,13 @@
 				<div
 					class={`flex flex-row items-center gap-2  ${formState.showTurnoutSettings ? 'col-span-4' : 'col-span-6'}`}
 				>
-					<PalettePip color={bloc.color} onChange={(color: string) => (bloc.color = color)} />
+					<PalettePip
+						color={bloc.color}
+						onChange={(color: string) => {
+							bloc.color = color;
+							formState.slates[i].color = color;
+						}}
+					/>
 					<span class="text-sm font-medium">{bloc.name || `Group ${i + 1}`}</span>
 				</div>
 				<label
@@ -98,7 +104,13 @@
 		{#each formState.slates.slice(0, 2) as slate, slateIndex}
 			<li class="list-row my-0 grid grid-cols-2 gap-2 px-0 py-1 pr-4">
 				<div class="col-span-1 flex items-center gap-2">
-					<PalettePip color={slate.color} onChange={(color: string) => (slate.color = color)} />
+					<PalettePip
+						color={slate.color}
+						onChange={(color: string) => {
+							slate.color = color;
+							formState.blocs[slateIndex].color = color;
+						}}
+					/>
 					<span class="text-sm font-medium">{slate.name || `Group ${slateIndex + 1}`}</span>
 				</div>
 				<div class="col-span-1 flex w-full max-w-xs flex-row items-center gap-2 pl-2">
