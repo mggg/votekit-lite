@@ -10,9 +10,13 @@ export const RUNS_KEY = 'votekit_runs_v1';
 
 export const NAV_CONFIG = [
 	{
-		label: 'Simulation settings',
+		label: 'Simulation Settings',
 		href: '/run'
 	},
+	// {
+	// 	label: 'Advanced settings',
+	// 	href: '/advanced'
+	// },
 	{
 		label: 'Results',
 		href: '/results'
@@ -35,7 +39,7 @@ export const ELECTION_SYSTEM_MAP: Record<
 	blocPlurality: {
 		name: 'Block Plurality',
 		description: 'Most votes wins.',
-		shortName: 'Plurality'
+		shortName: 'Block Plurality'
 	}
 };
 

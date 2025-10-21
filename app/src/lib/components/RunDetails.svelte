@@ -21,13 +21,10 @@
 
 <div class="card relative w-full max-w-none bg-base-100 p-4 shadow-sm" id="run-details">
 	<h2 class="mb-2 text-lg font-semibold text-slate-800">Run details</h2>
+	<p class="mb-2 text-xs text-slate-500">Name your run to identify later, e.g., Basic1</p>
 	<label class="input input-sm w-full">
 		<span class="text-gray-400">Run name</span>
-		<input
-			class="w-full grow text-sm"
-			bind:value={formState.name}
-			placeholder="Name your simulation run"
-		/>
+		<input class="w-full grow text-sm" bind:value={formState.name} placeholder="e.g., Basic1" />
 	</label>
 	<label class="input input-sm my-2 w-full">
 		<span class="text-gray-400">Number of trials</span>

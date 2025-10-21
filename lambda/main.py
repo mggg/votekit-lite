@@ -8,11 +8,9 @@ will be built and pushed to ECR, and the Lambda will reference that image.
 
 from __future__ import annotations
 
-import json
-import os
+import json, os, threading, time, jsonschema
 from typing import Any, Dict
 from common_schema import validation_schema
-import jsonschema
 from votekit.ballot_generator import (
     BlocSlateConfig,
     slate_pl_profile_generator,
@@ -30,6 +28,8 @@ from votekit.elections import FastSTV, Borda
 
 STRONG_ALPHA = 1 / 2
 UNIF_ALPHA = 2
+TIMEOUT_BUFFER = 1.5
+TIMEOUT_DURATION = 60
 
 ALPHA_MAP = {"all_bets_off": 1, "strong": STRONG_ALPHA, "unif": UNIF_ALPHA}
 
@@ -277,30 +277,11 @@ def _run_simulations(
         >>> len(results["slate2"]) == 3 and -1 not in results["slate2"] and all(result <=2 for result in results["slate2"])
         True
     """
-    import time
-
-    def check_remaining_time():
-        if context and hasattr(context, "get_remaining_time_in_millis"):
-            remaining_ms = context.get_remaining_time_in_millis()
-            remaining_seconds = remaining_ms / 1000
-            if remaining_seconds < 5:  # Less than 5 seconds remaining
-                raise TimeoutError(
-                    f"Simulation timeout approaching. {remaining_seconds:.2f} seconds remaining."
-                )
-
     results = {slate_name: [-1] * num_trials for slate_name in config.slates}
     completed_trials = 0
 
-    # Optimize: Check timeout less frequently for large trial counts
-    # Check every 10 trials for <100 trials, every 50 trials for >=100 trials
-    check_interval = 10 if num_trials < 100 else min(50, max(10, num_trials // 20))
-
     for i in range(num_trials):
         try:
-            # Check timeout periodically, not every iteration
-            if i % check_interval == 0:
-                check_remaining_time()
-
             profile = _generate_profile(
                 config=config,
                 ballot_generator=ballot_generator,
@@ -342,6 +323,27 @@ def _run_simulations(
 
     return results
 
+def _start_timeout_watchdog(event: Dict[str, Any], context: Any, buffer_seconds: float = TIMEOUT_BUFFER) -> threading.Timer:
+    """
+    Start the timeout watchdog.
+
+    Args:
+        event (Dict[str, Any]): The event to handle.
+        context (Any): The context of the event.
+        buffer_seconds (float): The buffer seconds before the hard timeout.
+    """
+    # Fire slightly before the hard timeout
+    start_time = time.time()
+    remaining = context.get_remaining_time_in_millis() / 1000.0 if context else TIMEOUT_DURATION
+    delay = max(0.01, remaining - buffer_seconds)
+
+    def _write_timeout_log():
+        write_error(event["id"], f"The simulation timed out, try reducing the number of trials or the complexity of your election.")
+
+    t = threading.Timer(delay, _write_timeout_log)
+    t.daemon = True  # don't block shutdown
+    t.start()
+    return t
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
@@ -367,24 +369,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         >>> returned["statusCode"] == 400 and "Invalid config" in returned["body"]
         True
     """
-    import time
-
-    start_time = time.time()
-
-    # Check remaining time periodically (with 5 second buffer)
-    def check_remaining_time():
-        if context and hasattr(context, "get_remaining_time_in_millis"):
-            remaining_ms = context.get_remaining_time_in_millis()
-            remaining_seconds = remaining_ms / 1000
-            if remaining_seconds < 5:  # Less than 5 seconds remaining
-                raise TimeoutError(
-                    f"Lambda timed out. Reduce simulation complexity or decrease number of trials."
-                )
+    watchdog = _start_timeout_watchdog(event, context)
 
     try:
         jsonschema.validate(event, validation_schema)
     except jsonschema.exceptions.ValidationError as e:
         write_error(event["id"], str(e))
+        watchdog.cancel()
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
@@ -397,6 +388,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         config.is_valid(raise_errors=True)
     except Exception as e:
         write_error(event["id"], str(e))
+        watchdog.cancel()
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
@@ -404,14 +396,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
     try:
-        # Check timeout before starting simulations
-        check_remaining_time()
         results = _run_simulations(
             num_trials=event["trials"],
             ballot_generator=event["ballotGenerator"],
             config=config,
             election_dict=event["election"],
         )
+        write_results(event["id"], results, event)
+        return {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(
+                {
+                    "message": "votekit lambda simulation results",
+                    "results": results,
+                    "env": {
+                        "AWS_REGION": os.getenv("AWS_REGION"),
+                        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
+                    },
+                }
+            ),
+        }
     except ValueError as e:
         return {
             "statusCode": 400,
@@ -447,21 +452,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             ),
         }
     finally:
-        write_results(event["id"], results, event)
-        return {
-            "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(
-                {
-                    "message": "votekit lambda simulation results",
-                    "results": results,
-                    "env": {
-                        "AWS_REGION": os.getenv("AWS_REGION"),
-                        "AWS_EXECUTION_ENV": os.getenv("AWS_EXECUTION_ENV"),
-                    },
-                }
-            ),
-        }
+        try:
+            watchdog.cancel()
+        except Exception as e:
+            print(f"Error canceling watchdog: {str(e)}")
+            pass
 
 
 if __name__ == "__main__":

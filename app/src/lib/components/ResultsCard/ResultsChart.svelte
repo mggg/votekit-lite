@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
-	import ViewIcon from './ViewIcon.svelte';
-	import ViewOffIcon from './ViewOffIcon.svelte';
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import { calculateCombinedSupport } from '$lib/stores/utils';
 	import { DEFAULT_SLATE_BLOCS } from '$lib/constants';
@@ -12,7 +10,7 @@
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 240;
-	const margin = { top: 60, right: 0, bottom: 40, left: 64 }; // increase left margin for y label
+	const margin = { top: 20, right: 0, bottom: 60, left: 64 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
@@ -37,7 +35,6 @@
 			: DEFAULT_SLATE_BLOCS.map((s) => s.color)
 	);
 	const combinedSupport = $derived(run?.config ? calculateCombinedSupport(run.config) : []);
-	let combinedSupportVisible = $state(false);
 	const raw = $derived(run?.result ?? {});
 	const groups = $derived(Object.keys(raw)); // series keys
 	const maxNameLength = $derived(Math.max(...groups.map((g) => g.length)));
@@ -46,107 +43,112 @@
 	);
 	let hoveredGroupIndex = $state<number | null>(null);
 
-	// interactive series filter (legend toggles)
-	let hiddenSlates = $state<Record<string, boolean>>({});
-	$effect(() => {
-		hiddenSlates = raw ? Object.fromEntries(groups.map((g) => [g, false])) : {};
-		return () => {
-			hiddenSlates = {};
-		};
-	});
+	// Only one group at a time (selectedGroup)
+	let selectedGroupIndex = $state(0);
 
-	const visibleGroups = $derived(groups.filter((g) => !hiddenSlates[g]));
-
-	const allHidden = $derived(Object.values(hiddenSlates).every((h) => h));
+	const selectedGroup = $derived(groups[selectedGroupIndex] ?? groups[0]);
+	const color = $derived(d3.scaleOrdinal<string, string>().domain(groups).range(colors));
 
 	// flatten for stats
 	type Row = { entry: string; group: string; value: number };
 	const flatData = $derived<Row[]>(
-		entries.flatMap((entry) =>
-			visibleGroups.map((group) => ({
-				entry,
-				group,
-				// @ts-expect-error
-				value: (raw?.[group]?.[entry] ?? 0) as number
-			}))
-		)
+		entries.map((entry) => ({
+			entry,
+			group: selectedGroup,
+			// @ts-expect-error
+			value: (raw?.[selectedGroup]?.[entry] ?? 0) as number
+		}))
 	);
 
 	// scales
 	const x0 = $derived(
-		d3.scaleBand<string>().domain(entries).range([0, innerWidth]).paddingInner(0.2)
-	);
-	const x1 = $derived(
-		d3.scaleBand<string>().domain(visibleGroups).range([0, x0.bandwidth()]).padding(0.05)
+		d3.scaleBand<string>().domain(entries).range([0, innerWidth]).paddingInner(0)
 	);
 	const yMax = $derived(d3.max(flatData, (d) => d.value) ?? 0);
 	const y = $derived(d3.scaleLinear().domain([0, yMax]).nice().range([innerHeight, 0]));
-	const color = $derived(d3.scaleOrdinal<string, string>().domain(groups).range(colors));
 
 	// axis ticks/format
 	const yTicks = $derived(y.ticks(Math.min(6, Math.max(2, Math.floor(innerHeight / 40)))));
 	const formatY = (v: number) => d3.format('~s')(v);
 
-	// helpers to group by entry for markup
+	// grouped for markup compat
 	const byEntry = $derived(
 		entries.map((entry) => ({
 			entry,
-			values: visibleGroups.map((group) => ({
-				entry,
-				group,
-				// @ts-expect-error
-				value: (raw?.[group]?.[entry] ?? 0) as number
-			}))
+			value: (raw?.[selectedGroup]?.[entry as any] ?? 0) as number
 		}))
 	);
 
-	// legend interaction
-	function toggleGroup(g: string) {
-		if (groups.length === 1) return;
-		hiddenSlates = {
-			...hiddenSlates,
-			[g]: !hiddenSlates[g]
-		};
-	}
+	// Combined support vertical line for selected group, if exists
+	const selectedCombinedSupport = $derived(combinedSupport.find((c) => c.slate === selectedGroup));
 
-	function isActive(g: string) {
-		return !hiddenSlates[g];
-	}
-
-	// Placeholder mouse event handlers for invisible bars
+	const numSeats = $derived(run?.config?.election?.numSeats ?? null);
+	const ratio = $derived(
+		selectedCombinedSupport?.seats && numSeats ? selectedCombinedSupport.seats / numSeats : 0
+	);
+	const ratioWidth = $derived(x0.bandwidth() / 2 + (innerWidth - x0.bandwidth()) * ratio);
 	function handleBarMouseEnter(idx: number) {
-		!allHidden && (hoveredGroupIndex = idx);
+		hoveredGroupIndex = idx;
 	}
 	function handleBarMouseLeave() {
 		hoveredGroupIndex = null;
 	}
+
+	function selectGroup(idx: number) {
+		selectedGroupIndex = idx;
+	}
+
+	function selectGroupByName(e: Event) {
+		const name = (e.target as HTMLSelectElement).value;
+		const idx = groups.findIndex((g) => g === name);
+		console.log('selectGroupByName', name, idx);
+		if (idx !== -1) selectGroup(idx);
+	}
 </script>
 
 <svelte:window onresize={resize} />
+
+<!-- Group select in the top left above the chart -->
+<div>
+	<fieldset>
+		<label
+			for="group-select"
+			class="label pt-4 text-xs font-semibold"
+			style="padding-left:2px;padding-bottom:1px;"
+			id="group-select-label"
+		>
+			Group:
+		</label>
+		<select
+			id="group-select"
+			class="select select-sm"
+			value={selectedGroup}
+			onchange={(e) => selectGroupByName(e)}
+			aria-labelledby="group-select-label"
+		>
+			{#each groups as g, i}
+				<option value={g}>{g}</option>
+			{/each}
+		</select>
+	</fieldset>
+</div>
+
 {#if hoveredGroupIndex !== null}
 	<div
-		class="pointer-events:none; absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
+		class="pointer-events-none absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
 		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
 	>
 		<p class="mb-2 text-xs font-bold">
-			Elections with {hoveredGroupIndex} seats won ({run?.config.trials} trials)
+			{selectedGroup}: {byEntry[hoveredGroupIndex].entry} seats won ({run?.config.trials} trials)
 		</p>
-		{#each byEntry[hoveredGroupIndex].values as g}
-			<p class="text-xs">
-				<b>{g.group}:</b>
-				{g.value}
-			</p>
-		{/each}
-	</div>
-{/if}
-{#if allHidden}
-	<div class="pointer-events-none absolute top-0 left-0 flex size-full items-center justify-center">
-		<p class="w-1/2 text-center text-sm text-amber-600">
-			All slates hidden. Select a slate in the legend to show its results.
+		<p class="text-xs">
+			<b>Frequency:</b>
+			{byEntry[hoveredGroupIndex].value}
 		</p>
 	</div>
 {/if}
-<svg bind:this={svg} {height} id={`chart-svg-${runId}`}>
+
+<svg bind:this={svg} {height} id={`chart-svg-${runId}`} class="chart-svg">
 	<!-- chart group with margins -->
 	<g transform={`translate(${margin.left},${margin.top})`}>
 		<!-- Y gridlines -->
@@ -156,23 +158,19 @@
 			{/each}
 		</g>
 
-		<!-- grouped bars with invisible background bars for interaction -->
+		<!-- Bars for selected group only -->
 		{#each byEntry as bucket, idx}
 			<g transform={`translate(${x0(bucket.entry) ?? 0},0)`}>
-				<!-- Invisible background bar for group interaction -->
-				{#each bucket.values as d}
-					<rect
-						x={x1(d.group) ?? 0}
-						y={y(d.value)}
-						width={x1.bandwidth()}
-						height={Math.max(0, innerHeight - y(d.value))}
-						fill={color(d.group)}
-						opacity={isActive(d.group) ? 1 : 0.35}
-						class="pointer-events:none;"
-					>
-						<title>{d.group} • {bucket.entry}: {d.value}</title>
-					</rect>
-				{/each}
+				<rect
+					x={0}
+					y={y(bucket.value)}
+					width={x0.bandwidth()}
+					height={Math.max(0, innerHeight - y(bucket.value))}
+					fill={color(selectedGroup)}
+					opacity={1}
+				>
+					<title>{selectedGroup} • {bucket.entry}: {bucket.value}</title>
+				</rect>
 				<rect
 					x="0"
 					y="0"
@@ -187,6 +185,22 @@
 			</g>
 		{/each}
 
+		<!-- Combined support vertical line for selected group -->
+		{#if selectedCombinedSupport && numSeats && ratio > 0}
+			<g>
+				<line
+					x1={ratioWidth}
+					x2={ratioWidth}
+					y1="0"
+					y2={innerHeight}
+					stroke="#333"
+					stroke-width="2"
+					stroke-dasharray="4 2"
+					opacity="0.85"
+				/>
+			</g>
+		{/if}
+
 		<!-- X axis -->
 		<g transform={`translate(0,${innerHeight})`}>
 			<line x1="0" x2={innerWidth} y1="0" y2="0" stroke="#333" stroke-width="1" />
@@ -200,7 +214,7 @@
 			{/each}
 			<!-- X axis label -->
 			<text
-				x={margin.left}
+				x={innerWidth / 2}
 				y="30"
 				text-anchor="middle"
 				font-size="10"
@@ -237,97 +251,43 @@
 		</g>
 	</g>
 
-	<!-- Legend (vertical, truncated, translucent background) -->
-	<g transform={`translate(${width - (Math.min(5, maxNameLength) * 10 + 42)}, 20)`}>
+	<!-- Group switcher (vertical, truncated, translucent background) -->
+	<g transform="translate(5, {height - 10})">
 		<rect
-			x="-10"
-			y="-18"
-			width={Math.min(5, maxNameLength) * 10 + 42}
-			height={groups.length * 24 + 10}
+			x="0"
+			y="0"
+			width={150}
+			height={25}
 			fill="rgba(255, 255, 255, 0.9)"
 			stroke="rgba(0, 0, 0, 0.25)"
 			stroke-width="1"
 			opacity="1"
 			rx="6"
 		/>
-		{#each groups as g, i}
-			<g
-				transform={`translate(0,${i * 24})`}
-				onclick={() => toggleGroup(g)}
-				style="cursor: pointer;"
-				aria-hidden="true"
-			>
-				<rect
-					x="0"
-					y="-10"
-					width="16"
-					height="16"
-					fill={isActive(g) ? color(g) : 'transparent'}
-					stroke={color(g)}
-					stroke-width={isActive(g) ? 0 : 1}
-					opacity={1}
-					rx="3"
-				/>
-				<text x="22" y="2" font-size="12" fill="#222">
-					{g.length > 7 ? `${g.slice(0, 7)}…` : g}
-				</text>
-			</g>
-		{/each}
+		<!-- indicated dashed line is combined support	 -->
+		<line
+			x1="10"
+			x2="10"
+			y1="5"
+			y2="20"
+			stroke="#333"
+			stroke-width="2"
+			stroke-dasharray="4 2"
+			opacity="0.85"
+		/>
+		<text x={20} y={15} text-anchor="left" font-size="10" fill="#333" font-weight="normal">
+			Combined support ({selectedCombinedSupport?.seats})
+		</text>
 	</g>
 </svg>
-<div class={`collapse ${combinedSupportVisible ? 'collapse-open' : 'collapse-closed'}`}>
-	<input type="checkbox" bind:checked={combinedSupportVisible} />
-	<div class="collapse-title rounded-none px-0 py-1 text-xs font-semibold">
-		<div class="flex flex-row items-center">
-			<span class="ml-2">
-				{#if combinedSupportVisible}
-					<ViewOffIcon />
-				{:else}
-					<ViewIcon />
-				{/if}
-			</span>
-			Combined support
-		</div>
-	</div>
-	<div class="collapse-content p-0 text-sm">
-		<p class="pb-2 text-xs">
-			The number of available seats times combined voter cohesion across all voter blocs for a given
-			slate.
-		</p>
-		{#each combinedSupport as c}
-			<svg height="14px" {width}>
-				<text x={0} y="12" font-size="12" fill="#333" class="bg-white">
-					{c.slate} ({c.seats})
-				</text>
-				<g transform={`translate(${margin.left},0)`} height="14px">
-					<!-- dot for each -->
-					<line
-						x1={0}
-						x2={innerWidth}
-						y1={8}
-						y2={8}
-						stroke="#333"
-						stroke-width="1"
-						stroke-dashoffset="2"
-						stroke-dasharray="2"
-					/>
-					<circle
-						cx={`${run?.config?.election?.numSeats ? (c.seats / run.config.election.numSeats) * innerWidth : '--'}`}
-						cy={8}
-						r="4"
-						fill={color(c.slate)}
-					/>
-				</g>
-			</svg>
-		{/each}
-	</div>
-</div>
 
 <style>
-	#chart-svg {
+	.chart-svg {
 		display: block;
 		width: 100%;
-		margin-top: -40px;
+		max-width: 100%;
+		height: 100%;
+		max-height: 100%;
 	}
 	text {
 		user-select: none;
