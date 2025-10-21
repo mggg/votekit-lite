@@ -10,7 +10,7 @@
 	// sizing
 	const DEFAULT_WIDTH = 500;
 	const DEFAULT_HEIGHT = 240;
-	const margin = { top: 20, right: 0, bottom: 40, left: 64 }; // increase left margin for y label
+	const margin = { top: 20, right: 0, bottom: 60, left: 64 }; // increase left margin for y label
 
 	let svg = $state<SVGSVGElement>();
 	let width = $state(DEFAULT_WIDTH);
@@ -62,7 +62,7 @@
 
 	// scales
 	const x0 = $derived(
-		d3.scaleBand<string>().domain(entries).range([0, innerWidth]).paddingInner(0.2)
+		d3.scaleBand<string>().domain(entries).range([0, innerWidth]).paddingInner(0)
 	);
 	const yMax = $derived(d3.max(flatData, (d) => d.value) ?? 0);
 	const y = $derived(d3.scaleLinear().domain([0, yMax]).nice().range([innerHeight, 0]));
@@ -252,7 +252,7 @@
 	</g>
 
 	<!-- Group switcher (vertical, truncated, translucent background) -->
-	<g transform="translate({innerWidth - 90}, 15)">
+	<g transform="translate(5, {height - 10})">
 		<rect
 			x="0"
 			y="0"
