@@ -193,7 +193,7 @@
 			{/each}
 			<!-- X axis label -->
 			<text
-				x={margin.left}
+				x={innerWidth / 2}
 				y="30"
 				text-anchor="middle"
 				font-size="10"
