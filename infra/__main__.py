@@ -65,7 +65,7 @@ fn = aws.lambda_.Function(
     package_type="Image",
     image_uri=image_uri,
     role=lambda_exec_role.arn,
-    timeout=30,
+    timeout=60 * 15,
     memory_size=1769,
     # Add these parameters to help with image compatibility
     architectures=["arm64"],

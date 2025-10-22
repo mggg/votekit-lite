@@ -1,4 +1,4 @@
-import { RUNS_KEY } from '$lib/constants';
+import { RUNS_KEY, TIMEOUT_IN_S } from '$lib/constants';
 import type { Run } from './types';
 import { getCandidateCountRange, getMaxRunCount } from './utils';
 import { getData } from '$lib/utils/getData';
@@ -80,8 +80,8 @@ class ResultsState {
 			const runDate = new Date(+run.createdAt);
 			const dateNow = new Date();
 			const diffTime = Math.abs(dateNow.getTime() - runDate.getTime());
-			const diffMinutes = Math.floor(diffTime / (1000 * 60));
-			if (diffMinutes < 2) {
+			const diffSeconds = Math.floor(diffTime / 1000);
+			if (diffSeconds < TIMEOUT_IN_S) {
 				this.listenForResults(runId, run.config);
 			} else {
 				this.upsertRun({

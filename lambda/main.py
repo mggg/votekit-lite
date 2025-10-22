@@ -29,7 +29,7 @@ from votekit.elections import FastSTV, Borda
 STRONG_ALPHA = 1 / 2
 UNIF_ALPHA = 2
 TIMEOUT_BUFFER = 1.5
-TIMEOUT_DURATION = 60
+TIMEOUT_DURATION = 60 * 15
 
 ALPHA_MAP = {"all_bets_off": 1, "strong": STRONG_ALPHA, "unif": UNIF_ALPHA}
 

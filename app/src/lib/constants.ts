@@ -77,3 +77,5 @@ export const DEFAULT_SLATE_BLOCS = [
 		color: '#999999'
 	}
 ];
+
+export const TIMEOUT_IN_S = 60 * 15;
