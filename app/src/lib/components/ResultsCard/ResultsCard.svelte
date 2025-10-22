@@ -11,11 +11,14 @@
 	import { downloadSvg } from '$lib/utils/downloadSvg';
 	import { downloadPng } from '$lib/utils/downloadPng';
 	import { downloadJson } from '$lib/utils/downloadJson';
+	import { TIMEOUT_IN_S } from '$lib/constants';
 
 	const { runId } = $props<{ runId: string }>();
 	let activeTab = $state('histogram');
 	const run = $derived(resultsState.runs.find((r) => r.id === runId));
-	const timeoutDate = $derived(run?.createdAt ? new Date(+run.createdAt + 2 * 60 * 1000) : null);
+	const timeoutDate = $derived(
+		run?.createdAt ? new Date(+run.createdAt + TIMEOUT_IN_S * 1000) : null
+	);
 	let showCopiedUrl = $state(false);
 	let hovered = $state(false);
 
