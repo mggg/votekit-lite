@@ -165,7 +165,7 @@
 									downloadSvg(el, run.id);
 								}
 							}, 125);
-						}}>Download chart (SVG)</button
+						}}>Download image (SVG)</button
 					>
 				</li>
 				<li>
@@ -180,7 +180,7 @@
 									downloadPng(el, run.id);
 								}
 							}, 125);
-						}}>Download chart (PNG)</button
+						}}>Download image (PNG)</button
 					>
 				</li>
 				<li>
