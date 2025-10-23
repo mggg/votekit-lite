@@ -102,8 +102,8 @@
 	<div class="mt-4">
 		<h3 class="text-md mb-2 font-medium">Voter cohesion</h3>
 		<p class="mb-2 text-xs text-slate-500">
-			How cohesive is each bloc — i.e., how heavy is the preference for their own candidates over
-			the other group?
+			How cohesive is each bloc -- i.e., how consistently do they lean towards the candidates
+			preferred by the group?
 		</p>
 		<ul class="list px-0">
 			{#each formState.blocCohesion.slice(0, 2) as blocCohesionArray, blocIndex}
@@ -200,7 +200,7 @@
 									style={`border: 2px solid ${formState.slates[slateIndex].color}; background-color: ${formState.slates[slateIndex].color}01`}
 								>
 									<span
-										>{formState.slates[slateIndex].name || `Group ${slateIndex + 1}`} candidates</span
+										>{formState.slates[slateIndex].name || `Group ${slateIndex + 1}`} preferred candidates</span
 									>
 									<div class="join inline-flex w-full justify-center">
 										{#each PREFERENCE_OPTIONS as opt}

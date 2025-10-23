@@ -57,23 +57,23 @@ export const BALLOT_GENERATOR_MAP = {
 
 export const DEFAULT_SLATE_BLOCS = [
 	{
-		name: 'Greens',
+		name: 'Green',
 		color: '#4daf4a'
 	},
 	{
-		name: 'Purples',
+		name: 'Purple',
 		color: '#984ea3'
 	},
 	{
-		name: 'Oranges',
+		name: 'Orange',
 		color: '#ff7f00'
 	},
 	{
-		name: 'Pinks',
+		name: 'Pink',
 		color: '#f781bf'
 	},
 	{
-		name: 'Greys',
+		name: 'Grey',
 		color: '#999999'
 	}
 ];
