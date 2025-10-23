@@ -1,4 +1,4 @@
-import { RUNS_KEY, TIMEOUT_IN_S } from '$lib/constants';
+import { RUNS_KEY, TIMEOUT_IN_S, COLLECTIONS_KEY } from '$lib/constants';
 import type { Run } from './types';
 import { getCandidateCountRange, getMaxRunCount } from './utils';
 import { getData } from '$lib/utils/getData';
@@ -6,12 +6,18 @@ import { goto } from '$app/navigation';
 import type { VotekitConfig } from '$lib/types/votekitConfig';
 import { formState } from './formStore.svelte';
 
+export interface Collections {
+	[collectionName: string]: string[];
+}
+
 class ResultsState {
 	constructor() {
 		this.runs = this.readRuns();
+		this.collections = this.readCollections();
 	}
 
 	runs: Run[] = $state([]);
+	collections: Collections = $state({});
 
 	activeRunsList: string[] = $state([]);
 	readonly activeRunsSet: Set<string> = $derived(new Set(this.activeRunsList));
@@ -197,6 +203,91 @@ class ResultsState {
 		if (config) {
 			formState.loadSimulationSettings(config);
 		}
+	}
+
+	// Collections management
+	readCollections(): Collections {
+		if (typeof localStorage === 'undefined') return {};
+		const raw = localStorage.getItem(COLLECTIONS_KEY);
+		if (!raw) return {};
+		try {
+			return JSON.parse(raw) as Collections;
+		} catch {
+			return {};
+		}
+	}
+
+	writeCollections(collections: Collections) {
+		if (typeof localStorage === 'undefined') return;
+		localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections));
+	}
+
+	createCollection(name: string, runIds: string[] = []) {
+		if (!name || this.collections[name]) {
+			return false;
+		}
+		this.collections = {
+			...this.collections,
+			[name]: runIds
+		};
+		this.writeCollections(this.collections);
+		return true;
+	}
+
+	deleteCollection(name: string) {
+		const { [name]: _, ...rest } = this.collections;
+		this.collections = rest;
+		this.writeCollections(this.collections);
+	}
+
+	addToCollection(collectionName: string, runId: string) {
+		if (!this.collections[collectionName]) {
+			return false;
+		}
+		if (this.collections[collectionName].includes(runId)) {
+			return false;
+		}
+		this.collections = {
+			...this.collections,
+			[collectionName]: [...this.collections[collectionName], runId]
+		};
+		this.writeCollections(this.collections);
+		return true;
+	}
+
+	removeFromCollection(collectionName: string, runId: string) {
+		if (!this.collections[collectionName]) {
+			return false;
+		}
+		this.collections = {
+			...this.collections,
+			[collectionName]: this.collections[collectionName].filter((id) => id !== runId)
+		};
+		this.writeCollections(this.collections);
+		return true;
+	}
+
+	renameCollection(oldName: string, newName: string) {
+		if (!this.collections[oldName] || this.collections[newName]) {
+			return false;
+		}
+		const runIds = this.collections[oldName];
+		const { [oldName]: _, ...rest } = this.collections;
+		this.collections = {
+			...rest,
+			[newName]: runIds
+		};
+		this.writeCollections(this.collections);
+		return true;
+	}
+
+	getCollectionUrl(collectionName: string): string {
+		const collection = this.collections[collectionName];
+		if (!collection) return '';
+		const params = new URLSearchParams();
+		params.set('collection', collectionName);
+		params.set('ids', collection.join(','));
+		return `${window.location.origin}/collections?${params.toString()}`;
 	}
 }
 

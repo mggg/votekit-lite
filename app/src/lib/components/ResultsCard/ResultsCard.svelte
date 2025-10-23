@@ -12,6 +12,7 @@
 	import { downloadPng } from '$lib/utils/downloadPng';
 	import { downloadJson } from '$lib/utils/downloadJson';
 	import { TIMEOUT_IN_S } from '$lib/constants';
+	import ChevronIcon from './ChevronIcon.svelte';
 
 	const { runId } = $props<{ runId: string }>();
 	let activeTab = $state('histogram');
@@ -21,6 +22,8 @@
 	);
 	let showCopiedUrl = $state(false);
 	let hovered = $state(false);
+	let showCollectionMenu = $state(false);
+	const collectionsArray = $derived(Object.keys(resultsState.collections));
 
 	$effect(() => {
 		// If data is incomplete, check the results
@@ -189,6 +192,47 @@
 						disabled={!run.result}>Download configuration (JSON)</button
 					>
 				</li>
+				<li>
+					<button
+						class="btn flex justify-between btn-ghost"
+						onclick={() => (showCollectionMenu = !showCollectionMenu)}
+					>
+						<span>Add to collection</span>
+						<span
+							class="ml-2 size-4 transition-transform duration-300 {showCollectionMenu
+								? ''
+								: 'rotate-180'}"
+						>
+							<ChevronIcon />
+						</span>
+					</button>
+				</li>
+				{#if showCollectionMenu}
+					{#if collectionsArray.length === 0}
+						<li class="ml-4 text-xs text-slate-500">
+							<p>No collections yet</p>
+						</li>
+					{:else}
+						{#each collectionsArray as collectionName}
+							{@const isInCollection = resultsState.collections[collectionName]?.includes(runId)}
+							<li class="ml-4">
+								<button
+									class="btn btn-ghost btn-xs"
+									onclick={() => {
+										if (isInCollection) {
+											resultsState.removeFromCollection(collectionName, runId);
+										} else {
+											resultsState.addToCollection(collectionName, runId);
+										}
+									}}
+								>
+									<span class="mr-2">{isInCollection ? '✓' : '○'}</span>
+									{collectionName}
+								</button>
+							</li>
+						{/each}
+					{/if}
+				{/if}
 				<li>
 					<button class="btn btn-ghost" onclick={() => resultsState.removeRun(run.id)}
 						>Delete this run</button

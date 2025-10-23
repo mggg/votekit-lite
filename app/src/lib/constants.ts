@@ -7,6 +7,7 @@ export const COLOR_MAP = {
 };
 export const IS_DEV = import.meta.env.MODE === 'development';
 export const RUNS_KEY = 'votekit_runs_v1';
+export const COLLECTIONS_KEY = 'votekit_collections_v1';
 
 export const NAV_CONFIG = [
 	{
@@ -20,6 +21,10 @@ export const NAV_CONFIG = [
 	{
 		label: 'Results',
 		href: '/results'
+	},
+	{
+		label: 'Collections',
+		href: '/collections'
 	},
 	{
 		label: 'About',
