@@ -28,8 +28,7 @@
 <style>
 	table,
 	tr,
-	td,
-	th {
+	td {
 		padding: 2px 2px 2px 0px;
 		margin: 0;
 	}

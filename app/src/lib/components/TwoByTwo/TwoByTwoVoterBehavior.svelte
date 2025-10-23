@@ -112,13 +112,11 @@
 				>
 					<li class="max-w-none py-2">
 						<p>
-							Voter cohesions reflect how consistently voters support candidates that are preferred
-							by their group.
+							Cohesion parameters determine how voters alternate between the slates when they rank.
 							<br />
 							<br />
-							At 100%, all people will vote for their group's preferred candidate slate. At 50%, half
-							of people will vote for their group's preferred candidate slate, and half prefer the group's
-							preferred candidate.
+							If the cohesion of group A is high, this means A voters are more likely to rank A candidates
+							above B candidates. If it is low, they are more likely to "cross over" and rank Bs higher.
 						</p>
 					</li>
 				</ul>
@@ -206,21 +204,27 @@
 			>
 				<li class="max-w-none py-2">
 					<p>
-						After voters chose which slate they prefer, they must then chose which candidate(s) they
-						prefer from that slate. Candidate strength reflects how strongly voters prefer a
-						particular candidate from their chosen slate.
+						Candidate strength describes whether voters agree on the strong candidates within
+						slates.
 					</p>
-				</li>
-				<li class="max-w-none py-2">
-					<p>If you select "No", votes will be evenly distributed between the candidates.</p>
 				</li>
 				<li class="max-w-none py-2">
 					<p>
-						If you select "Yes", votes will be more concentrated towards a single strong candidate.
+						If you answer "yes", this means that voters tend to agree that a certain candidate comes
+						first within the slate.
 					</p>
 				</li>
 				<li class="max-w-none py-2">
-					<p>If you select "Unknown", votes will distrubted randomly between the candidates.</p>
+					<p>
+						If you answer "no", this means the voters will tend to be more indifferent within the
+						slate.
+					</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>
+						If you answer "unknown", then we'll pick at random -- there could be a consensus strong
+						candidate, indifference, or something in between.
+					</p>
 				</li>
 			</ul>
 		</div>
