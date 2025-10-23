@@ -22,13 +22,6 @@
 			<td class="font-semibold">Trials</td>
 			<td>{run.config.trials}</td>
 		</tr>
-		<tr>
-			<td class="font-semibold">Voter Profile</td>
-			<td>
-				{BALLOT_GENERATOR_MAP[run.config.ballotGenerator as keyof typeof BALLOT_GENERATOR_MAP] ??
-					'Unknown'}
-			</td>
-		</tr>
 	</tbody>
 </table>
 
