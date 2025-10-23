@@ -3,7 +3,7 @@
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
 	import PencilIcon from '$lib/components/ResultsCard/PencilIcon.svelte';
-	import { rename } from 'fs';
+
 	let newCollectionName = $state('');
 	let showNewCollectionInput = $state(false);
 	let shareCollectionName = $state<string | null>(null);
@@ -65,7 +65,9 @@
 	}
 
 	function deleteCollection(name: string) {
+		activeCollection = null;
 		resultsState.deleteCollection(name);
+		resultsState.clearSelection();
 	}
 
 	function shareCollection(name: string) {
