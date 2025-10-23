@@ -41,7 +41,7 @@
 				{#each resultsState.runs as run}
 					<li class="list-row flex w-full">
 						<div class="flex w-full flex-row items-center justify-between gap-2">
-							<fieldset class="fieldset p-0">
+							<fieldset class="fieldset flex-grow p-0">
 								<legend class="sr-only fieldset-legend">Toggle {run.name}</legend>
 								<label class="label">
 									<input
@@ -54,7 +54,7 @@
 								</label>
 							</fieldset>
 
-							<div class="dropdown dropdown-left" id={`dropdown-${run.id}`}>
+							<div class="dropdown dropdown-left flex-none" id={`dropdown-${run.id}`}>
 								<div tabindex="0" role="button" class="btn m-1 text-slate-400 btn-ghost btn-xs">
 									&times;
 								</div>
