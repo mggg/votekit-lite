@@ -7,6 +7,7 @@ export const COLOR_MAP = {
 };
 export const IS_DEV = import.meta.env.MODE === 'development';
 export const RUNS_KEY = 'votekit_runs_v1';
+export const COLLECTIONS_KEY = 'votekit_collections_v1';
 
 export const NAV_CONFIG = [
 	{
@@ -20,6 +21,10 @@ export const NAV_CONFIG = [
 	{
 		label: 'Results',
 		href: '/results'
+	},
+	{
+		label: 'Collections',
+		href: '/collections'
 	},
 	{
 		label: 'About',
@@ -57,23 +62,23 @@ export const BALLOT_GENERATOR_MAP = {
 
 export const DEFAULT_SLATE_BLOCS = [
 	{
-		name: 'Greens',
+		name: 'Green',
 		color: '#4daf4a'
 	},
 	{
-		name: 'Purples',
+		name: 'Purple',
 		color: '#984ea3'
 	},
 	{
-		name: 'Oranges',
+		name: 'Orange',
 		color: '#ff7f00'
 	},
 	{
-		name: 'Pinks',
+		name: 'Pink',
 		color: '#f781bf'
 	},
 	{
-		name: 'Greys',
+		name: 'Grey',
 		color: '#999999'
 	}
 ];

@@ -12,6 +12,7 @@
 	import { downloadPng } from '$lib/utils/downloadPng';
 	import { downloadJson } from '$lib/utils/downloadJson';
 	import { TIMEOUT_IN_S } from '$lib/constants';
+	import ChevronIcon from './ChevronIcon.svelte';
 
 	const { runId } = $props<{ runId: string }>();
 	let activeTab = $state('histogram');
@@ -21,6 +22,9 @@
 	);
 	let showCopiedUrl = $state(false);
 	let hovered = $state(false);
+	let showCollectionMenu = $state(false);
+	let downloading = $state(false);
+	const collectionsArray = $derived(Object.keys(resultsState.collections));
 
 	$effect(() => {
 		// If data is incomplete, check the results
@@ -38,7 +42,9 @@
 <!-- name of each tab group should be unique -->
 {#if run}
 	<div
-		class="relative flex flex-col gap-2"
+		class="relative flex flex-col gap-2 {hovered ? 'result-card-hovered' : ''} {downloading
+			? 'result-card-downloading'
+			: ''}"
 		onmouseenter={() => (hovered = true)}
 		onmouseleave={() => (hovered = false)}
 		role="group"
@@ -109,7 +115,7 @@
 		<div
 			tabindex="0"
 			id="dropdown-results-{runId}"
-			class={`dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+			class="appear-hover dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300"
 		>
 			<div role="button" class="btn p-0 btn-ghost btn-md">
 				<GearIcon />
@@ -122,7 +128,7 @@
 				<li>
 					<button
 						class="btn btn-ghost"
-						disabled={!run.result}
+						disabled={!run.config}
 						onclick={() => {
 							resultsState.loadSimulationSettings(run.id);
 						}}>Load simulation settings</button
@@ -134,7 +140,6 @@
 					<li>
 						<button
 							class="btn btn-ghost"
-							disabled={!run.result}
 							onclick={(e) => {
 								e.preventDefault();
 								shareUrl(run.id);
@@ -158,14 +163,16 @@
 						class="btn btn-ghost"
 						disabled={!run.result}
 						onclick={() => {
+							downloading = true;
 							activeTab = 'histogram';
 							setTimeout(() => {
 								const el = document.getElementById(`histogram-container-${runId}`);
 								if (el) {
 									downloadSvg(el, run.id);
+									downloading = false;
 								}
 							}, 125);
-						}}>Download chart (SVG)</button
+						}}>Download image (SVG)</button
 					>
 				</li>
 				<li>
@@ -174,13 +181,17 @@
 						disabled={!run.result}
 						onclick={() => {
 							activeTab = 'histogram';
+							downloading = true;
 							setTimeout(() => {
 								const el = document.getElementById(`histogram-container-${runId}`);
 								if (el) {
 									downloadPng(el, run.id);
 								}
 							}, 125);
-						}}>Download chart (PNG)</button
+							setTimeout(() => {
+								downloading = false;
+							}, 250);
+						}}>Download image (PNG)</button
 					>
 				</li>
 				<li>
@@ -190,6 +201,47 @@
 						disabled={!run.result}>Download configuration (JSON)</button
 					>
 				</li>
+				<li>
+					<button
+						class="btn flex justify-between btn-ghost"
+						onclick={() => (showCollectionMenu = !showCollectionMenu)}
+					>
+						<span>Add to collection</span>
+						<span
+							class="ml-2 size-4 transition-transform duration-300 {showCollectionMenu
+								? ''
+								: 'rotate-180'}"
+						>
+							<ChevronIcon />
+						</span>
+					</button>
+				</li>
+				{#if showCollectionMenu}
+					{#if collectionsArray.length === 0}
+						<li class="ml-4 text-xs text-slate-500">
+							<p>No collections yet</p>
+						</li>
+					{:else}
+						{#each collectionsArray as collectionName}
+							{@const isInCollection = resultsState.collections[collectionName]?.includes(runId)}
+							<li class="ml-4">
+								<button
+									class="btn btn-ghost btn-xs"
+									onclick={() => {
+										if (isInCollection) {
+											resultsState.removeFromCollection(collectionName, runId);
+										} else {
+											resultsState.addToCollection(collectionName, runId);
+										}
+									}}
+								>
+									<span class="mr-2">{isInCollection ? '✓' : '○'}</span>
+									{collectionName}
+								</button>
+							</li>
+						{/each}
+					{/if}
+				{/if}
 				<li>
 					<button class="btn btn-ghost" onclick={() => resultsState.removeRun(run.id)}
 						>Delete this run</button

@@ -6,7 +6,9 @@
 	import ElectionTable from './ElectionTable.svelte';
 	import SlatesTable from './SlatesTable.svelte';
 	import VoterBlocsTable from './VoterBlocsTable.svelte';
-
+	import TwoByTwoGroupsTable from './TwoByTwoGroupsTable.svelte';
+	import TwoByTwoVoterBehavior from './TwoByTwoVoterBehavior.svelte';
+	import TwoByTwoElectionProperties from './TwoByTwoElectionProperties.svelte';
 	const { run, compact = false } = $props<{ run: Run; compact?: boolean }>();
 	let sectionOpen = $state('General');
 	const onOpenChange = (title: string) => {
@@ -36,14 +38,14 @@
 			<Section title="General">
 				<GeneralTable {run} />
 			</Section>
-			<Section title="Election">
-				<ElectionTable {run} />
+			<Section title="Groups">
+				<TwoByTwoGroupsTable {run} />
 			</Section>
-			<Section title="Slates">
-				<SlatesTable {run} />
+			<Section title="Voter behavior">
+				<TwoByTwoVoterBehavior {run} />
 			</Section>
-			<Section title="Voter Blocs">
-				<VoterBlocsTable {run} />
+			<Section title="Election properties">
+				<TwoByTwoElectionProperties {run} />
 			</Section>
 		</div>
 	{/if}

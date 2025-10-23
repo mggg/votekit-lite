@@ -111,7 +111,9 @@
 							formState.blocs[slateIndex].color = color;
 						}}
 					/>
-					<span class="text-sm font-medium">{slate.name || `Group ${slateIndex + 1}`}</span>
+					<span class="text-sm font-medium"
+						>{slate.name || `Group ${slateIndex + 1}`} preferred candidates</span
+					>
 				</div>
 				<div class="col-span-1 flex w-full max-w-xs flex-row items-center gap-2 pl-2">
 					<span class="sr-only" id={`slate-candidates-label-${slateIndex}`}
