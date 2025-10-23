@@ -42,3 +42,11 @@
 	animation: tourPulse 3s infinite;
 	/* pulsate */
 }
+
+.appear-hover {
+	opacity: 0 !important;
+	transition: opacity 0.2s ease-in-out;
+}
+.result-card-hovered .appear-hover {
+	opacity: 1 !important;
+}

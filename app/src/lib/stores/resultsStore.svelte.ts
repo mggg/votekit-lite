@@ -119,7 +119,6 @@ class ResultsState {
 			return [];
 		}
 	}
-
 	upsertRun(runInfo: Partial<Run>) {
 		if (!runInfo.id) {
 			return;

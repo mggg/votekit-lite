@@ -38,7 +38,7 @@
 <!-- name of each tab group should be unique -->
 {#if run}
 	<div
-		class="relative flex flex-col gap-2"
+		class="relative flex flex-col gap-2 {hovered ? 'result-card-hovered' : ''}"
 		onmouseenter={() => (hovered = true)}
 		onmouseleave={() => (hovered = false)}
 		role="group"
@@ -109,7 +109,7 @@
 		<div
 			tabindex="0"
 			id="dropdown-results-{runId}"
-			class={`dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+			class={`appear-hover dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300`}
 		>
 			<div role="button" class="btn p-0 btn-ghost btn-md">
 				<GearIcon />
@@ -122,7 +122,7 @@
 				<li>
 					<button
 						class="btn btn-ghost"
-						disabled={!run.result}
+						disabled={!run.config}
 						onclick={() => {
 							resultsState.loadSimulationSettings(run.id);
 						}}>Load simulation settings</button
@@ -134,7 +134,6 @@
 					<li>
 						<button
 							class="btn btn-ghost"
-							disabled={!run.result}
 							onclick={(e) => {
 								e.preventDefault();
 								shareUrl(run.id);
