@@ -3,7 +3,6 @@
 	import { resultsState } from '$lib/stores/resultsStore.svelte';
 	import ResultsCard from '$lib/components/ResultsCard/ResultsCard.svelte';
 
-	// Check if there is a result-share parameter in the URL.
 	onMount(() => {
 		const url = new URL(window.location.href);
 		const resultShare = url.searchParams.get('result-share');
@@ -33,35 +32,58 @@
 				>
 			</div>
 		</div>
-		<ul class="list-xs list max-h-[50vh] overflow-y-auto" role="list">
+		<ul class="list-xs list max-h-[50vh] overflow-x-visible overflow-y-auto" role="list">
 			{#if resultsState.runs.length === 0}
 				<li class="list-row">
 					<p class="text-sm text-slate-500">No runs yet. Create one on the Run page.</p>
 				</li>
 			{:else}
 				{#each resultsState.runs as run}
-					<li class="list-row">
-						<fieldset class="fieldset p-0">
-							<legend class="sr-only fieldset-legend">Toggle {run.name}</legend>
-							<label class="label">
-								<input
-									type="checkbox"
-									checked={resultsState.activeRunsSet.has(run.id)}
-									class="toggle text-lg font-bold"
-									onclick={() => resultsState.toggleActiveRun(run.id)}
-								/>
-								{run.name}
-							</label>
-						</fieldset>
-						<!-- change popover-1 and --anchor-1 names. Use unique names for each dropdown -->
-						<!-- <button
-							class="btn"
-							popovertarget={`popover-${run.id}`}
-							style={`anchor-name:--anchor-${run.id}`}
-						>
-							Settings
-						</button>
-						<ResultRunControlDropdown {run} /> -->
+					<li class="list-row flex w-full">
+						<div class="flex w-full flex-row items-center justify-between gap-2">
+							<fieldset class="fieldset p-0">
+								<legend class="sr-only fieldset-legend">Toggle {run.name}</legend>
+								<label class="label">
+									<input
+										type="checkbox"
+										checked={resultsState.activeRunsSet.has(run.id)}
+										class="toggle text-lg font-bold"
+										onclick={() => resultsState.toggleActiveRun(run.id)}
+									/>
+									{run.name}
+								</label>
+							</fieldset>
+
+							<div class="dropdown dropdown-left" id={`dropdown-${run.id}`}>
+								<div tabindex="0" role="button" class="btn m-1 text-slate-400 btn-ghost btn-xs">
+									&times;
+								</div>
+								<ul
+									tabindex="-1"
+									class="dropdown-content menu z-1 w-full min-w-32 rounded-box bg-base-100 p-2 shadow-sm"
+								>
+									<li class="text-red-500">Are you sure? This cannot be undone.</li>
+									<li>
+										<button
+											class="btn my-2 btn-xs btn-error"
+											onclick={() => {
+												(document.activeElement as HTMLElement).blur();
+												resultsState.removeRun(run.id);
+											}}>Delete run</button
+										>
+									</li>
+									<li>
+										<button
+											class="btn btn-xs btn-neutral"
+											onclick={() => {
+												// unfocus the dropdown
+												(document.activeElement as HTMLElement).blur();
+											}}>Cancel</button
+										>
+									</li>
+								</ul>
+							</div>
+						</div>
 					</li>
 				{/each}
 			{/if}
