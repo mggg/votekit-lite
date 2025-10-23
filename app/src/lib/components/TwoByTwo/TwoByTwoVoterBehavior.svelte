@@ -100,7 +100,30 @@
 		{/each}
 	</div>
 	<div class="mt-4">
-		<h3 class="text-md mb-2 font-medium">Voter cohesion</h3>
+		<div class="flex flex-row gap-2">
+			<h3 class="text-md mb-2 font-medium">Voter cohesion</h3>
+			<div class="dropdown dropdown-top">
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<div tabindex="0" role="button" class="btn btn-xs">?</div>
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<ul
+					tabindex="0"
+					class="dropdown-content disabled z-1 w-72 rounded-box bg-gray-100 p-4 text-sm shadow-xl"
+				>
+					<li class="max-w-none py-2">
+						<p>
+							Voter cohesions reflect how consistently voters support candidates that are preferred
+							by their group.
+							<br />
+							<br />
+							At 100%, all people will vote for their group's preferred candidate slate. At 50%, half
+							of people will vote for their group's preferred candidate slate, and half prefer the group's
+							preferred candidate.
+						</p>
+					</li>
+				</ul>
+			</div>
+		</div>
 		<p class="mb-2 text-xs text-slate-500">
 			How cohesive is each bloc -- i.e., how consistently do they lean towards the candidates
 			preferred by the group?
@@ -170,7 +193,38 @@
 		</ul>
 	</div>
 
-	<h3 class="text-md my-2 font-medium">Candidate strength</h3>
+	<div class="flex flex-row items-center gap-2">
+		<h3 class="text-md my-2 font-medium">Candidate strength</h3>
+
+		<div class="dropdown dropdown-top">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div tabindex="0" role="button" class="btn btn-xs">?</div>
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<ul
+				tabindex="0"
+				class="dropdown-content disabled z-1 w-72 rounded-box bg-gray-100 p-4 text-sm shadow-xl"
+			>
+				<li class="max-w-none py-2">
+					<p>
+						After voters chose which slate they prefer, they must then chose which candidate(s) they
+						prefer from that slate. Candidate strength reflects how strongly voters prefer a
+						particular candidate from their chosen slate.
+					</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>If you select "No", votes will be evenly distributed between the candidates.</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>
+						If you select "Yes", votes will be more concentrated towards a single strong candidate.
+					</p>
+				</li>
+				<li class="max-w-none py-2">
+					<p>If you select "Unknown", votes will distrubted randomly between the candidates.</p>
+				</li>
+			</ul>
+		</div>
+	</div>
 	<p class="mb-2 text-xs text-slate-500">
 		When voters from each bloc consider candidates from each slate, do they tend to view one strong
 		candidate or are they indifferent between the options?
