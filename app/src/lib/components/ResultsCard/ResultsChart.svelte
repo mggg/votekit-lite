@@ -117,11 +117,11 @@
 			style="padding-left:2px;padding-bottom:1px;"
 			id="group-select-label"
 		>
-			Group:
+			Group: <span class="image-only font-bold">{selectedGroup}</span>
 		</label>
 		<select
 			id="group-select"
-			class="select select-sm"
+			class="hide-image select select-sm"
 			value={selectedGroup}
 			onchange={(e) => selectGroupByName(e)}
 			aria-labelledby="group-select-label"
@@ -135,7 +135,7 @@
 
 {#if hoveredGroupIndex !== null}
 	<div
-		class="pointer-events-none absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
+		class="appear-hover pointer-events-none absolute top-[50%] w-36 rounded-md bg-base-100 p-2 shadow-md"
 		style={`left: ${x0(byEntry[hoveredGroupIndex].entry) ?? 0}px; transform: translate(-50%, -50%); pointer-events: none !important;`}
 	>
 		<p class="mb-2 text-xs font-bold">
@@ -178,6 +178,7 @@
 					height={innerHeight}
 					fill={hoveredGroupIndex === idx ? 'rgba(0, 0, 0, 0.05)' : 'transparent'}
 					style="pointer-events: all;"
+					class="appear-hover"
 					onmouseenter={() => handleBarMouseEnter(idx)}
 					onmouseleave={() => handleBarMouseLeave()}
 					aria-hidden="true"

@@ -50,3 +50,14 @@
 .result-card-hovered .appear-hover {
 	opacity: 1 !important;
 }
+
+.result-card-downloading .appear-hover,
+.result-card-downloading .hide-image {
+	display: none !important;
+}
+.result-card-downloading .image-only {
+	display: block !important;
+}
+.image-only {
+	display: none !important;
+}

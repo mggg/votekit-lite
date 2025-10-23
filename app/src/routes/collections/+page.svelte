@@ -28,6 +28,7 @@
 
 	// Handle query params on mount
 	onMount(() => {
+		resultsState.clearSelection();
 		const url = new URL(window.location.href);
 		const collectionParam = url.searchParams.get('collection');
 		const idsParam = url.searchParams.get('ids');
@@ -101,6 +102,7 @@
 			}
 		});
 	}
+
 	function handleSave(collectionName: string, name: string) {
 		resultsState.renameCollection(collectionName, name);
 		showEditCollectionName = false;
@@ -254,7 +256,7 @@
 			{:else}
 				<h2 class="mb-2 text-lg font-semibold text-slate-800">Collection View</h2>
 			{/if}
-			{#if activeCollection}
+			{#if activeCollection && resultsState.activeRunsList.length === 0}
 				<p class="text-sm text-slate-500">
 					Add results to this collection from the Results page by clicking the gear icon in the top
 					right of the result cards.

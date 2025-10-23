@@ -23,6 +23,7 @@
 	let showCopiedUrl = $state(false);
 	let hovered = $state(false);
 	let showCollectionMenu = $state(false);
+	let downloading = $state(false);
 	const collectionsArray = $derived(Object.keys(resultsState.collections));
 
 	$effect(() => {
@@ -41,7 +42,9 @@
 <!-- name of each tab group should be unique -->
 {#if run}
 	<div
-		class="relative flex flex-col gap-2 {hovered ? 'result-card-hovered' : ''}"
+		class="relative flex flex-col gap-2 {hovered ? 'result-card-hovered' : ''} {downloading
+			? 'result-card-downloading'
+			: ''}"
 		onmouseenter={() => (hovered = true)}
 		onmouseleave={() => (hovered = false)}
 		role="group"
@@ -112,7 +115,7 @@
 		<div
 			tabindex="0"
 			id="dropdown-results-{runId}"
-			class={`appear-hover dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300`}
+			class="appear-hover dropdown absolute dropdown-left top-0 right-0 transition-opacity duration-300"
 		>
 			<div role="button" class="btn p-0 btn-ghost btn-md">
 				<GearIcon />
@@ -160,11 +163,13 @@
 						class="btn btn-ghost"
 						disabled={!run.result}
 						onclick={() => {
+							downloading = true;
 							activeTab = 'histogram';
 							setTimeout(() => {
 								const el = document.getElementById(`histogram-container-${runId}`);
 								if (el) {
 									downloadSvg(el, run.id);
+									downloading = false;
 								}
 							}, 125);
 						}}>Download image (SVG)</button
@@ -176,12 +181,16 @@
 						disabled={!run.result}
 						onclick={() => {
 							activeTab = 'histogram';
+							downloading = true;
 							setTimeout(() => {
 								const el = document.getElementById(`histogram-container-${runId}`);
 								if (el) {
 									downloadPng(el, run.id);
 								}
 							}, 125);
+							setTimeout(() => {
+								downloading = false;
+							}, 250);
 						}}>Download image (PNG)</button
 					>
 				</li>
