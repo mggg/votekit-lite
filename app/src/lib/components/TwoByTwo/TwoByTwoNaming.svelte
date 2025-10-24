@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { formState } from '$lib/stores/formStore.svelte';
 	import PalettePip from '../PalettePip.svelte';
-
-	// Automatically sync slate names with bloc names
-	$effect(() => {
-		formState.slates[0].name = formState.blocs[0].name;
-		formState.slates[1].name = formState.blocs[1].name;
-	});
 </script>
 
 <div class="card bg-base-100 p-4 shadow-sm">
@@ -32,7 +26,12 @@
 						type="text"
 						class="w-full grow px-1 text-sm"
 						placeholder={`e.g., Group ${String.fromCharCode(65 + index)}`}
-						bind:value={bloc.name}
+						value={bloc.name}
+						oninput={(e) => {
+							console.log(e.currentTarget.value);
+							bloc.name = e.currentTarget.value;
+							formState.slates[index].name = e.currentTarget.value;
+						}}
 					/>
 				</label>
 			</div>
