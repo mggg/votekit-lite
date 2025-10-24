@@ -18,6 +18,11 @@
 	<meta name="robots" content="index, follow" />
 	<meta name="googlebot" content="index, follow" />
 	<meta name="bingbot" content="index, follow" />
+	<script
+		defer
+		src="https://analytics.ds.uchicago.edu/script.js"
+		data-website-id="426f6f26-02e9-49aa-b9e4-1ff5e0861c71"
+	></script>
 </svelte:head>
 <div class="min-h-dvh bg-gradient-to-b from-slate-50 to-indigo-50/30 text-slate-900">
 	<header class="sticky top-0 z-10 shadow-sm">
