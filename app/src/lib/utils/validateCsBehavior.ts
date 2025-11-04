@@ -18,9 +18,17 @@ export const validateCsBehavior = (
 	// Check if bloc names match slate names
 	const slateNames = slates.map((slate) => slate.name).sort();
 	const blocNames = blocs.map((bloc) => bloc.name).sort();
+	const blocsAreEqual = blocs.every(
+		(bloc) => bloc.population * bloc.turnout === blocs[0].population * blocs[0].turnout
+	);
 	if (JSON.stringify(slateNames) !== JSON.stringify(blocNames)) {
 		errors.push(
 			'For Cambridge voters, the voter blocs must have the same names as the slates of candidates.'
+		);
+	}
+	if (blocsAreEqual) {
+		errors.push(
+			'For Cambridge voters, the voter blocs cannot have the exact same number of voters.'
 		);
 	}
 
