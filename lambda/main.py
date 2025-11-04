@@ -279,6 +279,7 @@ def _run_simulations(
     """
     results = {slate_name: [-1] * num_trials for slate_name in config.slates}
     completed_trials = 0
+    errors = set()
 
     for i in range(num_trials):
         try:
@@ -306,11 +307,15 @@ def _run_simulations(
         except Exception as e:
             # Log the error but continue with remaining trials
             print(f"Error in trial {i}: {str(e)}")
+            errors.add(str(e))
             continue
 
     results = {
         slate_name: Counter(result_list) for slate_name, result_list in results.items()
     }
+    if completed_trials == 0:
+        error_list = "\n".join(list(errors)).replace("_", " ")
+        raise ValueError(f"All trials failed.\n{error_list}")
 
     if any(-1 in result_counter.keys() for result_counter in results.values()):
         raise ValueError("Some trials resulted in an error.")
@@ -418,6 +423,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             ),
         }
     except ValueError as e:
+        write_error(event["id"], str(e))
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
