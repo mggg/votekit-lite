@@ -7,7 +7,6 @@
 	import TwoByTwoElectionDetails from '$lib/components/TwoByTwo/TwoByTwoElectionDetails.svelte';
 	import TwoByTwoCandidatePools from '$lib/components/TwoByTwo/TwoByTwoCandidatePools.svelte';
 	import TwoByTwoVoterBehavior from '$lib/components/TwoByTwo/TwoByTwoVoterBehavior.svelte';
-	import TwoByTwoCandidateStrength from '$lib/components/TwoByTwo/TwoByTwoCandidateStrength.svelte';
 	import RunDetails from '$lib/components/RunDetails.svelte';
 	import Preview from '$lib/components/Preview.svelte';
 	import WelcomeModal from '$lib/components/Onboarding/WelcomeModal.svelte';
