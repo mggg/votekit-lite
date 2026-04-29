@@ -10,6 +10,10 @@
 		editable?: boolean;
 		onChange?: (color: string) => void;
 	}>();
+
+	const FALLBACK_COLOR = '#999999';
+	const normalizeColor = (value: string) =>
+		/^#[0-9a-fA-F]{6}$/.test(value) ? value : FALLBACK_COLOR;
 </script>
 
 {#if editable}
@@ -22,10 +26,13 @@
 			type="color"
 			class="size-[150%]"
 			style="transform:translate(-4px, -4px)"
-			value={color}
+			value={normalizeColor(color)}
 			onchange={(e) => onChange(e.currentTarget.value)}
 		/>
 	</div>
 {:else}
-	<span class="aspect-square {size} rounded-full" style={`background-color: ${color}`}></span>
+	<span
+		class="aspect-square {size} rounded-full"
+		style={`background-color: ${normalizeColor(color)}`}
+	></span>
 {/if}
