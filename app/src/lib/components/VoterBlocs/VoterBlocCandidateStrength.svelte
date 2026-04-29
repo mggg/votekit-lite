@@ -75,7 +75,7 @@
 											min="0.01"
 											max="100"
 											step="any"
-											class="text-sm invalid:border-2 invalid:border-red-500"
+											class="w-full min-w-0 text-sm invalid:border-2 invalid:border-red-500"
 											placeholder="0.01 to 100"
 											value={formState.blocPreferences[blocIndex][slateIndex]}
 											oninput={(e) => {
