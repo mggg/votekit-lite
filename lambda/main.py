@@ -117,7 +117,7 @@ def _generate_profile(
         >>> config = BlocSlateConfig(
         ...     n_voters=100,
         ...     slate_to_candidates={"X": ["c1", "c2", "c3"], "Y": ["d1", "d2", "d3"]},
-        ...     bloc_proportions={"X": 0.5, "Y": 0.5},
+        ...     bloc_proportions={"X": 0.51, "Y": 0.49},
         ...     cohesion_mapping={"X": {"X": .6, "Y": .4},
         ...                         "Y": {"X": .7, "Y": .3}},
         ... )

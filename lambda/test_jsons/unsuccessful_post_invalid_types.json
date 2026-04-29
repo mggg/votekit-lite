@@ -1,45 +1,56 @@
 {
-    "id": "314444",
-    "name": "test parameters",
-    "numVoters": "a",
-    "voterBlocs": {
-        "A": {
-            "proportion": 0.6,
-            "preference": {
-                "R": "u",
-                "D": "strong"
-            },
-            "cohesion": {
-                "R": 0.4,
-                "D": 0.6
-            }
-        },
-        "B": {
-            "proportion": 0.4,
-            "preference": {
-                "R": "unif",
-                "D": "unif"
-            },
-            "cohesion": {
-                "R": 0.8,
-                "D": 0.2
-            }
-        }
+  "id": "314444",
+  "name": "test parameters",
+  "numVoters": "a",
+  "voterBlocs": {
+    "A": {
+      "proportion": 0.6,
+      "preference": {
+        "R": "u",
+        "D": 0.5
+      },
+      "cohesion": {
+        "R": 0.4,
+        "D": 0.6
+      }
     },
-    "slates": {
-        "X": {
-            "numCandidates": 4
-        },
-        "D": {
-            "numCandidates": 5
-        }
+    "B": {
+      "proportion": 0.4,
+      "preference": {
+        "R": 2,
+        "D": 2
+      },
+      "cohesion": {
+        "R": 0.8,
+        "D": 0.2
+      }
+    }
+  },
+  "slates": {
+    "X": {
+      "numCandidates": 4
     },
-    "election": {
-        "system": "youuuuuu",
-        "numSeats": 4,
-        "maxBallotLength": 9
+    "D": {
+      "numCandidates": 5
+    }
+  },
+  "election": {
+    "system": "youuuuuu",
+    "numSeats": 4,
+    "maxBallotLength": 9
+  },
+  "ballotGenerator": "meeeee",
+  "trials": 100,
+  "createdAt": "111111",
+  "meta": {
+    "slateColors": {
+      "R": "#ff0000",
+      "D": "#0000ff"
     },
-    "ballotGenerator": "meeeee",
-    "trials": 100,
-    "createdAt": "111111"
+    "blocColors": {
+      "A": "#00ff00",
+      "B": "#ffff00"
+    }
+  }
 }
+
