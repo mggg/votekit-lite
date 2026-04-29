@@ -6,6 +6,7 @@ import type { Slate, VoterBloc, VoterBlocMode } from './types';
 import { balanceRemainingValue, formatConfig } from './utils';
 import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
 import { DEFAULT_SLATE_BLOCS } from '$lib/constants';
+import { COLOR_FALLBACK, normalizeColor } from '$lib/utils/color';
 // Constants
 export const MAX_CANDIDATES = 12;
 
@@ -53,10 +54,10 @@ export class FormState {
 	);
 	voterShare: number[] = $derived(this.blocCounts.map((count) => count / this.totalVoters));
 
-	blocPreferences: VoterPreference[][] = $state([
-		['all_bets_off', 'all_bets_off'],
-		['all_bets_off', 'all_bets_off']
-	]);
+	blocPreferences: number[][] = $state([
+      [1.0, 1.0],
+      [1.0, 1.0]
+  ]);
 	blocCohesion: number[][] = $state([
 		[1.0, 0],
 		[0, 1.0]
@@ -130,7 +131,7 @@ export class FormState {
 			const newBlocPreferences = this.blocPreferences.map((bloc) => {
 				const newBlocPreferences = [...bloc];
 				for (let i = bloc.length; i < value; i++) {
-					newBlocPreferences.push('all_bets_off');
+					newBlocPreferences.push(1);
 				}
 				return newBlocPreferences;
 			});
@@ -152,7 +153,7 @@ export class FormState {
 			for (let i = this.blocs.length; i < value; i++) {
 				newBlocs.push({ population: 50, turnout: 1.0, ...DEFAULT_SLATE_BLOCS[i] });
 				newBlocCohesion.push(new Array(this.slates.length).fill(1 / this.slates.length));
-				newBlocPreferences.push(new Array(this.slates.length).fill('all_bets_off'));
+				newBlocPreferences.push(new Array(this.slates.length).fill(1));
 			}
 			this.blocs = newBlocs;
 			this.blocCohesion = newBlocCohesion;
@@ -262,15 +263,21 @@ export class FormState {
 			name,
 			population: bloc.proportion * config.numVoters,
 			turnout: 1.0,
-			color: config.meta?.blocColors?.[name] ?? DEFAULT_SLATE_BLOCS[i].color
+			color: normalizeColor(
+				config.meta?.blocColors?.[name],
+				DEFAULT_SLATE_BLOCS[i]?.color ?? COLOR_FALLBACK
+			)
 		}));
 		this.slates = Object.entries(config.slates).map(([name, slate], i) => ({
 			name,
 			numCandidates: slate.numCandidates,
-			color: config.meta?.slateColors?.[name] ?? DEFAULT_SLATE_BLOCS[i].color
+			color: normalizeColor(
+				config.meta?.slateColors?.[name],
+				DEFAULT_SLATE_BLOCS[i]?.color ?? COLOR_FALLBACK
+			)
 		}));
 		this.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>
-			this.slates.map((slate) => bloc.preference[slate.name] ?? 'all_bets_off')
+			this.slates.map((slate) => bloc.preference[slate.name] ?? 1)
 		);
 		this.blocCohesion = Object.entries(config.voterBlocs).map(([name, bloc]) =>
 			this.slates.map((slate) => Math.round((bloc.cohesion[slate.name] ?? 0) * 100) / 100)

@@ -4,6 +4,11 @@ import { defineConfig } from 'vite';
 import { spawn } from 'child_process';
 
 export default defineConfig({
+	server: {
+		watch: {
+			usePolling: true
+		}
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit(),

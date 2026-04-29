@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { normalizeColor } from '$lib/utils/color';
+
 	const {
 		color,
 		size = 'size-4',
@@ -22,10 +24,13 @@
 			type="color"
 			class="size-[150%]"
 			style="transform:translate(-4px, -4px)"
-			value={color}
+			value={normalizeColor(color)}
 			onchange={(e) => onChange(e.currentTarget.value)}
 		/>
 	</div>
 {:else}
-	<span class="aspect-square {size} rounded-full" style={`background-color: ${color}`}></span>
+	<span
+		class="aspect-square {size} rounded-full"
+		style={`background-color: ${normalizeColor(color)}`}
+	></span>
 {/if}

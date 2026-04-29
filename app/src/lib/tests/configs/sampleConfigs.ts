@@ -8,8 +8,8 @@ export const twoBlocTwoSlate: VotekitConfig = {
 		bloc1: {
 			proportion: 0.5,
 			preference: {
-				slate1: 'all_bets_off',
-				slate2: 'strong'
+				slate1: 1,
+				slate2: 0.5
 			},
 			cohesion: {
 				slate1: 0.7,
@@ -19,8 +19,8 @@ export const twoBlocTwoSlate: VotekitConfig = {
 		bloc2: {
 			proportion: 0.5,
 			preference: {
-				slate1: 'all_bets_off',
-				slate2: 'strong'
+				slate1: 1,
+				slate2: 0.5
 			},
 			cohesion: {
 				slate1: 0.6,
@@ -64,9 +64,9 @@ export const twoBlocThreeSlate: VotekitConfig = {
 		bloc1: {
 			proportion: 0.5,
 			preference: {
-				slate1: 'all_bets_off',
-				slate2: 'strong',
-				slate3: 'unif'
+				slate1: 1,
+				slate2: 0.5,
+				slate3: 2
 			},
 			cohesion: {
 				slate1: 0.6,
@@ -77,9 +77,9 @@ export const twoBlocThreeSlate: VotekitConfig = {
 		bloc2: {
 			proportion: 0.5,
 			preference: {
-				slate1: 'strong',
-				slate2: 'strong',
-				slate3: 'unif'
+				slate1: 0.5,
+				slate2: 0.5,
+				slate3: 2
 			},
 			cohesion: {
 				slate1: 0.7,
@@ -174,9 +174,9 @@ export const threeBlocFourSlate: VotekitConfig = {
 		bloc1: {
 			proportion: 0.4,
 			preference: {
-				slate1: 'all_bets_off',
-				slate2: 'strong',
-				slate3: 'unif'
+				slate1: 1,
+				slate2: 0.5,
+				slate3: 2
 			},
 			cohesion: {
 				slate1: 0.6,
@@ -187,9 +187,9 @@ export const threeBlocFourSlate: VotekitConfig = {
 		bloc2: {
 			proportion: 0.3,
 			preference: {
-				slate1: 'strong',
-				slate2: 'strong',
-				slate3: 'unif'
+				slate1: 0.5,
+				slate2: 0.5,
+				slate3: 2
 			},
 			cohesion: {
 				slate1: 0.7,
@@ -200,9 +200,9 @@ export const threeBlocFourSlate: VotekitConfig = {
 		bloc3: {
 			proportion: 0.3,
 			preference: {
-				slate1: 'unif',
-				slate2: 'strong',
-				slate3: 'unif'
+				slate1: 2,
+				slate2: 0.5,
+				slate3: 2
 			},
 			cohesion: {
 				slate1: 0.7,
