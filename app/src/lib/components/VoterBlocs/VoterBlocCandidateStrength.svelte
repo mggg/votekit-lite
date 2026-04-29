@@ -4,6 +4,7 @@
 	import PalettePip from '../PalettePip.svelte';
 
 	let useAlphaInput = $state(false);
+	let invalidCells = $state<Record<string, boolean>>({});
 
 	const PREFERENCE_OPTIONS = [
 		{ value: 2, label: 'No' },
@@ -77,21 +78,24 @@
 									{#if useAlphaInput}
 										<input
 											type="number"
-											min="0.01"
-											max="100"
-											step="any"
-											class="w-full min-w-0 text-sm invalid:border-2 invalid:border-red-500"
+											class="input input-sm w-full text-center {invalidCells[`${blocIndex}-${slateIndex}`] ? 'input-error' : ''}"
 											placeholder="0.01 to 100"
 											value={formState.blocPreferences[blocIndex][slateIndex]}
 											oninput={(e) => {
-												const raw = e.currentTarget.value;
-												const value = Number(raw);
-
-												if (raw === "") return;
-
-												if (value >= 0.01 && value <= 100) {
-													setPreference(blocIndex, slateIndex, value);
+												let raw = e.currentTarget.value;
+												if (raw.length > 8) {
+													raw = raw.slice(0, 8);
+													e.currentTarget.value = raw;
 												}
+												const key = `${blocIndex}-${slateIndex}`;
+												if (raw === "") {
+													invalidCells[key] = false;
+													return;
+												}
+												const value = Number(raw);
+												const ok = Number.isFinite(value) && value >= 0.01 && value <= 100;
+												invalidCells[key] = !ok;
+												if (ok) setPreference(blocIndex, slateIndex, value);
 											}}
 										/>
 									{:else}
