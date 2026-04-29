@@ -16,7 +16,6 @@
 		slateIndex: number,
 		value: number
 	) {
-		console.log('Setting reference for bloc', blocIndex, 'slate', slateIndex, 'to', value);
 		formState.blocPreferences[blocIndex][slateIndex] = value;
 	}
 
