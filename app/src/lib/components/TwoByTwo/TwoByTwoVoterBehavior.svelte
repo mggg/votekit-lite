@@ -10,6 +10,7 @@
 	];
 
 	let useAlphaInput = $state(false);
+	let invalidCells = $state<Record<string, boolean>>({});
 
 	function setPreference(
 		blocIndex: number,
@@ -286,27 +287,30 @@
 									class="block flex h-full flex-col justify-center rounded-md p-2 px-4 text-center text-xs"
 									style={`border: 2px solid ${formState.slates[slateIndex].color}; background-color: ${formState.slates[slateIndex].color}01`}
 								>
-									<span
+									<span class="mb-2 block"
 										>{formState.slates[slateIndex].name || `Group ${slateIndex + 1}`} preferred candidates</span
 									>
 									{#if useAlphaInput}
 										<input
 											type="number"
-											min="0.01"
-											max="100"
-											step="0.01"
-											class="text-sm invalid:border-2 invalid:border-red-500"
+											class="input input-sm w-full text-center {invalidCells[`${blocIndex}-${slateIndex}`] ? 'input-error' : ''}"
 											placeholder="0.01 to 100"
 											value={formState.blocPreferences[blocIndex][slateIndex]}
 											oninput={(e) => {
-												const raw = e.currentTarget.value;
-												const value = Number(raw);
-
-												if (raw === "") return;
-
-												if (value >= 0.01 && value <= 100) {
-													setPreference(blocIndex, slateIndex, value);
+												let raw = e.currentTarget.value;
+												if (raw.length > 8) {
+													raw = raw.slice(0, 8);
+													e.currentTarget.value = raw;
 												}
+												const key = `${blocIndex}-${slateIndex}`;
+												if (raw === "") {
+													invalidCells[key] = false;
+													return;
+												}
+												const value = Number(raw);
+												const ok = Number.isFinite(value) && value >= 0.01 && value <= 100;
+												invalidCells[key] = !ok;
+												if (ok) setPreference(blocIndex, slateIndex, value);
 											}}
 										/>
 									{:else}

@@ -15,8 +15,9 @@
 		},
 		{
 			title: 'Team',
-			body: '<b>Current team:</b> Chris Donnay, Moon Duchin (PI), and Dylan Halpern.<br>\
-			<b>Original Shiny team:</b> Dylan Phelan and Thomas Weighill.'
+			body: '<b>Current team:</b> Peter Rock, Moon Duchin (PI), and Dylan Halpern.<br>\
+			<b>Previous Contributors:</b> Chris Donnay.<br>\
+			<b>Original Shiny/Flask team:</b> Dylan Phelan and Thomas Weighill.'
 		}
 	];
 </script>
@@ -35,14 +36,21 @@
 			Born out of conversations and feedback from community groups and election advocates, VoteKit Lite
 			allows users to explore alternative election methods without needing to code in Python. This empowers
 			organizations to use modeling tools to inform their decisions about which election methods are
-			best for <i>their</i> communities. VoteKit Lite is based on a previous
+			best for <i>their</i> communities. VoteKit Lite is based on previous
+			<a
+				href="https://thomasweighill.shinyapps.io/rcv-app"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="text-blue-600 underline hover:text-blue-800">Shiny</a
+			>
+			and 
 			<a
 				href="https://mggg.github.io/rcv-webapp/#/"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="text-blue-600 underline hover:text-blue-800">Shiny app</a
+				class="text-blue-600 underline hover:text-blue-800">Flask</a
 			>
-			released by the Lab.
+			apps released by the Lab.
 		</p>
 	</div>
 
