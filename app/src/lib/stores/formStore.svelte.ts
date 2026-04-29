@@ -6,11 +6,9 @@ import type { Slate, VoterBloc, VoterBlocMode } from './types';
 import { balanceRemainingValue, formatConfig } from './utils';
 import { validateCsBehavior } from '$lib/utils/validateCsBehavior';
 import { DEFAULT_SLATE_BLOCS } from '$lib/constants';
+import { COLOR_FALLBACK, normalizeColor } from '$lib/utils/color';
 // Constants
 export const MAX_CANDIDATES = 12;
-const DEFAULT_COLOR = '#999999';
-const normalizeColor = (value: string | undefined, fallback: string) =>
-	/^#[0-9a-fA-F]{6}$/.test(value ?? '') ? value! : fallback || DEFAULT_COLOR;
 
 export class FormState {
 	name: string = $state('');
@@ -267,7 +265,7 @@ export class FormState {
 			turnout: 1.0,
 			color: normalizeColor(
 				config.meta?.blocColors?.[name],
-				DEFAULT_SLATE_BLOCS[i]?.color ?? DEFAULT_COLOR
+				DEFAULT_SLATE_BLOCS[i]?.color ?? COLOR_FALLBACK
 			)
 		}));
 		this.slates = Object.entries(config.slates).map(([name, slate], i) => ({
@@ -275,7 +273,7 @@ export class FormState {
 			numCandidates: slate.numCandidates,
 			color: normalizeColor(
 				config.meta?.slateColors?.[name],
-				DEFAULT_SLATE_BLOCS[i]?.color ?? DEFAULT_COLOR
+				DEFAULT_SLATE_BLOCS[i]?.color ?? COLOR_FALLBACK
 			)
 		}));
 		this.blocPreferences = Object.entries(config.voterBlocs).map(([name, bloc]) =>

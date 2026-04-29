@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { normalizeColor } from '$lib/utils/color';
+
 	const {
 		color,
 		size = 'size-4',
@@ -10,10 +12,6 @@
 		editable?: boolean;
 		onChange?: (color: string) => void;
 	}>();
-
-	const FALLBACK_COLOR = '#999999';
-	const normalizeColor = (value: string) =>
-		/^#[0-9a-fA-F]{6}$/.test(value) ? value : FALLBACK_COLOR;
 </script>
 
 {#if editable}
