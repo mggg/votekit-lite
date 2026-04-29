@@ -4,16 +4,19 @@
 	import type { VotekitConfig } from '$lib/types/votekitConfig';
 	import PalettePip from '../PalettePip.svelte';
 	const PREFERENCE_OPTIONS = [
-		{ value: 'unif', label: 'No' },
-		{ value: 'all_bets_off', label: 'Unknown' },
-		{ value: 'strong', label: 'Yes' }
+		{ value: 2, label: 'No' },
+		{ value: 1, label: 'Unknown' },
+		{ value: 0.5, label: 'Yes' }
 	];
+
+	let useAlphaInput = $state(false);
 
 	function setPreference(
 		blocIndex: number,
 		slateIndex: number,
-		value: FormState['blocPreferences'][number][number]
+		value: number
 	) {
+		console.log('Setting reference for bloc', blocIndex, 'slate', slateIndex, 'to', value);
 		formState.blocPreferences[blocIndex][slateIndex] = value;
 	}
 
@@ -228,11 +231,32 @@
 				</li>
 			</ul>
 		</div>
+		<button
+			type="button"
+			class="btn btn-xs ml-auto mr-8 {useAlphaInput ? 'btn-primary text-white' : 'btn-ghost border-purple-500 text-slate-600'}"
+			onclick={() => (useAlphaInput = !useAlphaInput)}
+		>
+			{useAlphaInput ? 'Use Preset Options' : 'Specify Dirichlet Alpha'}
+		</button>
 	</div>
 	<p class="mb-2 text-xs text-slate-500">
 		When voters from each bloc consider candidates from each slate, do they tend to view one strong
 		candidate or are they indifferent between the options?
 	</p>
+	{#if useAlphaInput}
+		<div class="flex flex-row">
+			<div class="grid grid-cols-2 gap-20">
+					<p class="mb-2 mt-1 text-xs text-gray-400">
+							Enter a positive number to specify the Dirichlet alpha parameter for each bloc's preferences towards candidates in each slate. <br/>
+					</p>
+					<p class="mb-2 mt-1 text-xs text-gray-400">
+							α closer to 0 ⇒ Stronger candidate<br/>
+							α greater than 1 ⇒ Candidate indifference<br/>
+							α = 1 ⇒ Candidate strength is unknown
+					</p>
+			</div>
+		</div>
+	{/if}
 	<ul class="list px-0">
 		{#each formState.blocs.slice(0, 2) as bloc, blocIndex}
 			<li class="p-0">
@@ -260,28 +284,50 @@
 									<span
 										>{formState.slates[slateIndex].name || `Group ${slateIndex + 1}`} preferred candidates</span
 									>
-									<div class="join inline-flex w-full justify-center">
-										{#each PREFERENCE_OPTIONS as opt}
-											<button
-												type="button"
-												class="btn join-item p-1 btn-soft btn-xs {formState.blocPreferences[
-													blocIndex
-												][slateIndex] === opt.value
-													? 'btn-primary'
-													: ''}"
-												aria-pressed={formState.blocPreferences[blocIndex][slateIndex] ===
-													opt.value}
-												onclick={() =>
-													setPreference(
-														blocIndex,
-														slateIndex,
-														opt.value as FormState['blocPreferences'][number][number]
-													)}
-											>
-												{opt.label}
-											</button>
-										{/each}
-									</div>
+									{#if useAlphaInput}
+										<input
+											type="number"
+											min="0.01"
+											max="100"
+											step="0.01"
+											class="text-sm invalid:border-2 invalid:border-red-500"
+											placeholder="0.01 to 100"
+											value={formState.blocPreferences[blocIndex][slateIndex]}
+											oninput={(e) => {
+												const raw = e.currentTarget.value;
+												const value = Number(raw);
+
+												if (raw === "") return;
+
+												if (value >= 0.01 && value <= 100) {
+													setPreference(blocIndex, slateIndex, value);
+												}
+											}}
+										/>
+									{:else}
+										<div class="join inline-flex w-full justify-center">
+											{#each PREFERENCE_OPTIONS as opt}
+												<button
+													type="button"
+													class="btn join-item p-1 btn-soft btn-xs {formState.blocPreferences[
+														blocIndex
+													][slateIndex] === opt.value
+														? 'btn-primary'
+														: ''}"
+													aria-pressed={formState.blocPreferences[blocIndex][slateIndex] ===
+														opt.value}
+													onclick={() =>
+														setPreference(
+															blocIndex,
+															slateIndex,
+															opt.value
+														)}
+												>
+													{opt.label}
+												</button>
+											{/each}
+										</div>
+									{/if}
 								</label>
 							{/each}
 						</div>

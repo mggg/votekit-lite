@@ -1,10 +1,6 @@
 import { z } from 'zod';
 
-const PreferenceValuesSchema = z.union([
-	z.literal('all_bets_off'),
-	z.literal('strong'),
-	z.literal('unif')
-]);
+const PreferenceValuesSchema = z.number()
 
 // Schema for a single bloc's preferences, keyed by bloc identifiers
 const PreferenceSchema = z.record(z.string(), PreferenceValuesSchema);

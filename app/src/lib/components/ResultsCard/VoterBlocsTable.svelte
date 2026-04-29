@@ -21,7 +21,7 @@
 			{@const typedBloc = bloc as {
 				proportion: number;
 				cohesion: Record<string, number>;
-				preference: Record<string, string>;
+				preference: Record<string, number>;
 			}}
 			<tr>
 				<td>{blocName}</td>
@@ -34,8 +34,14 @@
 				<td>
 					{#each Object.entries(typedBloc.preference) as [slate, pref]}
 						<p>
-							{slate}: {VOTER_PREFERENCE_MAP[pref as keyof typeof VOTER_PREFERENCE_MAP] ??
-								'Unknown'}
+							{slate}:
+							{#if pref < 1}
+								Yes (α = {pref})
+							{:else if pref > 1}
+								No (α = {pref})
+							{:else}
+								Unknown (α = 1)
+							{/if}
 						</p>
 					{/each}
 				</td>

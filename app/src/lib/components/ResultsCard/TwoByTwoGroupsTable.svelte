@@ -16,7 +16,7 @@
 			{@const typedBloc = bloc as {
 				proportion: number;
 				cohesion: Record<string, number>;
-				preference: Record<string, string>;
+				preference: Record<string, number>;
 			}}
 			<tr>
 				<td>{blocName}</td>

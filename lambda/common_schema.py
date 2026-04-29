@@ -28,20 +28,7 @@ validation_schema = {
               "type": "string"
             },
             "additionalProperties": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "const": "all_bets_off"
-                },
-                {
-                  "type": "string",
-                  "const": "strong"
-                },
-                {
-                  "type": "string",
-                  "const": "unif"
-                }
-              ]
+              "type": "number"
             }
           },
           "cohesion": {

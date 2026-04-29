@@ -49,9 +49,9 @@ export const ELECTION_SYSTEM_MAP: Record<
 };
 
 export const VOTER_PREFERENCE_MAP = {
-	strong: 'Yes',
-	all_bets_off: 'Unknown',
-	unif: 'No'
+	0.5: 'Yes',
+	1: 'Unknown',
+	2: 'No'
 };
 
 export const BALLOT_GENERATOR_MAP = {

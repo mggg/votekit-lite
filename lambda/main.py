@@ -31,8 +31,6 @@ UNIF_ALPHA = 2
 TIMEOUT_BUFFER = 1.5
 TIMEOUT_DURATION = 60 * 15
 
-ALPHA_MAP = {"all_bets_off": 1, "strong": STRONG_ALPHA, "unif": UNIF_ALPHA}
-
 
 def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
     """
@@ -61,9 +59,7 @@ def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
     config = BlocSlateConfig(
         n_voters=event["numVoters"],
         slate_to_candidates={
-            slate_name: [
-                f"{slate_name}_{i}" for i in range(slate_data["numCandidates"])
-            ]
+            slate_name: [f"{slate_name}_{i}" for i in range(slate_data["numCandidates"])]
             for slate_name, slate_data in event["slates"].items()
         },
         bloc_proportions={
@@ -71,14 +67,13 @@ def _convert_event_to_votekit_config(event: Dict[str, Any]) -> BlocSlateConfig:
             for bloc_name, bloc_data in event["voterBlocs"].items()
         },
         cohesion_mapping={
-            bloc_name: bloc_data["cohesion"]
-            for bloc_name, bloc_data in event["voterBlocs"].items()
+            bloc_name: bloc_data["cohesion"] for bloc_name, bloc_data in event["voterBlocs"].items()
         },
     )
     config.set_dirichlet_alphas(
         alphas={
             bloc_name: {
-                slate_name: ALPHA_MAP[bloc_data["preference"][slate_name]]
+                slate_name: bloc_data["preference"][slate_name]
                 for slate_name in event["slates"].keys()
             }
             for bloc_name, bloc_data in event["voterBlocs"].items()
@@ -175,7 +170,7 @@ def _truncate_profile(profile: RankProfile, new_max_ranking_length: int) -> Rank
     return RankProfile(
         df=profile.df.drop(
             columns=[
-                f"Ranking_{i+1}"
+                f"Ranking_{i + 1}"
                 for i in range(new_max_ranking_length, profile.max_ranking_length)
             ]
         ),
@@ -310,9 +305,7 @@ def _run_simulations(
             errors.add(str(e))
             continue
 
-    results = {
-        slate_name: Counter(result_list) for slate_name, result_list in results.items()
-    }
+    results = {slate_name: Counter(result_list) for slate_name, result_list in results.items()}
     if completed_trials == 0:
         error_list = "\n".join(list(errors)).replace("_", " ")
         raise ValueError(f"All trials failed.\n{error_list}")
@@ -328,7 +321,10 @@ def _run_simulations(
 
     return results
 
-def _start_timeout_watchdog(event: Dict[str, Any], context: Any, buffer_seconds: float = TIMEOUT_BUFFER) -> threading.Timer:
+
+def _start_timeout_watchdog(
+    event: Dict[str, Any], context: Any, buffer_seconds: float = TIMEOUT_BUFFER
+) -> threading.Timer:
     """
     Start the timeout watchdog.
 
@@ -343,12 +339,16 @@ def _start_timeout_watchdog(event: Dict[str, Any], context: Any, buffer_seconds:
     delay = max(0.01, remaining - buffer_seconds)
 
     def _write_timeout_log():
-        write_error(event["id"], f"The simulation timed out, try reducing the number of trials or the complexity of your election.")
+        write_error(
+            event["id"],
+            f"The simulation timed out, try reducing the number of trials or the complexity of your election.",
+        )
 
     t = threading.Timer(delay, _write_timeout_log)
     t.daemon = True  # don't block shutdown
     t.start()
     return t
+
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
@@ -427,9 +427,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             "statusCode": 400,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(
-                {"message": "Some trials resulted in an error.", "errors": str(e)}
-            ),
+            "body": json.dumps({"message": "Some trials resulted in an error.", "errors": str(e)}),
         }
     except TimeoutError as e:
         # Handle timeout gracefully
@@ -453,9 +451,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             "statusCode": 500,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(
-                {"message": "Internal server error", "error": error_msg}
-            ),
+            "body": json.dumps({"message": "Internal server error", "error": error_msg}),
         }
     finally:
         try:
