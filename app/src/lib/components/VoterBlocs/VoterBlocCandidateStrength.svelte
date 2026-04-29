@@ -24,13 +24,18 @@
 <div class="mt-4" id="voter-blocs-candidate-strength">
 	<div class="mb-2 flex flex-row items-center">
 		<h3 class="mb-2 text-sm font-medium text-slate-700">Candidate strength</h3>
-		<button
-			type="button"
-			class="btn btn-xs ml-auto mr-20 {useAlphaInput ? 'btn-primary text-white' : 'btn-ghost border-purple-500 text-slate-600'}"
-			onclick={() => (useAlphaInput = !useAlphaInput)}
+		<div
+			class="tooltip tooltip-bottom before:text-sm before:!w-72 before:!bg-gray-100 before:!text-xs before:!text-gray-900"
+			data-tip={"Advanced: Click to specify a custom value of the Dirichlet α parameter for each bloc's preferences towards candidates in each slate."}
 		>
-			{useAlphaInput ? 'Use Preset Options' : 'Specify Dirichlet Alpha'}
-		</button>
+			<button
+				type="button"
+				class="btn btn-xs ml-2 mr-8 {useAlphaInput ? 'btn-primary text-white' : 'btn-ghost border-purple-500 text-slate-600'}"
+				onclick={() => (useAlphaInput = !useAlphaInput)}
+			>
+				{useAlphaInput ? 'Use Preset Options' : 'Specify Dirichlet Alpha'}
+			</button>
+		</div>
 	</div>
 	<p class="mb-2 text-xs text-slate-500">
 		Do voters from each bloc favor a strong candidate from each slate?

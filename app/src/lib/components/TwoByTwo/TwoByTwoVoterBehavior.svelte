@@ -231,13 +231,18 @@
 				</li>
 			</ul>
 		</div>
-		<button
-			type="button"
-			class="btn btn-xs ml-auto mr-8 {useAlphaInput ? 'btn-primary text-white' : 'btn-ghost border-purple-500 text-slate-600'}"
-			onclick={() => (useAlphaInput = !useAlphaInput)}
+		<div
+			class="tooltip tooltip-bottom before:text-sm before:!w-72 before:!bg-gray-100 before:!text-xs before:!text-gray-900"
+			data-tip={"Advanced: Click to specify a custom value of the Dirichlet α parameter for each bloc's preferences towards candidates in each slate."}
 		>
-			{useAlphaInput ? 'Use Preset Options' : 'Specify Dirichlet Alpha'}
-		</button>
+			<button
+				type="button"
+				class="btn btn-xs ml-auto mr-8 {useAlphaInput ? 'btn-primary text-white' : 'btn-ghost border-purple-500 text-slate-600'}"
+				onclick={() => (useAlphaInput = !useAlphaInput)}
+			>
+				{useAlphaInput ? 'Use Preset Options' : 'Specify Dirichlet Alpha'}
+			</button>
+		</div>
 	</div>
 	<p class="mb-2 text-xs text-slate-500">
 		When voters from each bloc consider candidates from each slate, do they tend to view one strong
