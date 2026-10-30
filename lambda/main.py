@@ -212,13 +212,13 @@ def _run_election(
         >>> num_elected_by_slate == {"slate1": 1, "slate2": 0}
         True
     """
-    m = election_dict["numSeats"]
+    n_seats = election_dict["numSeats"]
     system = election_dict["system"]
     if system == "blocPlurality":
         # equivalent to blocPlurality
-        election = Borda(profile=profile, m=m, tiebreak="random", score_vector=[1] * m)
+        election = Borda(profile=profile, n_seats=n_seats, tiebreak="random", score_vector=[1] * n_seats)
     elif system == "STV":
-        election = FastSTV(profile=profile, m=m)
+        election = FastSTV(profile=profile, n_seats=n_seats)
     else:
         raise ValueError(f"Invalid election system: {election_dict['system']}.")
 

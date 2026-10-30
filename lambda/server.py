@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, Request, Response
@@ -44,8 +45,13 @@ def _build_event_from_request(path: str, request: Request, body_text: Optional[s
 @app.post("/invoke")
 async def invoke(event: Dict[str, Any]) -> Response:
     """Directly invoke the Lambda handler with a provided event JSON."""
+    start = time.perf_counter()
     result = lambda_handler(event, context=None)
     status = int(result.get("statusCode", 200))
+    print(
+        f"[timing] id={event.get('id')} trials={event.get('trials')} "
+        f"status={status} took {time.perf_counter() - start:.2f}s"
+    )
     headers = result.get("headers") or {}
     body = result.get("body")
 
