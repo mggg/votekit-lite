@@ -1,3 +1,7 @@
+[build]
+# Netlify's image has pip but not uv, which build:notebook needs.
+command = "pip install uv && pnpm build:notebook && pnpm build"
+
 [build.environment]
 SECRETS_SCAN_OMIT_KEYS = "PUBLIC_TURNSTILE_KEY,PUBLIC_CDN_URL"
 
