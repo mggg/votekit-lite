@@ -36,3 +36,7 @@ infra/__pycache__/__main__.cpython-313.pyc
 image.tar
 
 app/static/results/*.json
+
+# JupyterLite build output (pnpm build:notebook)
+app/static/jupyterlite/
+app/jupyterlite/.jupyterlite.doit.db
